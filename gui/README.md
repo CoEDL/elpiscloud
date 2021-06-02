@@ -221,7 +221,6 @@ ReactDOM.render(
 
 ```tsx
 import React from 'react'
-import { hot } from 'react-hot-loader/root'
 
 export function App(): JSX.Element | null {
     return (
@@ -230,14 +229,4 @@ export function App(): JSX.Element | null {
         </div>
     )
 }
-```
-
-(Note: I'm not sure whether `App = hot(_App)` is really necessary.)
-
-## Bonuses: Hot reload
-
-The linked guide at the top of this page recommends using react-hot-loader, but that is outdated. Instead, here are some instructions to use [react-refresh-webpack-plugin](https://github.com/pmmmwh/react-refresh-webpack-plugin/).
-
-```
-yarn add --dev @pmmmwh/react-refresh-webpack-plugin react-refresh type-fest
 ```

@@ -171,10 +171,10 @@ export default config;
 Now we can start actually creating our app, with React. Let's install React (NOT as a dev dependency, rather as a regular dependency)
 
 ```
-yarn add react react-dom react-hot-loader
+yarn add react react-dom
 ```
 
-`react` is self-explanatory. `react-dom` will be used to render our app on index.tsx, and `react-hot-loader` is used for development - it will auto update our app on file changes.
+`react` is self-explanatory. `react-dom` will be used to render our app on index.tsx.
 
 ## Step 6: Add a script
 
@@ -223,8 +223,7 @@ ReactDOM.render(
 import React from 'react'
 import { hot } from 'react-hot-loader/root'
 
-export const App = hot(_App)
-export function _App(): JSX.Element | null {
+export function App(): JSX.Element | null {
     return (
         <div>
             <h1>Hello world!</h1>
@@ -234,3 +233,11 @@ export function _App(): JSX.Element | null {
 ```
 
 (Note: I'm not sure whether `App = hot(_App)` is really necessary.)
+
+## Bonuses: Hot reload
+
+The linked guide at the top of this page recommends using react-hot-loader, but that is outdated. Instead, here are some instructions to use [react-refresh-webpack-plugin](https://github.com/pmmmwh/react-refresh-webpack-plugin/).
+
+```
+yarn add --dev @pmmmwh/react-refresh-webpack-plugin react-refresh type-fest
+```

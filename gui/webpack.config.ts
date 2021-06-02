@@ -10,11 +10,12 @@ interface Configuration extends WebpackConfiguration {
 }
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const plugins = isDevelopment ? [new HotModuleReplacementPlugin(), new ReactRefreshWebpackPlugin()] : [];
+const plugins = isDevelopment ? [new ReactRefreshWebpackPlugin()] : [];
 
 const config: Configuration = {
-  entry: './src/index.tsx',
+  entry: { main: ['./src/index.tsx'] },
   mode: isDevelopment ? 'development' : 'production',
+  target: process.env.NODE_ENV === "development" ? "web" : "browserslist",
   module: {
     rules: [
       {
@@ -23,10 +24,10 @@ const config: Configuration = {
         exclude: /node_modules/, 
         use: [
             {
-                loader: 'babel-loader',
+                loader: require.resolve('babel-loader'),
                 options: {
                     plugins: [
-                        isDevelopment && 'react-refresh/babel'
+                        isDevelopment && require.resolve('react-refresh/babel')
                     ].filter(Boolean)
                 }
             }
@@ -35,6 +36,20 @@ const config: Configuration = {
       {
         test: /\.css$/, // matches .css files only (i.e. not .scss, etc)
         use: ['style-loader', 'css-loader'], 
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf)(\?.*$|$)/i,
+        use: [
+          'file-loader',
+        ],
+      },
+      {
+        test: /\.(svg|png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
       },
     ],
   },

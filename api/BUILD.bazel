@@ -22,8 +22,8 @@ py_library(
 )
 
 py_test(
-    name = "",
-
+    name = "test",
+    srcs = TEST_SRCST
 )
 
 py_binary(

@@ -7,6 +7,8 @@ This document will go through the thought process for setting up the React app f
 - Package manager: Yarn
 - Language: TypeScript
 
+Things that still need to be set up: tslint, react-router, a proper GUI framework.
+
 ## Step 1: Add yarn
 
 Create this directory and initialise the project with `yarn`.

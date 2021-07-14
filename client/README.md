@@ -1,4 +1,4 @@
-Source: [https://github.com/bazelbuild/rules_nodejs/tree/stable/examples/react_webpack](https://github.com/bazelbuild/rules_nodejs/tree/stable/examples/react_webpack).
+Source: [here](https://github.com/bazelbuild/rules_nodejs/tree/stable/examples/react_webpack).
 
 This example shows how to use Webpack to build and serve a React app with Bazel.
 

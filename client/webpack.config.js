@@ -1,21 +1,19 @@
- 
 module.exports = (env, argv) => ({
-  mode: argv.mode,
+  mode: 'development',
   module: {
-      rules: [
-        {
-          test: /\.css$/,
-          exclude: /node_modules/,
-          use: [
-            { loader: "style-loader" },
-            {
-              loader: "css-loader",
-              query: {
-                modules: true
-              }
-            }
-          ]
-        },
-      ]
-    }
+    rules: [
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"]
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf)(\?.*$|$)/i,
+        use: ["file-loader"],
+      },
+      {
+        test: /\.(svg|png|jpe?g|gif)$/i,
+        use: ["file-loader"],
+      },
+    ],
+  },
 });

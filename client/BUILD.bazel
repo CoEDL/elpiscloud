@@ -21,9 +21,16 @@ webpack(
         "-o",
         "$@",
     ],
-    data = [
+    # Why do globs not work :(
+    data = glob(["src/**/*.js"]) + [
         "index.js",
         "src/App.js",
+        "src/ui/Home.js",
+        "src/ui/Navigation.js",
+        "src/ui/Footer.js",
+        "src/ui/Datasets.js",
+        "src/ui/Train.js",
+        "src/ui/Transcribe.js",
         "webpack.config.js",
         "@npm//:node_modules",
     ],

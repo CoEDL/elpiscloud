@@ -31,7 +31,7 @@ module.exports = (env, argv) => ({
         use: ["file-loader"],
       },
       {
-        test: /\.(svg|png|jpe?g|gif)$/i,
+        test: /\.(ico|svg|png|jpe?g|gif)$/i,
         use: ["file-loader"],
       },
     ],
@@ -41,6 +41,7 @@ module.exports = (env, argv) => ({
     new HtmlWebpackPlugin({
         filename: './index.html',
         template: './public/index.html',
+        favicon: './public/favicon.ico',
     }),
   ].filter(Boolean),
   resolve: {

@@ -9,6 +9,7 @@ server(
     ],
     data = glob(["src/**/*.tsx"]) + [
         "public/index.html",
+        "public/favicon.ico",
         "tsconfig.json",
         "webpack.config.js"
     ],

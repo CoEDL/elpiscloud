@@ -6,7 +6,7 @@ export const Navigation = () => (
   <Menu fixed="top" inverted>
     <Container>
       <Link to="/"><Menu.Item header>
-        Elpisnet
+        Elpiscloud
       </Menu.Item></Link>
       <Link to="/datasets">
       <Menu.Item>Datasets</Menu.Item>

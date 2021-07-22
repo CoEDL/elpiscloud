@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Header, Image, Label, Table } from "semantic-ui-react";
+import { Container, Header, Segment, Table } from "semantic-ui-react";
 
 export const Datasets = () => {
   const [uploadedFiles, setUploadedFiles] = useState([{
@@ -9,18 +9,15 @@ export const Datasets = () => {
   }]);
 
   return <Container style={{ padding: "7em 0em 3em 0em" }}>
-    <Container text>
     <Header as="h1">Datasets</Header>
-    <p>
+    <Segment>
       Here you can create datasets by collecting and uploading audio. There are two types of transcription supported in Elpisnet: word and phoneme.
       <ul>
         <li><b>Word transcription</b> requires recordings, corresponding transcriptions and a letter-to-sound file. The letter-to-sound file is required to generate a pronunciation dictionary, which we call the <i>grapheme-to-phoneme</i> or <i>G2P</i> process.</li>
         <li><b>Phoneme transcription</b> only requires recordings and corresponding transcriptions.</li>    
       </ul> 
-    </p>
-    </Container>
-    <Container>
-    <Table celled>
+    </Segment>
+    <Table>
         <Table.Header>
         <Table.Row>
             <Table.HeaderCell>File name</Table.HeaderCell>
@@ -37,6 +34,5 @@ export const Datasets = () => {
         </Table.Row>)}
         </Table.Body>
     </Table>
-    </Container>
   </Container>;
 };

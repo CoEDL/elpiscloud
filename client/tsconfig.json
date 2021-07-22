@@ -1,16 +1,18 @@
 {
     "compilerOptions": {
-        "jsx": "react",
-        "lib": [
-            "ES2015",
-            "DOM"
-        ],
-        "esModuleInterop": true,
+      "outDir": "dist",
+      "target": "es6",
+      "moduleResolution": "node",
+      "lib": [
+        "dom",
+        "dom.iterable",
+        "esnext"
+      ],
+      "sourceMap": true,
+      "jsx": "react",
+      "esModuleInterop": true,
     },
-    // When using ts_project in worker mode, we run outside the Bazel sandbox (unless using --worker_sandboxing).
-    // We list the files that should be part of this particular compilation to avoid TypeScript discovering others.
     "include": [
-        "*.tsx",
-        "*.ts"
+      "src"
     ]
-}
+  }

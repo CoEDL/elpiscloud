@@ -1,8 +1,15 @@
-import React from "react";
-import { Container, Header, Image } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Container, Header, Image, Label, Table } from "semantic-ui-react";
 
-export const Datasets = () => (
-  <Container text style={{ padding: "7em 0em 3em 0em" }}>
+export const Datasets = () => {
+  const [uploadedFiles, setUploadedFiles] = useState([{
+    fileName: "1_1_1.wav",
+    type: "Audio file",
+    fileSize: "123KB"
+  }]);
+
+  return <Container style={{ padding: "7em 0em 3em 0em" }}>
+    <Container text>
     <Header as="h1">Datasets</Header>
     <p>
       Here you can create datasets by collecting and uploading audio. There are two types of transcription supported in Elpisnet: word and phoneme.
@@ -11,5 +18,25 @@ export const Datasets = () => (
         <li><b>Phoneme transcription</b> only requires recordings and corresponding transcriptions.</li>    
       </ul> 
     </p>
-  </Container>
-);
+    </Container>
+    <Container>
+    <Table celled>
+        <Table.Header>
+        <Table.Row>
+            <Table.HeaderCell>File name</Table.HeaderCell>
+            <Table.HeaderCell>Type</Table.HeaderCell>
+            <Table.HeaderCell>File size</Table.HeaderCell>
+        </Table.Row>
+        </Table.Header>
+
+        <Table.Body>
+        {uploadedFiles.map(file => <Table.Row>
+            <Table.Cell>{file.fileName}</Table.Cell>
+            <Table.Cell>{file.type}</Table.Cell>
+            <Table.Cell>{file.fileSize}</Table.Cell>
+        </Table.Row>)}
+        </Table.Body>
+    </Table>
+    </Container>
+  </Container>;
+};

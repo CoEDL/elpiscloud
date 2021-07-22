@@ -1,47 +1,15 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_project")
-load("@npm//http-server:index.bzl", "http_server")
-load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
+load("@npm//webpack-dev-server:index.bzl", server = "webpack_dev_server")
 
-ts_project(
-    # Experimental: Start a tsc daemon to watch for changes to make recompiles faster.
-    supports_workers = True,
-    deps = [
-        "@npm//@types",
-        "@npm//csstype",
-    ],
-)
-
-webpack(
-    name = "bundle",
-    outs = ["app.bundle.js"],
-    args = [
-        "$(execpath index.js)",
-        "--config",
-        "$(execpath webpack.config.js)",
-        "-o",
-        "$@",
-    ],
-    # Why do globs not work :(
-    data = glob(["src/**/*.js"]) + [
-        "index.js",
-        "src/App.js",
-        "src/ui/Home.js",
-        "src/ui/Navigation.js",
-        "src/ui/Footer.js",
-        "src/ui/Datasets.js",
-        "src/ui/Train.js",
-        "src/ui/Transcribe.js",
-        "webpack.config.js",
-        "@npm//:node_modules",
-    ],
-)
-
-# Note, on Windows you need `--enable_runfiles`
-http_server(
+server(
     name = "server",
-    data = [
-        "app.bundle.js",
-        "index.html",
+    args = [
+        "--hot",
+        "--watch-poll",
+        "--config webpack.config.js"
     ],
-    templated_args = ["."],
+    data = glob(["src/**/*.tsx"]) + [
+        "public/index.html",
+        "tsconfig.json",
+        "webpack.config.js"
+    ],
 )

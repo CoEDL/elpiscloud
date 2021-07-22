@@ -21,7 +21,7 @@
     },
     "scripts": {
         "build": "bazel build //...",
-        "serve": "ibazel run :server"
+        "start": "ibazel run :server"
     },
     "dependencies": {
         "semantic-ui-css": "^2.4.1",

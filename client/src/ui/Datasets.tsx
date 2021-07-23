@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Header, Segment, Table } from "semantic-ui-react";
 
 export const Datasets: () => JSX.Element = () => {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  useEffect(() => {
+    setUploadedFiles([
+        {
+          fileName: "1_1_1.wav",
+          type: "Audio file",
+          fileSize: "123KB",
+        },
+      ]);
+  }, []);
 
-  setUploadedFiles([
-    {
-      fileName: "1_1_1.wav",
-      type: "Audio file",
-      fileSize: "123KB",
-    },
-  ]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   return (
     <Container style={{ padding: "7em 0em 3em 0em" }}>

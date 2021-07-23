@@ -1,18 +1,12 @@
 {
-    "compilerOptions": {
-      "outDir": "dist",
-      "target": "es6",
-      "moduleResolution": "node",
-      "lib": [
-        "dom",
-        "dom.iterable",
-        "esnext"
-      ],
-      "sourceMap": true,
-      "jsx": "react",
-      "esModuleInterop": true,
-    },
-    "include": [
-      "src"
-    ]
-  }
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "es6",
+    "moduleResolution": "node",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "sourceMap": true,
+    "jsx": "react",
+    "esModuleInterop": true
+  },
+  "include": ["src"]
+}

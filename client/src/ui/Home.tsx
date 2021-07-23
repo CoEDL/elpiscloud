@@ -1,9 +1,13 @@
 import React from "react";
 import { Container, Header, Image } from "semantic-ui-react";
 
-export const Home = () => (
+export const Home: () => JSX.Element = () => (
   <Container text style={{ padding: "7em 0em 3em 0em" }}>
-    <Image src='https://github.com/CoEDL/elpis/blob/master/docs/img/elpis.png?raw=true' size='medium' centered />
+    <Image
+      src="https://github.com/CoEDL/elpis/blob/master/docs/img/elpis.png?raw=true"
+      size="medium"
+      centered
+    />
     <Header as="h1">Elpis</Header>
     <p>
       Elpis is a tool which allows language workers with minimal computational

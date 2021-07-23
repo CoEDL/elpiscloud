@@ -1,13 +1,13 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Navigation } from './ui/Navigation';
-import { Home } from './ui/Home';
-import { Footer } from './ui/Footer';
-import { Datasets } from './ui/Datasets';
-import { Train } from './ui/Train';
-import { Transcribe } from './ui/Transcribe';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Navigation } from "./ui/Navigation";
+import { Home } from "./ui/Home";
+import { Footer } from "./ui/Footer";
+import { Datasets } from "./ui/Datasets";
+import { Train } from "./ui/Train";
+import { Transcribe } from "./ui/Transcribe";
 
-export function App(): JSX.Element | null {
+export const App: () => JSX.Element = () => {
   return (
     <>
       <Router>
@@ -17,17 +17,17 @@ export function App(): JSX.Element | null {
             <Home />
           </Route>
           <Route path="/datasets">
-              <Datasets />
+            <Datasets />
           </Route>
           <Route path="/train">
-              <Train />
+            <Train />
           </Route>
           <Route path="/transcribe">
-              <Transcribe />
+            <Transcribe />
           </Route>
         </Switch>
         <Footer />
       </Router>
     </>
   );
-}
+};

@@ -1,6 +1,7 @@
 Source: [here](https://github.com/bazelbuild/rules_nodejs/tree/stable/examples/react_webpack).
 
 This app uses Bazel, Webpack and React so far. To setup:
+
 - Linting with TSLint/prettier
 - Babel
 

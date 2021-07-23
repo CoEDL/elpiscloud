@@ -1,7 +1,7 @@
 import React from "react";
-import { Container, Header, Image } from "semantic-ui-react";
+import { Container, Header } from "semantic-ui-react";
 
-export const Train = () => (
+export const Train: () => JSX.Element = () => (
   <Container text style={{ padding: "7em 0em 3em 0em" }}>
     <Header as="h1">Train</Header>
     <p>

@@ -8,6 +8,7 @@ server(
         "--config webpack.config.js"
     ],
     data = glob(["src/**/*.tsx"]) + [
+        "src/App.css",
         "public/index.html",
         "public/favicon.ico",
         "tsconfig.json",

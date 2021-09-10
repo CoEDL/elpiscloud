@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Navigation } from "./ui/Navigation";
 import { Home } from "./ui/Home";
+import { Datasets } from "./ui/Datasets";
 import { Footer } from "./ui/Footer";
 import { Files } from "./ui/Files";
 import { Train } from "./ui/Train";
@@ -18,6 +19,9 @@ export const App: () => JSX.Element = () => {
           </Route>
           <Route path="/files">
             <Files />
+          </Route>
+          <Route path="/datasets">
+            <Datasets />
           </Route>
           <Route path="/train">
             <Train />

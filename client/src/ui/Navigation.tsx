@@ -8,8 +8,8 @@ export const Navigation: () => JSX.Element = () => (
       <Link to="/">
         <Menu.Item header>Elpiscloud</Menu.Item>
       </Link>
-      <Link to="/datasets">
-        <Menu.Item>Datasets</Menu.Item>
+      <Link to="/files">
+        <Menu.Item>Files</Menu.Item>
       </Link>
       <Link to="/train">
         <Menu.Item>Train</Menu.Item>

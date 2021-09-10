@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Navigation } from "./ui/Navigation";
 import { Home } from "./ui/Home";
 import { Footer } from "./ui/Footer";
-import { Datasets } from "./ui/Datasets";
+import { Files } from "./ui/Files";
 import { Train } from "./ui/Train";
 import { Transcribe } from "./ui/Transcribe";
 
@@ -16,8 +16,8 @@ export const App: () => JSX.Element = () => {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route path="/datasets">
-            <Datasets />
+          <Route path="/files">
+            <Files />
           </Route>
           <Route path="/train">
             <Train />

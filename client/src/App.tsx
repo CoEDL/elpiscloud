@@ -22,7 +22,7 @@ const language = navigator.language.split(/[-_]/)[0];
 
 export const App: () => JSX.Element = () => {
   return (
-    <IntlProvider locale="en" messages={flatten(messages[language])}>
+    <IntlProvider locale={language} messages={flatten(messages[language])}>
       <Router>
         <Navigation />
         <Switch>

@@ -6,7 +6,8 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "sourceMap": true,
     "jsx": "react",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
   "include": ["src"]
 }

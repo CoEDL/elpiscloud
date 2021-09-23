@@ -38,8 +38,10 @@
     "format": "yarn lint && yarn pretty"
   },
   "dependencies": {
+    "flat": "^5.0.2",
     "react": "^17.0.2",
     "react-dropzone": "^11.3.4",
+    "react-intl": "^5.20.10",
     "react-router-dom": "^5.2.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3"

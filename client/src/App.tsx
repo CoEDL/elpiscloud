@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import common_en from './i18n/en-GB/common.json';
+import common_fr from './i18n/fr/common.json';
 import { Navigation } from "./ui/Navigation";
 import { Home } from "./ui/Home";
 import { Datasets } from "./ui/Datasets";
@@ -8,9 +10,19 @@ import { Files } from "./ui/Files";
 import { Train } from "./ui/Train";
 import { Transcribe } from "./ui/Transcribe";
 
+import flatten from "flat";
+import { IntlProvider } from "react-intl";
+
+const messages = {
+    'en': common_en,
+    'fr': common_fr
+}
+
+const language = navigator.language.split(/[-_]/)[0];
+
 export const App: () => JSX.Element = () => {
   return (
-    <>
+    <IntlProvider locale="en" messages={flatten(messages[language])}>
       <Router>
         <Navigation />
         <Switch>
@@ -32,6 +44,6 @@ export const App: () => JSX.Element = () => {
         </Switch>
         <Footer />
       </Router>
-    </>
+    </IntlProvider>
   );
 };

@@ -1,57 +1,88 @@
 import React, { useEffect, useState } from "react";
-import { Container, Header, Segment, Table } from "semantic-ui-react";
+import { FormattedMessage } from "react-intl";
+import {
+  Container,
+  Dropdown,
+  Form,
+  Grid,
+  Header,
+  Input,
+  Segment,
+  Table,
+} from "semantic-ui-react";
+import { NAME_EXTENSION_MAP } from "../common";
+import { MOCK_FILES } from "../mock";
 
 export const Datasets: () => JSX.Element = () => {
-  useEffect(() => {
-    setUploadedFiles([
-        {
-          fileName: "1_1_1.wav",
-          type: "Audio file",
-          fileSize: "123KB",
-        },
-      ]);
-  }, []);
-
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-
   return (
     <Container style={{ padding: "7em 0em 3em 0em" }}>
       <Header as="h1">Datasets</Header>
       <Segment>
-        Here you can create datasets by collecting and uploading audio. There
-        are two types of transcription supported in Elpisnet: word and phoneme.
-        <ul>
-          <li>
-            <b>Word transcription</b> requires recordings, corresponding
-            transcriptions and a letter-to-sound file. The letter-to-sound file
-            is required to generate a pronunciation dictionary, which we call
-            the <i>grapheme-to-phoneme</i> or <i>G2P</i> process.
-          </li>
-          <li>
-            <b>Phoneme transcription</b> only requires recordings and
-            corresponding transcriptions.
-          </li>
-        </ul>
+        Here you can create datasets, based off of the files you upload in the
+        Files menu.
       </Segment>
-      <Table>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>File name</Table.HeaderCell>
-            <Table.HeaderCell>Type</Table.HeaderCell>
-            <Table.HeaderCell>File size</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-
-        <Table.Body>
-          {uploadedFiles.map((file) => (
-            <Table.Row key={file.fileName}>
-              <Table.Cell>{file.fileName}</Table.Cell>
-              <Table.Cell>{file.type}</Table.Cell>
-              <Table.Cell>{file.fileSize}</Table.Cell>
-            </Table.Row>
+      <Grid>
+        <Grid.Column width={8}>
+          {Array.from(NAME_EXTENSION_MAP).map((name) => (
+            <Grid.Row key={name[0]}>
+              <h3>{name[0]}</h3>
+              <Table selectable>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell>File name</Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {Array.from(MOCK_FILES)
+                    .sort()
+                    .filter((file) => file.includes(name[1]))
+                    .map((file) => (
+                      <Table.Row key={file}>
+                        <Table.Cell>{file}</Table.Cell>
+                      </Table.Row>
+                    ))}
+                </Table.Body>
+              </Table>
+            </Grid.Row>
           ))}
-        </Table.Body>
-      </Table>
+        </Grid.Column>
+        <Grid.Column width={8}>
+          <Form>
+            <Form.Field>
+              <label>Selection mechanism</label>
+              <Dropdown placeholder="Selection mechanism" fluid selection />
+            </Form.Field>
+            <Form.Field>
+              <label>Tier name</label>
+              <Dropdown placeholder="Tier name" fluid selection />
+            </Form.Field>
+            <Form.Field>
+              <label>Tier type</label>
+              <Dropdown placeholder="Tier type" fluid selection />
+            </Form.Field>
+            <Form.Field>
+              <label>Tier order</label>
+              <Dropdown placeholder="Tier order" fluid selection />
+            </Form.Field>
+            <Form.Field>
+              <label>Punctuation to replace with spaces</label>
+              <Input placeholder="Punctuation to replace with spaces" />
+            </Form.Field>
+            <Form.Field>
+              <label>Punctuation to remove</label>
+              <Input placeholder="Punctuation to remove" />
+            </Form.Field>
+            <Form.Field>
+              <label>Words to remove</label>
+              <Input placeholder="Words to remove" />
+            </Form.Field>
+            <Form.Field>
+              <label>Tags to remove</label>
+              <Input placeholder="Tags to remove" />
+            </Form.Field>
+          </Form>
+        </Grid.Column>
+      </Grid>
     </Container>
   );
 };

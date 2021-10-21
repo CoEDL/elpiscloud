@@ -7,7 +7,8 @@ server(
         "--watch-poll",
         "--config webpack.config.js"
     ],
-    data = glob(["src/**/*.tsx"]) + [
+    data = glob(["src/**/*.tsx"]) + glob(["src/**/*.ts"]) + glob(["src/**/*.json"]) + [
+        "src/App.css",
         "public/index.html",
         "public/favicon.ico",
         "tsconfig.json",

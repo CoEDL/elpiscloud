@@ -1,43 +1,39 @@
+load("@pypi//:requirements.bzl", "requirement")
 load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
-load("@bazel_for_gcloud_python//infra/serverless:gcf_rules.bzl", "py_cloud_function")
 
 DEPS = [
-    "flask"
+    requirement("flask"),
 ]
 
-TEST_DEPS = [
-    "pytest"
-]
-
-TEST_SRCS = glob([
-    "tests/**/*.py",
+SCRS = glob([
+   "functions/**/*.py",
 ])
 
 py_library(
-    name = "function_utils",
+    name = "lib",
     srcs = [
         "functions/utils.py",
     ],
     visibility = ["//visibility:public"],
 )
 
+py_binary(
+    name = "main",
+    srcs = SCRS,
+    deps = DEPS,
+)
+
+TEST_DEPS = [
+    ":main",
+    requirement("pytest"),
+]
+
+TEST_SRCS = glob([
+    "tests/**/*.py",
+])
+
 py_test(
     name = "test",
-    srcs = TEST_SRCST
-)
-
-py_binary(
-  name = "main",
-  srcs = ["main.py"],
-)
-
-py_cloud_function(
-    # Required parameters:
-    name = "hello_deploy",
-    src = ":hello",
-    entry = "hello",
-
-    requirements = [
-      "google-cloud-logging",
-    ],
+    srcs = TEST_SRCS,
+    deps = TEST_DEPS,
 )

@@ -12,7 +12,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   echo 'Installing direnv'
   brew install direnv
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  if ! [ -x "$(command -v brew)" ]; then
+  if ! [ -x "$(command -v direnv)" ]; then
+    echo 'direnv not found, installing now' >&2
     apt-get install -y direnv
   fi
 else

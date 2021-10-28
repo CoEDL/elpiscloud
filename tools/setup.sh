@@ -31,11 +31,11 @@ else
   echo 'Your shell is not supported, use zsh or bash (or add `eval "$(direnv hook bash)"` to your config)' >&2
 fi
 
-$SHELL
-
 if ! [ -x "$(command -v nix)" ]; then
   echo 'Nix not found, installing now...' >&2
   curl -L https://nixos.org/nix/install | sh
 fi
+
+$SHELL
 
 echo 'Setup complete, restart your shell/terminal or change out of and back in to this directory to trigger direnv.'

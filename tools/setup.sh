@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -Eeuxo pipefail
+set -Eeuo pipefail
 
 echo 'Running development environment setup for Elpis Cloud'
 
@@ -39,6 +39,4 @@ if ! [ -x "$(command -v nix)" ]; then
   curl -L https://nixos.org/nix/install | sh
 fi
 
-$SHELL
-
-echo 'Development environment setup complete'
+$SHELL -c "echo 'Development environment setup complete'"

@@ -3,6 +3,8 @@ workspace(name = "elpisnet")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+###### PYTHON
+
 http_archive(
     name = "rules_python",
     sha256 = "778197e26c5fbeb07ac2a2c5ae405b30f6cb7ad1f5510ea6fdac03bded96cc6f",
@@ -50,3 +52,41 @@ pip_install(
     python_interpreter_target = "@python_interpreter//:python_bin",
     requirements = "//deps:requirements.txt",
 )
+
+###### DOCKER
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "92779d3445e7bdc79b961030b996cb0c91820ade7ffa7edca69273f404b085d5",
+    strip_prefix = "rules_docker-0.20.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.20.0/rules_docker-v0.20.0.tar.gz"],
+)
+
+docker_toolchain_configure(
+    docker_flags = [
+        "--tls",
+        "--log-level=info",
+    ]
+)
+
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+container_repositories()
+
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
+
+load(
+    "@io_bazel_rules_docker//python:image.bzl",
+    _py_image_repos = "repositories",
+)
+
+_py_image_repos()

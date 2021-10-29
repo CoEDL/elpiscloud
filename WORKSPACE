@@ -50,7 +50,7 @@ filegroup(
 pip_install(
     name = "pypi",
     python_interpreter_target = "@python_interpreter//:python_bin",
-    requirements = "//deps:requirements.txt",
+    requirements = "//tools/deps:requirements.txt",
 )
 
 ###### DOCKER
@@ -62,7 +62,12 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.20.0/rules_docker-v0.20.0.tar.gz"],
 )
 
+load("@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
+    docker_toolchain_configure="toolchain_configure"
+)
+
 docker_toolchain_configure(
+    name = "docker_config",
     docker_flags = [
         "--tls",
         "--log-level=info",

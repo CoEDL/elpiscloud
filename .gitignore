@@ -141,3 +141,7 @@ bazel-bin/
 bazel-elpiscloud/
 bazel-out/
 bazel-testlogs/
+/bazel-bin/
+/bazel-elpiscloud/
+/bazel-out/
+/bazel-testlogs/

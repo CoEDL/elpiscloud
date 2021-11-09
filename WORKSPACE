@@ -5,13 +5,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 ###### PYTHON
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "rules_python",
-    sha256 = "778197e26c5fbeb07ac2a2c5ae405b30f6cb7ad1f5510ea6fdac03bded96cc6f",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_python/releases/download/0.2.0/rules_python-0.2.0.tar.gz",
-        "https://github.com/bazelbuild/rules_python/releases/download/0.2.0/rules_python-0.2.0.tar.gz",
-    ],
+    url = "https://github.com/bazelbuild/rules_python/releases/download/0.5.0/rules_python-0.5.0.tar.gz",
+    sha256 = "cd6730ed53a002c56ce4e2f396ba3b3be262fd7cb68339f0377a45e8227fe332",
 )
 
 load("@rules_python//python:pip.bzl", "pip_install")
@@ -48,9 +46,8 @@ filegroup(
 )
 
 pip_install(
-    name = "pypi",
-    python_interpreter_target = "@python_interpreter//:python_bin",
-    requirements = "//tools/deps:requirements.txt",
+   name = "pypi",
+   requirements = "//tools/deps:requirements.txt",
 )
 
 ###### DOCKER
@@ -95,3 +92,12 @@ load(
 )
 
 _py_image_repos()
+
+###### SOURCE IMAGES
+container_pull(
+    name="kaldi",
+    registry="https://registry.hub.docker.com/",
+    repository="kaldiasr/kaldi",
+    tag="2020-09",
+    digest="sha256:4b5153e87f8ec61ef96bcf1751ba97e9e39b05aedf24bea37886a54944fb44ef",
+)

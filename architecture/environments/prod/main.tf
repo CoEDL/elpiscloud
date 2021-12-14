@@ -1,5 +1,5 @@
 locals {
-  env = "prod"
+  env         = "prod"
   website_url = "elpis.cloud"
 }
 
@@ -8,9 +8,10 @@ provider "google" {
 }
 
 module "frontend_bucket" {
-  source   = "../../modules/frontend_bucket"
-  name     = "${local.website_url}"
-  location = "US"
-  env      = "${local.env}"
-  project  = "${var.project}"
+  source         = "../../modules/frontend_bucket"
+  name           = "${local.website_url}"
+  location       = "US"
+  env            = "${local.env}"
+  project        = "${var.project}"
+  project_number = "${var.project_number}"
 }

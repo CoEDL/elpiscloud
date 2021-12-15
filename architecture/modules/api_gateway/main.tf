@@ -32,15 +32,15 @@ resource "google_api_gateway_gateway" "gateway" {
 
 # ----- Load balancer for api gateway (TODO Refactor later) ------
 # Static ip
-resource "google_compute_global_address" "lb_ip" {
+resource "google_compute_global_address" "api_ip" {
   name = "api-gateway-ip"
 }
 
-resource "google_compute_url_map" "urlmap" {
+resource "google_compute_url_map" "api_urlmap" {
   name        = "api-gateway-urlmap"
   description = "Maps urls to the gateway."
 
-  default_service = google_compute_backend_service.default.id
+  default_service = google_compute_backend_service.api_backend_service.id
 
   host_rule {
     hosts        = [var.host]
@@ -49,41 +49,41 @@ resource "google_compute_url_map" "urlmap" {
 
   path_matcher {
     name            = "mysite"
-    default_service = google_compute_backend_service.default.id
+    default_service = google_compute_backend_service.api_backend_service.id
   }
 }
 
 # Backend service
-resource "google_compute_backend_service" "default" {
+resource "google_compute_backend_service" "api_backend_service" {
   name        = "api-gateway-backend-service"
   port_name   = "http"
   protocol    = "HTTP"
   timeout_sec = 10
 
-  health_checks = [google_compute_http_health_check.default.id]
+  health_checks = [google_compute_http_health_check.api_hc.id]
 }
 
-resource "google_compute_http_health_check" "default" {
+resource "google_compute_http_health_check" "api_hc" {
   name               = "api-gateway-health-check"
   request_path       = "/"
   check_interval_sec = 1
   timeout_sec        = 1
 }
 
-resource "google_compute_target_http_proxy" "default" {
+resource "google_compute_target_http_proxy" "api_proxy" {
   project     = var.project
   provider    = google-beta
   name        = "api-gateway-target-proxy"
   description = "Proxy for site bucket forwarding rules"
-  url_map     = google_compute_url_map.urlmap.self_link
+  url_map     = google_compute_url_map.api_urlmap.self_link
 }
 
 // HTTP Forwarding rule
-resource "google_compute_global_forwarding_rule" "default" {
+resource "google_compute_global_forwarding_rule" "api_fwd_80" {
   provider              = google-beta
   name                  = "api-80"
   project               = var.project
-  ip_address            = google_compute_global_address.lb_ip.address
-  target                = google_compute_target_http_proxy.default.self_link
+  ip_address            = google_compute_global_address.api_ip.address
+  target                = google_compute_target_http_proxy.api_proxy.self_link
   port_range            = 80
 }

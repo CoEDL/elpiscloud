@@ -9,7 +9,8 @@ provider "google" {
 }
 
 module "requirements" {
-  source          = "../../modules/project_requirements"
+  source  = "../../modules/project_requirements"
+  project = "${var.project}"
 }
 
 module "functions" {

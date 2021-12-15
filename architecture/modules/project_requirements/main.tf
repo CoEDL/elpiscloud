@@ -30,7 +30,8 @@ resource "google_project_iam_binding" "service_permissions" {
   for_each = toset([
     "run.invoker", "cloudfunctions.invoker"
   ])
-
+  
+  project    = var.project
   role       = "roles/${each.key}"
   members    = ["serviceAccount:${google_service_account.elpis_worker.email}"]
   depends_on = [google_service_account.elpis_worker]

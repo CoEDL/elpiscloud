@@ -12,7 +12,7 @@ resource "google_api_gateway_api_config" "api_cfg" {
   openapi_documents {
     document {
       path = "spec.yaml"
-      contents = filebase64(templatefile(var.swagger_location, { hello_url = var.function_url }))
+      contents = base64encode(templatefile(var.swagger_location, { hello_url = var.function_url }))
     }
   }
   lifecycle {

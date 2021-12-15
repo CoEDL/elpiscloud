@@ -12,7 +12,7 @@ resource "google_api_gateway_api_config" "api_cfg" {
   openapi_documents {
     document {
       path = "spec.yaml"
-      contents = filebase64(data.template_file.elpis_api_swagger.rendered)
+      contents = filebase64(templatefile(var.swagger_location, { hello_url = var.function_url }))
     }
   }
   lifecycle {
@@ -25,15 +25,6 @@ resource "google_api_gateway_gateway" "gateway" {
   api_config = google_api_gateway_api_config.api_cfg.id
   gateway_id = "elpis-api-gateway"
   region     = var.region
-}
-
-# Replace endpoint urls with cloudfunction endpoints we've created.
-data "template_file" "elpis_api_swagger" {
-  template = "${file(var.swagger_location)}"
-
-  vars {
-    hello_url = "${var.function_url}"
-  }
 }
 
 # Load balancer for api gateway

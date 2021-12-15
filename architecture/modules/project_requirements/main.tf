@@ -19,11 +19,6 @@ resource "google_project_service" "cloudfunctions" {
   disable_on_destroy = false
 }
 
-resource "google_project_service" "enable_cloud_resource_manager_api" {
-  service            = "cloudresourcemanager.googleapis.com"
-  disable_on_destroy = false
-}
-
 # Create a service account
 resource "google_service_account" "elpis_worker" {
   account_id   = "elpis-worker"

@@ -2,7 +2,6 @@ locals {
   env              = "prod"
   website_url      = "elpis.cloud"
   functions_folder = "../../../api/functions"
-  elpis_worker_sa  = "serviceAccount:${google_service_account.elpis_worker.email}"
 }
 
 provider "google" {
@@ -11,7 +10,6 @@ provider "google" {
 
 module "requirements" {
   source          = "../../modules/project_requirements"
-  elpis_worker_sa = "${local.elpis_worker_sa}"
 }
 
 module "functions" {

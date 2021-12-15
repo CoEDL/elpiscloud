@@ -32,6 +32,6 @@ resource "google_project_iam_binding" "service_permissions" {
   ])
 
   role       = "roles/${each.key}"
-  members    = [var.elpis_worker_sa]
+  members    = ["serviceAccount:${google_service_account.elpis_worker.email}"]
   depends_on = [google_service_account.elpis_worker]
 }

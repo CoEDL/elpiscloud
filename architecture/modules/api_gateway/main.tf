@@ -33,11 +33,11 @@ resource "google_api_gateway_gateway" "gateway" {
 # ----- Load balancer for api gateway (TODO Refactor later) ------
 # Static ip
 resource "google_compute_global_address" "lb_ip" {
-  name = "elb-ip"
+  name = "api-gateway-ip"
 }
 
 resource "google_compute_url_map" "urlmap" {
-  name        = "urlmap"
+  name        = "api-gateway-urlmap"
   description = "Maps urls to the gateway."
 
   default_service = google_compute_backend_service.default.id

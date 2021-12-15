@@ -11,7 +11,6 @@ provider "google" {
 
 module "requirements" {
   source          = "../../modules/project_requirements"
-  project         = "${var.project}"
   elpis_worker_sa = "${local.elpis_worker_sa}"
 }
 

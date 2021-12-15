@@ -31,7 +31,7 @@ resource "google_storage_bucket_object" "archive" {
   name = "${var.functions_folder}_${data.archive_file.functions.output_md5}.zip" # will delete old items
 
   bucket = google_storage_bucket.source.name
-  source = data.archive_file.functions_folder.output_path
+  source = data.archive_file.functions.output_path
 
   depends_on = [data.archive_file.functions]
 }

@@ -3,5 +3,5 @@ variable "region" {
     default = "us-central1"
 }
 variable "project" {}
-variable "function_folder" {}
+variable "functions_folder" {}
 variable "elpis_worker" {}

@@ -23,6 +23,8 @@ resource "google_project_service" "cloudfunctions" {
 resource "google_service_account" "elpis_worker" {
   account_id   = "elpis-worker"
   display_name = "Elpis Worker SA"
+  
+  depends_on = [google_project_service.iam]
 }
 
 # Set permissions

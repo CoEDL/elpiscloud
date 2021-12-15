@@ -1,7 +1,7 @@
 locals {
   env              = "prod"
   website_url      = "elpis.cloud"
-  functions_folder = "../../../api/functions"
+  functions_folder = "api/functions"
   location         = "US"
 }
 

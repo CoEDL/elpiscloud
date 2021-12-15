@@ -36,6 +36,7 @@ module "functions" {
 module "api_gateway" {
   source           = "../../modules/api_gateway"
   project          = var.project
+  host             = "api.${local.website_url}"
   swagger_location = local.swagger_api
   function_url     = module.functions.function_url
 }

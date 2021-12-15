@@ -2,6 +2,7 @@ locals {
   env              = "prod"
   website_url      = "elpis.cloud"
   functions_folder = "../../../api/functions"
+  swagger_api      = "../../../api/swagger_api.yaml"
   location         = "US"
 }
 
@@ -14,6 +15,15 @@ module "requirements" {
   project = var.project
 }
 
+module "frontend_bucket" {
+  source         = "../../modules/frontend_bucket"
+  project        = var.project
+  project_number = var.project_number
+  location       = local.location
+  env            = local.env
+  name           = local.website_url
+}
+
 module "functions" {
   source           = "../../modules/functions"
   project          = var.project
@@ -23,11 +33,8 @@ module "functions" {
   depends_on       = [module.requirements]
 }
 
-module "frontend_bucket" {
-  source         = "../../modules/frontend_bucket"
-  project        = var.project
-  project_number = var.project_number
-  location       = local.location
-  env            = local.env
-  name           = local.website_url
+module "api_gateway" {
+  source           = "../../modules/api_gateway"
+  swagger_location = local.swagger_api
+  function_url     = module.functions.function_url
 }

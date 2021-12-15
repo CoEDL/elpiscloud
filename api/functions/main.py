@@ -1,3 +1,3 @@
-from api.functions.example_funtion import hello
+from api.functions.example_function import hello
 
 hello()

@@ -1,5 +1,2 @@
 import functions_framework
-
-
-def hello(request):
-    return "Hello, world!"
+from example_function import hello

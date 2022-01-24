@@ -9,3 +9,6 @@ variable "region" {
     type = string
     default = "us-central1"
 }
+
+variable "root_zone" {}
+variable "ssl_cert" {}

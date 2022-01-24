@@ -6,3 +6,5 @@ variable "region" {
 }
 variable "project" {}
 variable "host" {}
+variable "root_zone" {}
+variable "ssl_cert" {}

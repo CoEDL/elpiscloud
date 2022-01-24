@@ -37,7 +37,7 @@ resource "google_compute_backend_bucket" "backend" {
   name        = "site-bucket-backend"
   description = "Backend for site bucket"
   bucket_name = google_storage_bucket.static-site.name
-  enable_cdn  = true
+  enable_cdn  = false
 }
 
 // Static IP for load balancer
@@ -50,32 +50,27 @@ resource "google_compute_url_map" "urlmap" {
   description = "Maps urls to the bucket."
 
   default_service = google_compute_backend_bucket.backend.id
-
-  host_rule {
-    hosts        = ["${var.name}"]
-    path_matcher = "mysite"
-  }
-
-  path_matcher {
-    name            = "mysite"
-    default_service = google_compute_backend_bucket.backend.id
-  }
 }
 
-resource "google_compute_target_http_proxy" "default" {
-  project     = var.project
-  provider    = google-beta
-  name        = "target-proxy"
-  description = "Proxy for site bucket forwarding rules"
-  url_map     = google_compute_url_map.urlmap.self_link
+resource "google_compute_target_https_proxy" "frontend_proxy_443" {
+  name             = "frontend-https-proxy"
+  ssl_certificates = [var.ssl_cert.id]
+  url_map          = google_compute_url_map.urlmap.self_link
 }
 
-// HTTP Forwarding rule
-resource "google_compute_global_forwarding_rule" "default" {
-  provider              = google-beta
-  name                  = "frontend-80"
-  project               = var.project
-  ip_address            = google_compute_global_address.lb_ip.address
-  target                = google_compute_target_http_proxy.default.self_link
-  port_range            = 80
+// HTTPS
+resource "google_compute_global_forwarding_rule" "frontend_fwd_rule_443" {
+  name        = "frontend-443"
+  target      = google_compute_target_https_proxy.frontend_proxy_443.id
+  ip_protocol = "TCP"
+  port_range  = "443"
+  ip_address  = google_compute_global_address.lb_ip.address
+}
+
+resource "google_dns_record_set" "api" {
+  managed_zone = var.root_zone.name
+  name         = var.root_zone.dns_name
+  rrdatas      = [google_compute_global_address.lb_ip.address]
+  ttl          = 300
+  type         = "A"
 }

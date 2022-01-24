@@ -7,7 +7,7 @@ resource "google_compute_managed_ssl_certificate" "ssl_cert" {
   name = "ssl-cert"
 
   managed {
-    domains = ["${var.root_zone_url}.com", "api.${var.root_zone_url}.com"]
+    domains = ["${var.root_zone_url}", "api.${var.root_zone_url}"]
   }
 
   lifecycle {

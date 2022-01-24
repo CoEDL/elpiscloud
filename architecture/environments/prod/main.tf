@@ -15,13 +15,23 @@ module "requirements" {
   project = var.project
 }
 
+module "zones" {
+  source         = "../../modules/zones"
+  root_zone_name = "root-zone" 
+  root_zone_url  = local.website_url
+}
+
 module "frontend_bucket" {
-  source         = "../../modules/frontend_bucket"
-  project        = var.project
-  project_number = var.project_number
-  location       = local.location
-  env            = local.env
-  name           = local.website_url
+  source           = "../../modules/frontend_bucket"
+  project          = var.project
+  project_number   = var.project_number
+  location         = local.location
+  env              = local.env
+  name             = local.website_url
+  root_zone        = module.zones.root_zone
+  ssl_cert         = module.zones.ssl_cert
+
+  depends_on       = [module.zones]
 }
 
 module "functions" {
@@ -39,4 +49,8 @@ module "api_gateway" {
   host             = "api.${local.website_url}"
   swagger_location = local.swagger_api
   function_url     = module.functions.function_url
+
+  root_zone            = module.zones.root_zone
+  ssl_cert             = module.zones.ssl_cert
+  depends_on           = [module.zones]
 }

@@ -3,5 +3,5 @@ output "url" {
 }
 
 output "ip" {
-    value = google_compute_global_address.api_ip.address
+    value = google_compute_global_address.api_fwd_address.address
 }

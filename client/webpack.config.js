@@ -7,7 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 module.exports = (env, argv) => ({
   mode: isDevelopment ? "development" : "production",
   entry: {
-    main: "./src/index.tsx",
+    main: "./client/src/index.tsx",
   },
   module: {
     rules: [
@@ -40,8 +40,8 @@ module.exports = (env, argv) => ({
     isDevelopment && new ReactRefreshPlugin(),
     new HtmlWebpackPlugin({
       filename: "./index.html",
-      template: "./public/index.html",
-      favicon: "./public/favicon.ico",
+      template: "./client/public/index.html",
+      favicon: "./client/public/favicon.ico",
     }),
   ].filter(Boolean),
   resolve: {

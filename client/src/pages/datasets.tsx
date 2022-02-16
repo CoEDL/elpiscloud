@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import React from 'react';
 import {
   Container,
   Dropdown,
@@ -9,13 +8,13 @@ import {
   Input,
   Segment,
   Table,
-} from "semantic-ui-react";
-import { NAME_EXTENSION_MAP } from "../common";
-import { MOCK_FILES } from "../mock";
+} from 'semantic-ui-react';
+import {NAME_EXTENSION_MAP} from '../common';
+import {MOCK_FILES} from '../mock';
 
-export const Datasets: () => JSX.Element = () => {
+export default function Datasets() {
   return (
-    <Container style={{ padding: "7em 0em 3em 0em" }}>
+    <Container>
       <Header as="h1">Datasets</Header>
       <Segment>
         Here you can create datasets, based off of the files you upload in the
@@ -23,7 +22,7 @@ export const Datasets: () => JSX.Element = () => {
       </Segment>
       <Grid>
         <Grid.Column width={8}>
-          {Array.from(NAME_EXTENSION_MAP).map((name) => (
+          {Array.from(NAME_EXTENSION_MAP).map(name => (
             <Grid.Row key={name[0]}>
               <h3>{name[0]}</h3>
               <Table selectable>
@@ -35,8 +34,8 @@ export const Datasets: () => JSX.Element = () => {
                 <Table.Body>
                   {Array.from(MOCK_FILES)
                     .sort()
-                    .filter((file) => file.includes(name[1]))
-                    .map((file) => (
+                    .filter(file => file.includes(name[1]))
+                    .map(file => (
                       <Table.Row key={file}>
                         <Table.Cell>{file}</Table.Cell>
                       </Table.Row>
@@ -85,4 +84,4 @@ export const Datasets: () => JSX.Element = () => {
       </Grid>
     </Container>
   );
-};
+}

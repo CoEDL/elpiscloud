@@ -1,7 +1,7 @@
 import type {AppProps} from 'next/app';
 import {NextComponentType} from 'next/types';
 import 'semantic-ui-css/semantic.min.css';
-import 'styles/globals.css';
+// import 'styles/globals.css';
 import MainLayout from '../layouts/MainLayout';
 
 type ElpisComponentType = NextComponentType & {

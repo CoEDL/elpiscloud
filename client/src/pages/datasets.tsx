@@ -9,8 +9,8 @@ import {
   Segment,
   Table,
 } from 'semantic-ui-react';
-import {NAME_EXTENSION_MAP} from '../common';
-import {MOCK_FILES} from '../mock';
+import {NAME_EXTENSION_MAP} from 'lib/file_extensions';
+import {MOCK_FILES} from 'mock';
 
 export default function Datasets() {
   return (

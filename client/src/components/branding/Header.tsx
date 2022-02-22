@@ -1,27 +1,47 @@
 import React from 'react';
 import Link from 'next/link';
-import {Container, Menu} from 'semantic-ui-react';
+import ProfileIndicator from 'components/ProfileIndicator';
 
 const Header = () => (
-  <Menu inverted>
-    <Container>
-      <Link href="/">
-        <Menu.Item header>Elpiscloud</Menu.Item>
-      </Link>
-      <Link href="/files">
-        <Menu.Item>Files</Menu.Item>
-      </Link>
-      <Link href="/datasets">
-        <Menu.Item>Datasets</Menu.Item>
-      </Link>
-      <Link href="/train">
-        <Menu.Item>Train</Menu.Item>
-      </Link>
-      <Link href="/transcribe">
-        <Menu.Item>Transcribe</Menu.Item>
-      </Link>
-    </Container>
-  </Menu>
+  <div className="h-16 bg-gray-800">
+    <nav className="container flex h-full items-center text-white">
+      {/* Left Menu */}
+      <ul className="flex flex-1 divide-x divide-gray-500">
+        {links.map(({name, link}) => (
+          <Link key={name} href={link}>
+            <li className="cursor-pointer px-4 font-semibold first:pl-0">
+              {name}
+            </li>
+          </Link>
+        ))}
+      </ul>
+      {/* Right menu */}
+      <ProfileIndicator />
+    </nav>
+  </div>
 );
+
+const links = [
+  {
+    name: 'Elpiscloud',
+    link: '/',
+  },
+  {
+    name: 'Files',
+    link: '/files',
+  },
+  {
+    name: 'Datasets',
+    link: '/datasets',
+  },
+  {
+    name: 'Train',
+    link: '/train',
+  },
+  {
+    name: 'Transcribe',
+    link: '/transcribe',
+  },
+];
 
 export default Header;

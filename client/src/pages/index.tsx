@@ -10,14 +10,15 @@ const Home: NextPage = () => {
         size="medium"
         centered
       />
-      <Header as="h1">
+      <h1 className="title">
         <FormattedMessage
           id="welcome.title"
           defaultMessage="Elpis"
           description="Title on main page"
         />
-      </Header>
-      <p>
+      </h1>
+
+      <p className="">
         <FormattedMessage
           id="welcome.description"
           defaultMessage="Description"

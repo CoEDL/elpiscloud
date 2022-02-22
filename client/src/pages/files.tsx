@@ -49,10 +49,12 @@ export default function Files() {
 
   return (
     <Container style={{padding: '7em 0em 3em 0em'}}>
-      <Header as="h1">Files</Header>
-      <Segment>
-        Here you can create Files by collecting and uploading audio. There are
-        two types of transcription supported in Elpisnet: word and phoneme.
+      <div className="prose max-w-none lg:prose-xl">
+        <h1>Files</h1>
+        <p>
+          Here you can create Files by collecting and uploading audio. There are
+          two types of transcription supported in Elpisnet: word and phoneme.
+        </p>
         <ul>
           <li>
             <b>Word transcription</b> requires recordings, corresponding
@@ -65,7 +67,7 @@ export default function Files() {
             corresponding transcriptions.
           </li>
         </ul>
-      </Segment>
+      </div>
       <Dropzone onDrop={acceptedFiles => updateAcceptedFiles(acceptedFiles)}>
         {({getRootProps, getInputProps}) => (
           <section>

@@ -1,4 +1,4 @@
-resource "google_storage_bucket" "bucket {
+resource "google_storage_bucket" "bucket" {
   name          = "${var.file_type}-files"
   location      = "${var.location}"
   force_destroy = true

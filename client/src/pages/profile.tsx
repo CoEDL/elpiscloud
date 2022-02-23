@@ -9,7 +9,7 @@ export default function profile() {
 
   useEffect(() => {
     if (user === null) {
-      router.push('/signIn');
+      router.push('/');
     }
   });
 

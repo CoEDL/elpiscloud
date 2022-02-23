@@ -17,13 +17,11 @@ type FileObject = {
 };
 
 export default function Files() {
-  const [uploadedFiles, setUploadedFiles] = useState(
-    new Map<string, FileObject>()
-  );
+  const [files, setFiles] = useState(new Map<string, FileObject>());
 
   const updateAcceptedFiles = (acceptedFiles: File[]) => {
     acceptedFiles.forEach(file =>
-      setUploadedFiles(
+      setFiles(
         prev =>
           new Map([
             ...prev,
@@ -40,7 +38,7 @@ export default function Files() {
   };
 
   const deleteFile = (fileName: string) => {
-    setUploadedFiles(prev => {
+    setFiles(prev => {
       const newState = new Map(prev);
       newState.delete(fileName);
       return newState;
@@ -99,7 +97,7 @@ export default function Files() {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {Array.from(uploadedFiles)
+                  {Array.from(files)
                     .sort()
                     .filter(file => file[0].includes(name[1]))
                     .map(file => (

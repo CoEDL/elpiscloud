@@ -50,7 +50,9 @@ resource "google_service_account" "elpis_worker" {
 # Set permissions
 resource "google_project_iam_binding" "service_permissions" {
   for_each = toset([
-    "run.invoker", "cloudfunctions.invoker"
+    "run.invoker",
+    "cloudfunctions.invoker",
+    "iam.serviceAccountTokenCreator"
   ])
   
   project    = var.project

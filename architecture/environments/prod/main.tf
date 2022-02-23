@@ -34,6 +34,15 @@ module "frontend_bucket" {
   depends_on       = [module.zones]
 }
 
+module "user_upload_files_bucket" {
+  source           = "../../modules/user_files_bucket"
+  location         = local.location
+  file_type        = "user-upload"
+  elpis_worker     = module.requirements.elpis_worker
+
+  depends_on       = [module.requirements]
+}
+
 module "functions" {
   source           = "../../modules/functions"
   project          = var.project
@@ -48,7 +57,7 @@ module "api_gateway" {
   project          = var.project
   host             = "api.${local.website_url}"
   swagger_location = local.swagger_api
-  function_url     = module.functions.function_url
+  function_url_map     = module.functions.function_urls
 
   root_zone            = module.zones.root_zone
   ssl_cert             = module.zones.ssl_cert

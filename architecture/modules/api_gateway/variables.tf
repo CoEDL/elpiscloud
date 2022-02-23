@@ -1,4 +1,4 @@
-variable "function_url" {}
+variable "function_url_map" {}
 variable "swagger_location" {}
 variable "region" {
     type = string

@@ -12,6 +12,20 @@ resource "google_cloudfunctions_function" "function" {
   service_account_email = var.elpis_worker.email
 }
 
+resource "google_cloudfunctions_function" "sign_files" {
+  name        = "sign_files"
+  description = "Signs files to be uploaded to the relevant storage bucket"
+  runtime     = "python37"
+  region      = var.region
+
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.source.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  trigger_http          = true
+  entry_point           = "sign_files"
+  service_account_email = var.elpis_worker.email
+}
+
 # A dedicated Cloud Storage bucket to store the zip source
 resource "google_storage_bucket" "source" {
   name     = "${var.project}-functions-source"

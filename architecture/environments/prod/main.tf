@@ -57,7 +57,7 @@ module "api_gateway" {
   project          = var.project
   host             = "api.${local.website_url}"
   swagger_location = local.swagger_api
-  function_url_map     = module.functions.function_urls
+  function_url_map     = module.functions.function_url_map
 
   root_zone            = module.zones.root_zone
   ssl_cert             = module.zones.ssl_cert

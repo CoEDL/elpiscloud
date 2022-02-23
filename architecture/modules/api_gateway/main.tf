@@ -1,9 +1,3 @@
-locals {
-  url_map = { 
-    hello_url = var.function_url
-  }
-}
-
 resource "google_api_gateway_api" "api" {
   provider     = google-beta
   project      = var.project
@@ -21,7 +15,7 @@ resource "google_api_gateway_api_config" "api_cfg" {
     document {
       path = "spec.yaml"
       contents = base64encode(
-        templatefile(var.swagger_location, local.url_map))
+        templatefile(var.swagger_location, var.function_url_map))
     }
   }
   lifecycle {

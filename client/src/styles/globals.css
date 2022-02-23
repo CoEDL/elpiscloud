@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .container {
+    @apply mx-auto max-w-5xl px-2 lg:px-0;
+  }
+
+  .button {
+    @apply rounded-md bg-primary px-4 py-3 font-semibold tracking-wider text-white;
+  }
+
+  .title {
+    @apply mt-4 mb-4 text-4xl font-semibold text-primary;
+  }
+}

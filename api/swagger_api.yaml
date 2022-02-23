@@ -1,5 +1,5 @@
 # openapi2-functions.yaml
-swagger: '2.0'
+swagger: "2.0"
 info:
   title: API_ID optional-string
   description: Sample API on API Gateway with a Google Cloud Functions backend
@@ -8,6 +8,14 @@ schemes:
   - https
 produces:
   - application/json
+securityDefinitions:
+  firebase:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: "https://securetoken.google.com/elpiscloud"
+    x-google-jwks_uri: "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+    x-google-audiences: "elpiscloud"
 paths:
   /hello:
     get:
@@ -16,7 +24,20 @@ paths:
       x-google-backend:
         address: ${hello_url}
       responses:
-        '200':
+        "200":
           description: A successful response
+          schema:
+            type: string
+  /sign-files:
+    post:
+      summary: Sign files to be uploaded to cloud storage
+      operationId: sign-files
+      x-google-backend:
+        address: ${sign_files_url}
+      security:
+        - firebase: []
+      responses:
+        "200":
+          description: A successful response containing the signed upload urls
           schema:
             type: string

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import Dropzone from "react-dropzone";
+import React, {useState} from 'react';
+import Dropzone from 'react-dropzone';
 import {
   Button,
   Container,
@@ -8,23 +8,21 @@ import {
   Icon,
   Segment,
   Table,
-} from "semantic-ui-react";
-import { NAME_EXTENSION_MAP } from "../common";
+} from 'semantic-ui-react';
+import {NAME_EXTENSION_MAP} from 'lib/file_extensions';
 
 type FileObject = {
   type: string;
   fileSize: number;
 };
 
-export const Files: () => JSX.Element = () => {
-  const [uploadedFiles, setUploadedFiles] = useState(
-    new Map<string, FileObject>()
-  );
+export default function Files() {
+  const [files, setFiles] = useState(new Map<string, FileObject>());
 
   const updateAcceptedFiles = (acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file) =>
-      setUploadedFiles(
-        (prev) =>
+    acceptedFiles.forEach(file =>
+      setFiles(
+        prev =>
           new Map([
             ...prev,
             [
@@ -40,7 +38,7 @@ export const Files: () => JSX.Element = () => {
   };
 
   const deleteFile = (fileName: string) => {
-    setUploadedFiles((prev) => {
+    setFiles(prev => {
       const newState = new Map(prev);
       newState.delete(fileName);
       return newState;
@@ -48,11 +46,13 @@ export const Files: () => JSX.Element = () => {
   };
 
   return (
-    <Container style={{ padding: "7em 0em 3em 0em" }}>
-      <Header as="h1">Files</Header>
-      <Segment>
-        Here you can create Files by collecting and uploading audio. There are
-        two types of transcription supported in Elpisnet: word and phoneme.
+    <Container style={{padding: '7em 0em 3em 0em'}}>
+      <div className="prose max-w-none lg:prose-xl">
+        <h1>Files</h1>
+        <p>
+          Here you can create Files by collecting and uploading audio. There are
+          two types of transcription supported in Elpisnet: word and phoneme.
+        </p>
         <ul>
           <li>
             <b>Word transcription</b> requires recordings, corresponding
@@ -65,9 +65,9 @@ export const Files: () => JSX.Element = () => {
             corresponding transcriptions.
           </li>
         </ul>
-      </Segment>
-      <Dropzone onDrop={(acceptedFiles) => updateAcceptedFiles(acceptedFiles)}>
-        {({ getRootProps, getInputProps }) => (
+      </div>
+      <Dropzone onDrop={acceptedFiles => updateAcceptedFiles(acceptedFiles)}>
+        {({getRootProps, getInputProps}) => (
           <section>
             <div {...getRootProps()}>
               <input {...getInputProps()} />
@@ -84,7 +84,7 @@ export const Files: () => JSX.Element = () => {
       <br />
       <Grid columns={2}>
         <Grid.Row>
-          {Array.from(NAME_EXTENSION_MAP).map((name) => (
+          {Array.from(NAME_EXTENSION_MAP).map(name => (
             <Grid.Column key={name[0]}>
               <h3>{name[0]}</h3>
               <Table>
@@ -97,10 +97,10 @@ export const Files: () => JSX.Element = () => {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {Array.from(uploadedFiles)
+                  {Array.from(files)
                     .sort()
-                    .filter((file) => file[0].includes(name[1]))
-                    .map((file) => (
+                    .filter(file => file[0].includes(name[1]))
+                    .map(file => (
                       <Table.Row key={file[0]}>
                         <Table.Cell>{file[0]}</Table.Cell>
                         <Table.Cell>{file[1].type}</Table.Cell>
@@ -124,4 +124,4 @@ export const Files: () => JSX.Element = () => {
       </Grid>
     </Container>
   );
-};
+}

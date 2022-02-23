@@ -9,8 +9,9 @@ class UploadTypes(Enum):
     FILES = 'files'
 
 
+# Note: Must be in sync with terraform buckets
 BUCKETS = {
-    UploadTypes.FILES: 'user-upload-files'
+    UploadTypes.FILES: 'elpiscloud-user-upload-files'
 }
 
 VALIDATED_USER_INFO = "X-Apigateway-Api-Userinfo"

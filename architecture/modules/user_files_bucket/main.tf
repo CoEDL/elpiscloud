@@ -1,5 +1,5 @@
 resource "google_storage_bucket" "bucket" {
-  name          = "${var.file_type}-files"
+  name          = "elpiscloud-${var.file_type}-files"
   location      = "${var.location}"
   force_destroy = true
 

@@ -49,7 +49,10 @@ resource "google_compute_backend_service" "api_lb_backend" {
   name                   = "apigw-lb-backend"
   enable_cdn             = true
   protocol               = "HTTPS"
-  custom_request_headers = ["Host: ${google_compute_global_network_endpoint.api_endpoint.fqdn}"]
+  custom_request_headers = [
+    "Host: ${google_compute_global_network_endpoint.api_endpoint.fqdn}",
+    "Access-Control-Origin: *",
+  ]
 
   backend {
     group = google_compute_global_network_endpoint_group.api_neg.id

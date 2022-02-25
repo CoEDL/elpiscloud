@@ -4,7 +4,7 @@ import flask
 from google.cloud import storage
 from enum import Enum
 
-from api.functions.utils import cors_preflight, cors_wrap_response
+from utils import cors_preflight, cors_wrap_response
 
 
 class UploadTypes(Enum):

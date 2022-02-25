@@ -1,4 +1,5 @@
 from typing import List
+from flask import Response, abort
 
 
 def cors_preflight(request_methods: List[str]):
@@ -12,6 +13,13 @@ def cors_preflight(request_methods: List[str]):
     }
 
     return ('', 204, headers)
+
+
+def cors_wrap_abort(status: int):
+    headers = {
+        'Access-Control-Allow-Origin': '*'
+    }
+    abort(Response(status=status, headers=headers))
 
 
 def cors_wrap_response(data, status: int):

@@ -3,8 +3,9 @@ import flask
 
 from google.cloud import storage
 from enum import Enum
+from api.functions.utils import cors_wrap_abort
 
-from utils import cors_preflight, cors_wrap_response
+from utils import cors_preflight, cors_wrap_response, cors_wrap_abort
 
 
 class UploadTypes(Enum):
@@ -34,17 +35,15 @@ def sign_files(request: flask.Request):
     if request.method == 'OPTIONS':
         return cors_preflight(['POST'])
 
-    from flask import abort
-
     # Only allow post requests
     if request.method != 'POST':
-        abort(405)
+        cors_wrap_abort(405)
 
     if not request.is_json:
-        abort(400)
+        cors_wrap_abort(400)
 
     if not request.headers.has_key(VALIDATED_USER_INFO):
-        abort(403)
+        cors_wrap_abort(403)
 
     user_id = request.headers.get(VALIDATED_USER_INFO)['user_id']
     file_names = request.json['file_names']

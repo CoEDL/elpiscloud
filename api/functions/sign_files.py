@@ -4,6 +4,8 @@ import flask
 from google.cloud import storage
 from enum import Enum
 
+from api.functions.utils import cors_preflight, cors_wrap_response
+
 
 class UploadTypes(Enum):
     FILES = 'files'
@@ -28,7 +30,12 @@ def sign_files(request: flask.Request):
     Returns:
         A dictionary of the requested upload files to their signed urls
     """
+    # CORS Preflight
+    if request.method == 'OPTIONS':
+        return cors_preflight(['POST'])
+
     from flask import abort
+
     # Only allow post requests
     if request.method != 'POST':
         abort(405)
@@ -50,7 +57,7 @@ def sign_files(request: flask.Request):
         blob = f'{user_id}/{name}'
         result[name] = generate_upload_signed_url_v4(bucket, blob)
 
-    return result
+    return cors_wrap_response(result, 200)
 
 
 def generate_upload_signed_url_v4(bucket_name, blob_name):

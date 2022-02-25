@@ -31,7 +31,7 @@ paths:
   /sign-files:
     post:
       summary: Sign files to be uploaded to cloud storage
-      operationId: sign-files
+      operationId: signFiles
       x-google-backend:
         address: ${sign_files_url}
       security:
@@ -39,5 +39,10 @@ paths:
       responses:
         "200":
           description: A successful response containing the signed upload urls
-          schema:
-            type: string
+    options:
+      operationId: corsSignFiles
+      x-google-backend:
+        address: ${sign_files_url}
+      responses:
+        "204":
+          description: A successful preflight cors response

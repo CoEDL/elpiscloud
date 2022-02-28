@@ -1,5 +1,9 @@
 # openapi2-functions.yaml
 swagger: "2.0"
+host: "api-35yn1zm07nwjv.apigateway.elpiscloud.cloud.goog"
+x-google-endpoints:
+  - name: "api-35yn1zm07nwjv.apigateway.elpiscloud.cloud.goog"
+    allowCors: True
 info:
   title: API_ID optional-string
   description: Sample API on API Gateway with a Google Cloud Functions backend

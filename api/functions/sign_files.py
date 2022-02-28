@@ -36,12 +36,15 @@ def sign_files(request: flask.Request):
 
     # Only allow post requests
     if request.method != 'POST':
+        print('invalid method')
         cors_wrap_abort(405)
 
     if not request.is_json:
+        print('invalid json body')
         cors_wrap_abort(400)
 
     if not request.headers.has_key(VALIDATED_USER_INFO):
+        print('invalid json body')
         cors_wrap_abort(403)
 
     user_id = request.headers.get(VALIDATED_USER_INFO)['user_id']
@@ -55,6 +58,7 @@ def sign_files(request: flask.Request):
         blob = f'{user_id}/{name}'
         result[name] = generate_upload_signed_url_v4(bucket, blob)
 
+    print('result: ', result)
     return cors_wrap_response(result, 200)
 
 

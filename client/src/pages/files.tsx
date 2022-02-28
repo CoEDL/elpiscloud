@@ -1,15 +1,10 @@
 import React, {useState} from 'react';
 import Dropzone from 'react-dropzone';
-import {
-  Button,
-  Container,
-  Grid,
-  Header,
-  Icon,
-  Segment,
-  Table,
-} from 'semantic-ui-react';
+import {Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import {NAME_EXTENSION_MAP} from 'lib/file_extensions';
+import FileList from 'components/files/FileList';
+import {useAuth} from 'contexts/auth';
+import {urls} from 'lib/urls';
 
 type FileObject = {
   type: string;
@@ -17,6 +12,7 @@ type FileObject = {
 };
 
 export default function Files() {
+  const {user} = useAuth();
   const [files, setFiles] = useState(new Map<string, FileObject>());
 
   const updateAcceptedFiles = (acceptedFiles: File[]) => {
@@ -45,27 +41,39 @@ export default function Files() {
     });
   };
 
+  const canUpload = () => {
+    return files.size > 0;
+  };
+
+  const uploadFiles = async () => {
+    if (user === null || !canUpload()) return;
+
+    const signedURLs = await getSignedUploadURLs();
+  };
+
+  const getSignedUploadURLs = async () => {
+    const data = {
+      file_names: [...files.keys()],
+    };
+
+    const token = await user!.getIdToken();
+    const response = await fetch(urls.api.signFiles, {
+      method: 'POST',
+      mode: 'cors',
+      headers: new Headers({
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify(data),
+    });
+
+    console.log(response);
+    console.log(await response.json());
+  };
+
   return (
-    <Container style={{padding: '7em 0em 3em 0em'}}>
-      <div className="prose max-w-none lg:prose-xl">
-        <h1>Files</h1>
-        <p>
-          Here you can create Files by collecting and uploading audio. There are
-          two types of transcription supported in Elpisnet: word and phoneme.
-        </p>
-        <ul>
-          <li>
-            <b>Word transcription</b> requires recordings, corresponding
-            transcriptions and a letter-to-sound file. The letter-to-sound file
-            is required to generate a pronunciation dictionary, which we call
-            the <i>grapheme-to-phoneme</i> or <i>G2P</i> process.
-          </li>
-          <li>
-            <b>Phoneme transcription</b> only requires recordings and
-            corresponding transcriptions.
-          </li>
-        </ul>
-      </div>
+    <div className="my-8">
+      <Description />
       <Dropzone onDrop={acceptedFiles => updateAcceptedFiles(acceptedFiles)}>
         {({getRootProps, getInputProps}) => (
           <section>
@@ -83,45 +91,50 @@ export default function Files() {
       </Dropzone>
       <br />
       <Grid columns={2}>
-        <Grid.Row>
-          {Array.from(NAME_EXTENSION_MAP).map(name => (
-            <Grid.Column key={name[0]}>
-              <h3>{name[0]}</h3>
-              <Table>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell>File name</Table.HeaderCell>
-                    <Table.HeaderCell>Type</Table.HeaderCell>
-                    <Table.HeaderCell>File size</Table.HeaderCell>
-                    <Table.HeaderCell></Table.HeaderCell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {Array.from(files)
-                    .sort()
-                    .filter(file => file[0].includes(name[1]))
-                    .map(file => (
-                      <Table.Row key={file[0]}>
-                        <Table.Cell>{file[0]}</Table.Cell>
-                        <Table.Cell>{file[1].type}</Table.Cell>
-                        <Table.Cell>{file[1].fileSize}</Table.Cell>
-                        <Table.Cell textAlign="right">
-                          <Button
-                            size="tiny"
-                            icon
-                            onClick={() => deleteFile(file[0])}
-                          >
-                            <Icon name="delete" />
-                          </Button>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))}
-                </Table.Body>
-              </Table>
-            </Grid.Column>
-          ))}
-        </Grid.Row>
+        {Array.from(NAME_EXTENSION_MAP).map(([title, extension]) => (
+          <Grid.Column key={title}>
+            <FileList
+              title={title}
+              extension={extension}
+              deleteFile={deleteFile}
+              files={files}
+            />
+          </Grid.Column>
+        ))}
       </Grid>
-    </Container>
+      <div className="mt-8 text-center">
+        <button
+          disabled={!canUpload()}
+          className="button"
+          onClick={uploadFiles}
+        >
+          Upload
+        </button>
+      </div>
+    </div>
   );
 }
+
+const Description = () => {
+  return (
+    <div className="prose max-w-none lg:prose-xl">
+      <h1>Files</h1>
+      <p>
+        Here you can create Files by collecting and uploading audio. There are
+        two types of transcription supported in Elpisnet: word and phoneme.
+      </p>
+      <ul>
+        <li>
+          <b>Word transcription</b> requires recordings, corresponding
+          transcriptions and a letter-to-sound file. The letter-to-sound file is
+          required to generate a pronunciation dictionary, which we call the{' '}
+          <i>grapheme-to-phoneme</i> or <i>G2P</i> process.
+        </li>
+        <li>
+          <b>Phoneme transcription</b> only requires recordings and
+          corresponding transcriptions.
+        </li>
+      </ul>
+    </div>
+  );
+};

@@ -8,7 +8,9 @@
   }
 
   .button {
-    @apply rounded-md bg-primary px-4 py-3 font-semibold tracking-wider text-white;
+    @apply rounded-md bg-primary px-4 py-3 font-semibold tracking-wider 
+    text-white transition hover:bg-accent 
+    disabled:bg-gray-200 disabled:text-gray-400;
   }
 
   .title {

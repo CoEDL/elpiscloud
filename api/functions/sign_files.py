@@ -49,7 +49,7 @@ def sign_files(request: flask.Request):
         cors_wrap_abort(403)
 
     user_info = decode_auth_header(request.headers.get(VALIDATED_USER_INFO))
-    user_info = json.load(user_info)
+    user_info = json.loads(user_info)
 
     result = {}
     user_id = user_info.get('user_id')

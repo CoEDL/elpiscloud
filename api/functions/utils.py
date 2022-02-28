@@ -1,5 +1,11 @@
 from typing import List
 from flask import Response, abort
+from base64 import urlsafe_b64decode
+
+
+def decode_auth_header(user_info_header: str):
+    message_bytes = urlsafe_b64decode(user_info_header)
+    return message_bytes.decode('ascii')
 
 
 def cors_preflight(request_methods: List[str]):

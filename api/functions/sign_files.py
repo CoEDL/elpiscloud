@@ -1,10 +1,11 @@
 import datetime
 import flask
+import json
 
 from google.cloud import storage
 from enum import Enum
 
-from utils import cors_preflight, cors_wrap_response, cors_wrap_abort
+from utils import cors_preflight, cors_wrap_response, cors_wrap_abort, decode_auth_header
 
 
 class UploadTypes(Enum):
@@ -47,10 +48,12 @@ def sign_files(request: flask.Request):
         print('invalid json body')
         cors_wrap_abort(403)
 
-    user_id = request.headers.get(VALIDATED_USER_INFO)['user_id']
-    file_names = request.json['file_names']
+    user_info = decode_auth_header(request.headers.get(VALIDATED_USER_INFO))
+    user_info = json.load(user_info)
 
     result = {}
+    user_id = user_info.get('user_id')
+    file_names = request.json['file_names']
 
     # Make signed urls for all filenames in the request
     bucket = BUCKETS[UploadTypes.FILES]

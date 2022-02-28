@@ -12,7 +12,7 @@ def cors_preflight(request_methods: List[str]):
         'Access-Control-Max-Age': '3600'
     }
 
-    return ('', 204, headers)
+    return ('', 200, headers)
 
 
 def cors_wrap_abort(status: int):

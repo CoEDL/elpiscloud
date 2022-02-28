@@ -48,5 +48,5 @@ paths:
       x-google-backend:
         address: ${sign_files_url}
       responses:
-        "204":
+        "200":
           description: A successful preflight cors response

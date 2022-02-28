@@ -6,10 +6,10 @@ resource "google_api_gateway_api" "api" {
 }
 
 resource "google_api_gateway_api_config" "api_cfg" {
-  provider      = google-beta
-  project       = var.project
-  api           = google_api_gateway_api.api.api_id
-  api_config_id = "elpis-api-cfg"
+  provider             = google-beta
+  project              = var.project
+  api                  = google_api_gateway_api.api.api_id
+  api_config_id_prefix = "elpis-api-cfg"
 
   openapi_documents {
     document {

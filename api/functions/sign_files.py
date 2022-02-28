@@ -1,9 +1,12 @@
 import datetime
 import flask
 import json
-
-from google.cloud import storage
+import os
 from enum import Enum
+
+# from google.auth.transport import requests
+# from google.auth import compute_engine
+from google.cloud import storage
 
 from utils import cors_preflight, cors_wrap_response, cors_wrap_abort, decode_auth_header
 
@@ -37,15 +40,12 @@ def sign_files(request: flask.Request):
 
     # Only allow post requests
     if request.method != 'POST':
-        print('invalid method')
         cors_wrap_abort(405)
 
     if not request.is_json:
-        print('invalid json body')
         cors_wrap_abort(400)
 
     if not request.headers.has_key(VALIDATED_USER_INFO):
-        print('invalid json body')
         cors_wrap_abort(403)
 
     user_info = decode_auth_header(request.headers.get(VALIDATED_USER_INFO))
@@ -59,33 +59,31 @@ def sign_files(request: flask.Request):
     bucket = BUCKETS[UploadTypes.FILES]
     for name in file_names:
         blob = f'{user_id}/{name}'
-        result[name] = generate_upload_signed_url_v4(bucket, blob)
+        result[name] = generate_resumable_upload_url(bucket, blob)
 
     print('result: ', result)
     return cors_wrap_response(result, 200)
 
 
-def generate_upload_signed_url_v4(bucket_name, blob_name):
+def generate_resumable_upload_url(bucket_name, blob_name):
     """Generates a v4 signed URL for uploading a blob using HTTP PUT.
-
-    Note that this method requires a service account key file. You can not use
-    this if you are using Application Default Credentials from Google Compute
-    Engine or from the Google Cloud SDK.
     """
-    # bucket_name = 'your-bucket-name'
-    # blob_name = 'your-object-name'
 
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
 
-    url = blob.generate_signed_url(
-        version="v4",
-        # This URL is valid for 15 minutes
-        expiration=datetime.timedelta(minutes=15),
-        # Allow PUT requests using this URL.
-        method="PUT",
+    url = blob.create_resumable_upload_session(
         content_type="application/octet-stream",
     )
 
     return url
+
+
+# def get_signing_credentials():
+#     auth_request = requests.Request()
+#     return compute_engine.IDTokenCredentials(
+#         auth_request,
+#         "",
+#         service_account_email=os.environ["FUNCTION_IDENTITY"]
+#     )

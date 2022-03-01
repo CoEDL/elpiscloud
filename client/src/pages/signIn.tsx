@@ -7,6 +7,7 @@ import {
 import {auth} from 'lib/auth';
 import {useRouter} from 'next/router';
 import {useAuth} from 'contexts/auth';
+import LoadingIndicator from 'components/LoadingIndicator';
 
 const signIn = () => {
   const router = useRouter();
@@ -66,11 +67,7 @@ const signIn = () => {
       </p>
 
       {/* Loading Indicator */}
-      {loading && (
-        <div className="absolute top-0 left-0 flex h-full w-full flex-col items-center justify-center backdrop-blur-sm">
-          <p className="text-xl">Loading...</p>
-        </div>
-      )}
+      {loading && <LoadingIndicator />}
 
       <form className="cols-2 mt-4 flex flex-col" onSubmit={onSubmit}>
         {/* Email */}

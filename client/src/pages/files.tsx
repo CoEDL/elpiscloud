@@ -5,31 +5,25 @@ import {NAME_EXTENSION_MAP} from 'lib/file_extensions';
 import FileList from 'components/files/FileList';
 import {useAuth} from 'contexts/auth';
 import {urls} from 'lib/urls';
+import LoadingIndicator from 'components/LoadingIndicator';
+import FileUploader from 'components/files/FileUploader';
 
-type FileObject = {
-  type: string;
-  fileSize: number;
-};
+type UploadState = 'waiting' | 'signing' | 'uploading' | 'done';
 
 export default function Files() {
   const {user} = useAuth();
-  const [files, setFiles] = useState(new Map<string, FileObject>());
+  const [files, setFiles] = useState(new Map<string, File>());
+  const [uploadState, setUploadState] = useState<UploadState>('waiting');
+  const [sessionURLs, setSessionURLs] = useState(null);
 
+  /**
+   * Takes a list of user added files to be added to our pre-uploaded files.
+   *
+   * @param acceptedFiles The Files from the Dropzone element
+   */
   const updateAcceptedFiles = (acceptedFiles: File[]) => {
     acceptedFiles.forEach(file =>
-      setFiles(
-        prev =>
-          new Map([
-            ...prev,
-            [
-              file.name,
-              {
-                type: file.type,
-                fileSize: file.size,
-              },
-            ],
-          ])
-      )
+      setFiles(prev => new Map([...prev, [file.name, file]]))
     );
   };
 
@@ -42,13 +36,17 @@ export default function Files() {
   };
 
   const canUpload = () => {
-    return files.size > 0;
+    return (
+      (files.size > 0 && uploadState === 'waiting') || uploadState === 'done'
+    );
   };
 
   const uploadFiles = async () => {
     if (user === null || !canUpload()) return;
-
+    setUploadState('signing');
     const signedURLs = await getSignedUploadURLs();
+    setSessionURLs(signedURLs);
+    setUploadState('uploading');
   };
 
   const getSignedUploadURLs = async () => {
@@ -67,50 +65,80 @@ export default function Files() {
       body: JSON.stringify(data),
     });
 
-    console.log(response);
-    console.log(await response.json());
+    return response.json();
   };
+
+  function WaitingView() {
+    return (
+      <div className="relative">
+        {uploadState === 'signing' && <LoadingIndicator text="Signing files" />}
+        <Dropzone onDrop={acceptedFiles => updateAcceptedFiles(acceptedFiles)}>
+          {({getRootProps, getInputProps}) => (
+            <section>
+              <div {...getRootProps()}>
+                <input {...getInputProps()} />
+                <Segment placeholder>
+                  <Header icon>
+                    <Icon name="long arrow alternate down" />
+                    Drag and drop or click to select files.
+                  </Header>
+                </Segment>
+              </div>
+            </section>
+          )}
+        </Dropzone>
+        <br />
+        <Grid columns={2}>
+          {Array.from(NAME_EXTENSION_MAP).map(([title, extension]) => (
+            <Grid.Column key={title}>
+              <FileList
+                title={title}
+                extensionFilter={extension}
+                deleteFile={deleteFile}
+                files={files}
+              />
+            </Grid.Column>
+          ))}
+        </Grid>
+        <div className="mt-8 text-center">
+          <button
+            disabled={!canUpload()}
+            className="button"
+            onClick={uploadFiles}
+          >
+            Upload
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function UploadingView() {
+    if (sessionURLs === null) return <p>Error retrieving sessionUrls</p>;
+
+    return (
+      <div className="mt-8">
+        <p className="text-center text-3xl font-bold">Uploading Files</p>
+        <div className="grid grid-cols-1">
+          {Array.from(files)
+            .map(([filename, file]) => ({
+              name: filename,
+              file: file,
+              sessionURL: sessionURLs[filename],
+            }))
+            .map(props => (
+              <FileUploader key={props.name} {...props} />
+            ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="my-8">
       <Description />
-      <Dropzone onDrop={acceptedFiles => updateAcceptedFiles(acceptedFiles)}>
-        {({getRootProps, getInputProps}) => (
-          <section>
-            <div {...getRootProps()}>
-              <input {...getInputProps()} />
-              <Segment placeholder>
-                <Header icon>
-                  <Icon name="long arrow alternate down" />
-                  Drag and drop or click to select files.
-                </Header>
-              </Segment>
-            </div>
-          </section>
-        )}
-      </Dropzone>
-      <br />
-      <Grid columns={2}>
-        {Array.from(NAME_EXTENSION_MAP).map(([title, extension]) => (
-          <Grid.Column key={title}>
-            <FileList
-              title={title}
-              extension={extension}
-              deleteFile={deleteFile}
-              files={files}
-            />
-          </Grid.Column>
-        ))}
-      </Grid>
-      <div className="mt-8 text-center">
-        <button
-          disabled={!canUpload()}
-          className="button"
-          onClick={uploadFiles}
-        >
-          Upload
-        </button>
-      </div>
+
+      {uploadState === 'uploading' ? <UploadingView /> : <WaitingView />}
     </div>
   );
 }

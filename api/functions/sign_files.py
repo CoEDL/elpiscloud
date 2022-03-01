@@ -1,13 +1,7 @@
-import datetime
 import flask
 import json
-import os
 from enum import Enum
-
-# from google.auth.transport import requests
-# from google.auth import compute_engine
 from google.cloud import storage
-
 from utils import cors_preflight, cors_wrap_response, cors_wrap_abort, decode_auth_header
 
 
@@ -53,19 +47,20 @@ def sign_files(request: flask.Request):
 
     result = {}
     user_id = user_info.get('user_id')
+    origin = request.headers.get('Origin', '*')
     file_names = request.json['file_names']
 
     # Make signed urls for all filenames in the request
     bucket = BUCKETS[UploadTypes.FILES]
     for name in file_names:
-        blob = f'{user_id}/{name}'
-        result[name] = generate_resumable_upload_url(bucket, blob)
+        blob_name = f'{user_id}/{name}'
+        result[name] = generate_resumable_upload_url(bucket, blob_name, origin)
 
     print('result: ', result)
     return cors_wrap_response(result, 200)
 
 
-def generate_resumable_upload_url(bucket_name, blob_name):
+def generate_resumable_upload_url(bucket_name, blob_name, origin):
     """Generates a v4 signed URL for uploading a blob using HTTP PUT.
     """
 
@@ -75,15 +70,7 @@ def generate_resumable_upload_url(bucket_name, blob_name):
 
     url = blob.create_resumable_upload_session(
         content_type="application/octet-stream",
+        origin=origin
     )
 
     return url
-
-
-# def get_signing_credentials():
-#     auth_request = requests.Request()
-#     return compute_engine.IDTokenCredentials(
-#         auth_request,
-#         "",
-#         service_account_email=os.environ["FUNCTION_IDENTITY"]
-#     )

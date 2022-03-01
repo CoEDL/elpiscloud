@@ -1,19 +1,14 @@
 import React from 'react';
 import {Table, Button, Icon} from 'semantic-ui-react';
 
-type FileObject = {
-  type: string;
-  fileSize: number;
-};
-
 type Props = {
   title: string;
-  extension?: string;
-  files: Map<string, FileObject>;
+  extensionFilter?: string;
+  files: Map<string, File>;
   deleteFile: (filename: string) => void;
 };
 
-const FileList = ({title, extension = '', files, deleteFile}: Props) => {
+const FileList = ({title, extensionFilter = '', files, deleteFile}: Props) => {
   return (
     <div>
       <h3>{title}</h3>
@@ -29,14 +24,14 @@ const FileList = ({title, extension = '', files, deleteFile}: Props) => {
         <Table.Body>
           {Array.from(files)
             .sort()
-            .filter(file => file[0].includes(extension))
-            .map(file => (
-              <Table.Row key={file[0]}>
-                <Table.Cell>{file[0]}</Table.Cell>
-                <Table.Cell>{file[1].type}</Table.Cell>
-                <Table.Cell>{file[1].fileSize}</Table.Cell>
+            .filter(([filename, _]) => filename.includes(extensionFilter))
+            .map(([filename, file]) => (
+              <Table.Row key={filename}>
+                <Table.Cell>{filename}</Table.Cell>
+                <Table.Cell>{file.type}</Table.Cell>
+                <Table.Cell>{file.size}</Table.Cell>
                 <Table.Cell textAlign="right">
-                  <Button size="tiny" icon onClick={() => deleteFile(file[0])}>
+                  <Button size="tiny" icon onClick={() => deleteFile(filename)}>
                     <Icon name="delete" />
                   </Button>
                 </Table.Cell>

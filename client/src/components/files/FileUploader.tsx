@@ -14,7 +14,7 @@ export default function FileUploader({
   name,
   sessionURL,
 }: FileUploaderProps) {
-  const [progress, setProgress] = useState(10);
+  const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<UploadStatus>('waiting');
 
   const beginFileUpload = () => {
@@ -36,9 +36,8 @@ export default function FileUploader({
       method: 'PUT',
       headers: new Headers({
         'Content-Length': '0',
-        'Object-Size': '*',
+        'Content-Range': 'bytes */*',
       }),
-      body: file,
     });
     if (response.status === 200 || response.status === 201) {
       setProgress(100);

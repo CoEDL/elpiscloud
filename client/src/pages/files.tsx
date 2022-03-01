@@ -7,6 +7,7 @@ import {useAuth} from 'contexts/auth';
 import {urls} from 'lib/urls';
 import LoadingIndicator from 'components/LoadingIndicator';
 import FileUploader from 'components/files/FileUploader';
+import Link from 'next/link';
 
 type UploadState = 'waiting' | 'signing' | 'uploading' | 'done';
 
@@ -66,6 +67,12 @@ export default function Files() {
     });
 
     return response.json();
+  };
+
+  const reset = () => {
+    setUploadState('waiting');
+    setFiles(new Map<string, File>());
+    setSessionURLs(null);
   };
 
   function WaitingView() {
@@ -129,6 +136,14 @@ export default function Files() {
             .map(props => (
               <FileUploader key={props.name} {...props} />
             ))}
+          <div className="mt-8 flex justify-between">
+            <button className="button" onClick={reset}>
+              Upload more files
+            </button>
+            <button className="button">
+              <Link href="/datasets">Edit Datasets</Link>
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -138,7 +153,11 @@ export default function Files() {
     <div className="my-8">
       <Description />
 
-      {uploadState === 'uploading' ? <UploadingView /> : <WaitingView />}
+      {uploadState === 'uploading' || uploadState === 'done' ? (
+        <UploadingView />
+      ) : (
+        <WaitingView />
+      )}
     </div>
   );
 }

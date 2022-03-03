@@ -36,8 +36,8 @@ resource "google_cloudfunctions_function" "storage_watcher" {
   source_archive_bucket = google_storage_bucket.source.name
   source_archive_object = google_storage_bucket_object.archive.name
   entry_point           = "storage_watcher"
-  event_trigger         = {
-    event_type = "google.storage.object.finalize",
+  event_trigger {
+    event_type = "google.storage.object.finalize"
     resource   = var.user_upload_files_bucket.name
   }
   service_account_email = var.elpis_worker.email

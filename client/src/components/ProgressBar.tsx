@@ -6,14 +6,14 @@ interface ProgressBarProps {
 
 export default function ProgressBar({percent}: ProgressBarProps) {
   return (
-    <div className="relative h-6 w-full overflow-hidden rounded-full bg-gray-400">
+    <div className="relative h-6 w-full overflow-hidden rounded-full border border-gray-200 bg-gray-400">
       {/* Progress text */}
       <div className="absolute top-0 left-0 flex h-full w-full flex-col items-center justify-center">
         <p className="text-sm text-white">{percent}%</p>
       </div>
       {/* Background progress indicator */}
       <div
-        className="h-full bg-accent transition"
+        className="h-full bg-green-400 transition"
         style={{width: `${percent}%`}}
       ></div>
     </div>

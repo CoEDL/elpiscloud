@@ -1,21 +1,16 @@
-import React, {useState} from 'react';
-import Dropzone from 'react-dropzone';
-import {Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import {NAME_EXTENSION_MAP} from 'lib/file_extensions';
-import FileList from 'components/files/FileList';
+import React, {useMemo, useState} from 'react';
+
 import {useAuth} from 'contexts/auth';
 import {urls} from 'lib/urls';
-import LoadingIndicator from 'components/LoadingIndicator';
-import FileUploader from 'components/files/FileUploader';
-import Link from 'next/link';
-
-type UploadState = 'waiting' | 'signing' | 'uploading' | 'done';
+import {UploadState} from 'types/UploadState';
+import WaitingView from 'components/files/WaitingView';
+import UploadingView from 'components/files/UploadView';
 
 export default function Files() {
   const {user} = useAuth();
   const [files, setFiles] = useState(new Map<string, File>());
   const [uploadState, setUploadState] = useState<UploadState>('waiting');
-  const [sessionURLs, setSessionURLs] = useState(null);
+  const [sessionURLs, setSessionURLs] = useState(new Map<string, string>());
 
   /**
    * Takes a list of user added files to be added to our pre-uploaded files.
@@ -36,17 +31,18 @@ export default function Files() {
     });
   };
 
-  const canUpload = () => {
-    return (
-      (files.size > 0 && uploadState === 'waiting') || uploadState === 'done'
-    );
-  };
+  const canUpload = useMemo(
+    () =>
+      files.size > 0 &&
+      (uploadState === 'waiting' || uploadState === 'completed'),
+    [files, uploadState]
+  );
 
   const uploadFiles = async () => {
-    if (user === null || !canUpload()) return;
+    if (user === null || !canUpload) return;
     setUploadState('signing');
     const signedURLs = await getSignedUploadURLs();
-    setSessionURLs(signedURLs);
+    setSessionURLs(new Map<string, string>(Object.entries(signedURLs)));
     setUploadState('uploading');
   };
 
@@ -72,91 +68,29 @@ export default function Files() {
   const reset = () => {
     setUploadState('waiting');
     setFiles(new Map<string, File>());
-    setSessionURLs(null);
+    setSessionURLs(new Map<string, string>());
   };
-
-  function WaitingView() {
-    return (
-      <div className="relative">
-        {uploadState === 'signing' && <LoadingIndicator text="Signing files" />}
-        <Dropzone onDrop={acceptedFiles => updateAcceptedFiles(acceptedFiles)}>
-          {({getRootProps, getInputProps}) => (
-            <section>
-              <div {...getRootProps()}>
-                <input {...getInputProps()} />
-                <Segment placeholder>
-                  <Header icon>
-                    <Icon name="long arrow alternate down" />
-                    Drag and drop or click to select files.
-                  </Header>
-                </Segment>
-              </div>
-            </section>
-          )}
-        </Dropzone>
-        <br />
-        <Grid columns={2}>
-          {Array.from(NAME_EXTENSION_MAP).map(([title, extension]) => (
-            <Grid.Column key={title}>
-              <FileList
-                title={title}
-                extensionFilter={extension}
-                deleteFile={deleteFile}
-                files={files}
-              />
-            </Grid.Column>
-          ))}
-        </Grid>
-        <div className="mt-8 text-center">
-          <button
-            disabled={!canUpload()}
-            className="button"
-            onClick={uploadFiles}
-          >
-            Upload
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  function UploadingView() {
-    if (sessionURLs === null) return <p>Error retrieving sessionUrls</p>;
-
-    return (
-      <div className="mt-8">
-        <p className="text-center text-3xl font-bold">Uploading Files</p>
-        <div className="grid grid-cols-1">
-          {Array.from(files)
-            .map(([filename, file]) => ({
-              name: filename,
-              file: file,
-              sessionURL: sessionURLs[filename],
-            }))
-            .map(props => (
-              <FileUploader key={props.name} {...props} />
-            ))}
-          <div className="mt-8 flex justify-between">
-            <button className="button" onClick={reset}>
-              Upload more files
-            </button>
-            <button className="button">
-              <Link href="/datasets">Edit Datasets</Link>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="my-8">
       <Description />
 
-      {uploadState === 'uploading' || uploadState === 'done' ? (
-        <UploadingView />
+      {uploadState === 'uploading' || uploadState === 'completed' ? (
+        <UploadingView
+          sessionURLs={sessionURLs}
+          files={files}
+          reset={reset}
+          completedUploadsCallback={() => setUploadState('completed')}
+        />
       ) : (
-        <WaitingView />
+        <WaitingView
+          uploadState={uploadState}
+          files={files}
+          updateLocalFiles={updateAcceptedFiles}
+          deleteFile={deleteFile}
+          canUpload={canUpload}
+          uploadFiles={uploadFiles}
+        />
       )}
     </div>
   );

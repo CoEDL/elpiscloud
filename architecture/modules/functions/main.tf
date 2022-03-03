@@ -26,6 +26,23 @@ resource "google_cloudfunctions_function" "sign_files" {
   service_account_email = var.elpis_worker.email
 }
 
+resource "google_cloudfunctions_function" "storage_watcher" {
+  name        = "storage_watcher"
+  description = "Updates user file info in firestore from cloud storage events"
+  runtime     = "python37"
+  region      = var.region
+
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.source.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  entry_point           = "storage_watcher"
+  event_trigger         = {
+    event_type = "google.storage.object.finalize",
+    resource   = var.user_upload_files_bucket.name
+  }
+  service_account_email = var.elpis_worker.email
+}
+
 # A dedicated Cloud Storage bucket to store the zip source
 resource "google_storage_bucket" "source" {
   name     = "${var.project}-functions-source"

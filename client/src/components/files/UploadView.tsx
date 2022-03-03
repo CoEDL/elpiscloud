@@ -15,13 +15,12 @@ export default function UploadingView({
   reset,
   completedUploadsCallback,
 }: Props) {
+  const router = useRouter();
   const [completedUploads, setCompletedUploads] = useState(
     new Map<string, boolean>(
       [...files.keys()].map(filename => [filename, false])
     )
   );
-
-  const router = useRouter();
 
   if (sessionURLs === null || sessionURLs.size === 0)
     return <p>Error retrieving sessionUrls</p>;

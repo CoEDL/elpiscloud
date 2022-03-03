@@ -44,12 +44,17 @@ module "user_upload_files_bucket" {
 }
 
 module "functions" {
-  source           = "../../modules/functions"
-  project          = var.project
-  location         = local.location
-  functions_folder = local.functions_folder
-  elpis_worker     = module.requirements.elpis_worker
-  depends_on       = [module.requirements]
+  source                   = "../../modules/functions"
+  project                  = var.project
+  location                 = local.location
+  functions_folder         = local.functions_folder
+  elpis_worker             = module.requirements.elpis_worker
+  user_upload_files_bucket = module.user_upload_files_bucket.bucket
+
+  depends_on = [
+    module.requirements,
+    module.user_upload_files_bucket
+  ]
 }
 
 module "api_gateway" {

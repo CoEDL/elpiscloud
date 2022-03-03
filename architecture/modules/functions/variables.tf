@@ -6,3 +6,4 @@ variable "location" {}
 variable "project" {}
 variable "functions_folder" {}
 variable "elpis_worker" {}
+variable "user_upload_files_bucket" {}

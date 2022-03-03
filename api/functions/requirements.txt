@@ -1,2 +1,3 @@
 google-cloud-storage
 google-auth
+firebase-admin

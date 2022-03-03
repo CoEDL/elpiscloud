@@ -1,3 +1,16 @@
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+PROJECT_ID = 'elpiscloud'
+
+cred = credentials.ApplicationDefault()
+default_app = firebase_admin.initialize_app(cred, {
+    'projectId': PROJECT_ID,
+})
+db = firestore.client()
+
+
 def storage_watcher(event, context):
     """Background Cloud Function to be triggered by Cloud Storage.
        This generic function logs relevant data when a file is changed.
@@ -10,11 +23,21 @@ def storage_watcher(event, context):
     Returns:
         None; the output is written to Stackdriver Logging
     """
+    uid, file_name = event['name'].split('/')
+    content_type = event['contentType']
+    created = event['timeCreated']
+    size = event['size']
 
-    print('Event ID: {}'.format(context.event_id))
-    print('Event type: {}'.format(context.event_type))
-    print('Bucket: {}'.format(event['bucket']))
-    print('File: {}'.format(event['name']))
-    print('Metageneration: {}'.format(event['metageneration']))
-    print('Created: {}'.format(event['timeCreated']))
-    print('Updated: {}'.format(event['updated']))
+    data = {
+        'userID': uid,
+        'fileName': file_name,
+        'contentType': content_type,
+        'timeCreated': created,
+        'size': size,
+        'tags': []
+    }
+
+    user_ref = db.collection('users').document(uid)
+    file_ref = user_ref.collection('files').document(file_name)
+
+    file_ref.set(data)

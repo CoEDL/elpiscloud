@@ -33,7 +33,6 @@ export default function UploadingView({
     if (hasCompletedUploads()) {
       completedUploadsCallback();
     }
-    console.log(completedUploads);
   };
 
   const uploads = useMemo(

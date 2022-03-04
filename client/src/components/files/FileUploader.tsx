@@ -46,7 +46,6 @@ export default function FileUploader({
       setProgress(100);
       setStatus('completed');
       completedCallback();
-      console.log(name);
     }
     if (response.status === 308) {
       // Check the number of bytes persisted to google storage so far.

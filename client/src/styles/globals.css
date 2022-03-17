@@ -22,4 +22,8 @@
   .title {
     @apply mt-4 mb-4 text-4xl font-semibold text-primary;
   }
+
+  .table-padding {
+    @apply px-4 py-3;
+  }
 }

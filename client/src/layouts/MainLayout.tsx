@@ -19,7 +19,7 @@ export default function MainLayout({children}: layoutProps) {
           </Head>
           <div className="flex min-h-screen flex-col">
             <Header />
-            <main className="container flex-1">{children}</main>
+            <main className="container flex-1 py-8">{children}</main>
             <Footer />
           </div>
         </div>

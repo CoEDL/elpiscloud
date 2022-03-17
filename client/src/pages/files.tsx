@@ -72,7 +72,7 @@ export default function Files() {
   };
 
   return (
-    <div className="my-8">
+    <div>
       <Description />
 
       {uploadState === 'uploading' || uploadState === 'completed' ? (

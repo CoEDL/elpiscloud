@@ -1,6 +1,6 @@
 import Dropzone from 'react-dropzone';
 import {Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import {NAME_EXTENSION_MAP} from 'lib/file_extensions';
+import {NAME_EXTENSION_MAP} from 'lib/fileExtensions';
 import FileList from 'components/files/FileList';
 import LoadingIndicator from 'components/LoadingIndicator';
 import {UploadState} from 'types/UploadState';

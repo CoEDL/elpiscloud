@@ -23,6 +23,14 @@
     @apply mt-4 mb-4 text-4xl font-semibold text-primary;
   }
 
+  .form-label {
+    @apply font-semibold text-gray-500;
+  }
+
+  .textbox {
+    @apply rounded-md focus:ring-accent;
+  }
+
   .table-padding {
     @apply px-4 py-3;
   }

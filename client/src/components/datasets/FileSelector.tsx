@@ -5,10 +5,12 @@ import {firestore} from 'lib/firestore';
 import {UserFile} from 'types/UserFile';
 
 interface Props {
+  title: string;
   create(files: UserFile[]): void;
+  createPrompt: string;
 }
 
-export default function FileSelector({create}: Props) {
+export default function FileSelector({create, title, createPrompt}: Props) {
   const {user} = useAuth();
   const [files, setFiles] = useState<UserFile[]>([]);
   const [selected, setSelected] = useState(new Map<string, boolean>());
@@ -19,6 +21,12 @@ export default function FileSelector({create}: Props) {
       getFiles();
     }
   }, [user]);
+
+  // Reset on title change
+  useEffect(() => {
+    clearSelection();
+    setSearchFilter('');
+  }, [title]);
 
   async function getFiles() {
     const filesCollection = collection(firestore, `users/${user?.uid}/files`);
@@ -50,22 +58,48 @@ export default function FileSelector({create}: Props) {
     });
   };
 
+  const selectFiltered = () => {
+    setSelected(
+      new Map<string, boolean>(
+        filteredFiles().map(file => [file.fileName, true])
+      )
+    );
+  };
+
+  const clearSelection = () => {
+    setSelected(new Map<string, boolean>());
+  };
+
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Your files</h2>
+        <h2 className="text-xl font-semibold">{title}</h2>
 
-        <label htmlFor="search">
-          Filter:{' '}
-          <input
-            id="search"
-            name="filter"
-            className="ml-2 rounded border-slate-300 bg-white px-4 py-2 focus:ring-accent"
-            type="text"
-            value={searchFilter}
-            onChange={e => setSearchFilter(e.target.value)}
-          />
-        </label>
+        <div className="space-x-4">
+          <label htmlFor="search">
+            Filter:{' '}
+            <input
+              id="search"
+              name="filter"
+              className="ml-2 rounded border-slate-300 bg-white px-4 py-1 focus:ring-accent"
+              type="text"
+              value={searchFilter}
+              onChange={e => setSearchFilter(e.target.value)}
+            />
+          </label>
+          <button
+            className="py-1 underline underline-offset-1"
+            onClick={selectFiltered}
+          >
+            Select all
+          </button>
+          <button
+            className="py-1 underline underline-offset-1"
+            onClick={clearSelection}
+          >
+            Clear selection
+          </button>
+        </div>
       </div>
 
       <div className="rounded bg-white shadow-md">
@@ -124,7 +158,7 @@ export default function FileSelector({create}: Props) {
         </table>
       </div>
       <button className="button mt-4" disabled={!canCreate()} onClick={submit}>
-        Create Dataset
+        {createPrompt}
       </button>
     </>
   );

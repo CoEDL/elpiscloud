@@ -5,6 +5,7 @@ import {urls} from 'lib/urls';
 import {UploadState} from 'types/UploadState';
 import WaitingView from 'components/files/WaitingView';
 import UploadingView from 'components/files/UploadView';
+import Prose from 'components/Prose';
 
 export default function Files() {
   const {user} = useAuth();
@@ -98,7 +99,7 @@ export default function Files() {
 
 const Description = () => {
   return (
-    <div className="prose max-w-none lg:prose-xl">
+    <Prose>
       <h1>Files</h1>
       <p>
         Here you can create Files by collecting and uploading audio. There are
@@ -116,6 +117,6 @@ const Description = () => {
           corresponding transcriptions.
         </li>
       </ul>
-    </div>
+    </Prose>
   );
 };

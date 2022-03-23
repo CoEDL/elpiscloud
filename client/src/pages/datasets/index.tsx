@@ -1,4 +1,5 @@
 import DatasetViewer from 'components/datasets/DatasetViewer';
+import Prose from 'components/Prose';
 import Link from 'next/link';
 import React from 'react';
 
@@ -18,12 +19,12 @@ export default function Datasets() {
 
 const Description = () => {
   return (
-    <div className="prose max-w-none lg:prose-xl">
+    <Prose>
       <h1>Datasets</h1>
       <p>
-        Here you can adjust or create a new Dataset by organising the files
-        you've already uploaded.
+        Here you can view the Datasets you've created and their status, or
+        create a new Dataset by organising the files you've already uploaded.
       </p>
-    </div>
+    </Prose>
   );
 };

@@ -43,6 +43,29 @@ resource "google_cloudfunctions_function" "storage_watcher" {
   service_account_email = var.elpis_worker.email
 }
 
+resource "google_cloudfunctions_function" "process_dataset" {
+  name        = "process_dataset"
+  description = "Process new datasets for training"
+  runtime     = "python37"
+  region      = var.region
+
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.source.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  entry_point           = "process_dataset"
+  event_trigger {
+    event_type = "providers/cloud.firestore/eventTypes/document.create"
+    resource   = "projects/elpiscloud/databases/(default)/documents/users/{userId}/datasets/{dataset}"
+  }
+
+  environment_variables = {
+    TOPIC_ID = var.dataset_processing_topic.id
+    PROJECT = var.project
+  }
+
+  service_account_email = var.elpis_worker.email
+}
+
 # A dedicated Cloud Storage bucket to store the zip source
 resource "google_storage_bucket" "source" {
   name     = "${var.project}-functions-source"

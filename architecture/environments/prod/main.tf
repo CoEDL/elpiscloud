@@ -43,16 +43,22 @@ module "user_upload_files_bucket" {
   depends_on       = [module.requirements]
 }
 
+module "topics" {
+  source = "../../modules/topics"
+}
+
 module "functions" {
-  source                   = "../../modules/functions"
-  project                  = var.project
-  location                 = local.location
-  functions_folder         = local.functions_folder
-  elpis_worker             = module.requirements.elpis_worker
-  user_upload_files_bucket = module.user_upload_files_bucket.bucket
+  source                    = "../../modules/functions"
+  project                   = var.project
+  location                  = local.location
+  functions_folder          = local.functions_folder
+  elpis_worker              = module.requirements.elpis_worker
+  user_upload_files_bucket  = module.user_upload_files_bucket.bucket
+  datasets_processing_topic = module.topics.dataset_processing_topic
 
   depends_on = [
     module.requirements,
+    module.topics,
     module.user_upload_files_bucket
   ]
 }

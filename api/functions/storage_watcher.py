@@ -1,14 +1,4 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-
-PROJECT_ID = 'elpiscloud'
-
-cred = credentials.ApplicationDefault()
-default_app = firebase_admin.initialize_app(cred, {
-    'projectId': PROJECT_ID,
-})
-db = firestore.client()
+from utils import get_firestore_client
 
 
 def storage_watcher(event, context):
@@ -37,6 +27,7 @@ def storage_watcher(event, context):
         'tags': []
     }
 
+    db = get_firestore_client()
     user_ref = db.collection('users').document(uid)
     file_ref = user_ref.collection('files').document(file_name)
 

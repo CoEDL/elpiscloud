@@ -7,3 +7,4 @@ variable "project" {}
 variable "functions_folder" {}
 variable "elpis_worker" {}
 variable "user_upload_files_bucket" {}
+variable "dataset_processing_topic" {}

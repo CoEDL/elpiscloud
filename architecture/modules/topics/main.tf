@@ -4,6 +4,4 @@ resource "google_pubsub_topic" "dataset_processing_topic" {
   labels = {
     stage = "processing"
   }
-
-  message_retention_duration = "86600s"
 }

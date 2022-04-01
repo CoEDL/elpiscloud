@@ -1,10 +1,11 @@
 import {useAuth} from 'contexts/auth';
 import {
+  query,
   collection,
-  collectionGroup,
   doc,
   getDocs,
   deleteDoc,
+  orderBy,
 } from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import React, {ReactNode, useEffect, useState} from 'react';
@@ -21,11 +22,8 @@ export default function DatasetViewer() {
   }, [user]);
 
   async function getDatasets() {
-    const datasetCollection = collection(
-      firestore,
-      `users/${user?.uid}/datasets`
-    );
-    const datasetQuery = collectionGroup(firestore, datasetCollection.id);
+    const collectionRef = collection(firestore, `users/${user!.uid}/datasets`);
+    const datasetQuery = query(collectionRef, orderBy('name'));
     const querySnapshot = await getDocs(datasetQuery);
     const datasets = querySnapshot.docs.map(snapshot => snapshot.data());
     setDatasets(datasets as Dataset[]);

@@ -1,6 +1,6 @@
 import {useAuth} from 'contexts/auth';
 import React, {useEffect, useState} from 'react';
-import {collection, collectionGroup, getDocs} from 'firebase/firestore/lite';
+import {collection, orderBy, getDocs, query} from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import {UserFile} from 'types/UserFile';
 
@@ -29,9 +29,9 @@ export default function FileSelector({create, title, createPrompt}: Props) {
   }, [title]);
 
   async function getFiles() {
-    const filesCollection = collection(firestore, `users/${user?.uid}/files`);
-    const filesQuery = collectionGroup(firestore, filesCollection.id);
-    const querySnapshot = await getDocs(filesQuery);
+    const collectionRef = collection(firestore, `users/${user!.uid}/files`);
+    const datasetQuery = query(collectionRef, orderBy('fileName'));
+    const querySnapshot = await getDocs(datasetQuery);
     const files = querySnapshot.docs.map(snapshot => snapshot.data());
     setFiles(files as UserFile[]);
     setSelected(

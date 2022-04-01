@@ -36,7 +36,7 @@ def process_dataset(data, context):
         return callback
 
     # Read the required files
-    dataset = json.loads(data['value'])
+    dataset = data['value']
     files = dataset['files']
 
     # Add a processing job to the to processing topic for each one of the files

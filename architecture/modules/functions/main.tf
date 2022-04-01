@@ -1,4 +1,4 @@
-resource "google_cloudfunctions_function" "health_check" {
+resource "google_cloudfunctions_function" "function" {
   name        = "hello"
   description = "test function"
   runtime     = "python37"

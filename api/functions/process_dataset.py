@@ -36,7 +36,7 @@ def process_dataset(data, context):
         return callback
 
     # Read the required files
-    dataset = json.dumps(data['value'])
+    dataset = json.loads(data['value'])
     files = dataset['files']
 
     # Add a processing job to the to processing topic for each one of the files
@@ -86,3 +86,12 @@ def process_dataset_file(event, context):
 
     data = base64.b64decode(event['data']).decode('utf-8')
     print(f'Event data: {data}')
+
+    # Download the necessary file from cloud storage
+
+    # Check to see if it's a transcription file
+    # If so, process it.
+
+    # Save the processed file to the datasets folder in cloud storage
+
+    # Check to see if we have all the files to set the dataset status as processed

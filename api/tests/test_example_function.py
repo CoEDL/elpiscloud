@@ -1,4 +1,4 @@
-from api.functions.example_function import hello
+from api.functions.health_check import hello
 
 
 def test_hello():

@@ -37,6 +37,7 @@ def process_dataset(data, context):
 
     # Read the required files
     dataset = data['value']
+    print(dataset)  # TODO find errors here.
     files = dataset['files']
 
     # Add a processing job to the to processing topic for each one of the files

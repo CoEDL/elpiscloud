@@ -28,7 +28,8 @@ export async function getSignedUploadURLs(user: User, fileNames: String[]) {
     body: JSON.stringify(data),
   });
 
-  return new Map<string, string>(Object.entries(response.json()));
+  const result = await response.json();
+  return new Map<string, string>(Object.entries(result));
 }
 
 /**

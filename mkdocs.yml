@@ -1,0 +1,8 @@
+site_name: Elpiscloud documentation
+site_url: https://docs.elpis.cloud/
+
+nav:
+  - Home: index.md
+  - About: about.md
+
+theme: readthedocs

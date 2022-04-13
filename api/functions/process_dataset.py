@@ -37,17 +37,19 @@ def process_dataset(data, context):
 
     # Read the required files
     dataset = data['value']
-    print(dataset)  # TODO find errors here.
-    files = dataset['files']
+    print(dataset)
+    # Firestore has a disgusting format for the data inside it, as seen below
+    file_names = [field['stringValue']
+                  for field in dataset['fields']['files']['arrayValue']['values']]
 
     # Add a processing job to the to processing topic for each one of the files
-    for file in files:
+    for file in file_names:
         # Take the important info from the firestore object
         data = {
-            'name': dataset['name'],
+            'name': dataset['fields']['name']['stringValue'],
             'file': file,
-            'options': dataset['options'],
-            'userId': dataset['userId']
+            'options': clean_up_options(dataset['fields']['options']),
+            'userId': dataset['fields']['userId']['stringValue']
         }
 
         # When you publish a message, the client returns a future.
@@ -60,6 +62,27 @@ def process_dataset(data, context):
     futures.wait(publish_futures, return_when=futures.ALL_COMPLETED)
 
     print(f"Published messages with error handler to {topic_path}.")
+
+
+def clean_up_options(options):
+    """Cleans up the absolutely ridiculous value padding firestore does with their events.
+
+    This code is so digusting- I am ashamed of what I have written please never mention this to me.
+    """
+    result = {}
+    base = options['mapValue']['fields']
+
+    # Clean up regular options
+    for option in base:
+        if option != 'elanOptions':
+            result[option] = base[option]['stringValue']
+
+    # Clean up elan options
+    result['elanOptions'] = {}
+    for field in 'selectionMechanism', 'selectionValue':
+        result['elanOptions'][field] = base['elanOptions']['mapValue']['fields'][field]['stringValue']
+
+    return result
 
 
 def process_dataset_file(event, context):

@@ -71,7 +71,7 @@ resource "google_compute_global_forwarding_rule" "frontend_fwd_rule_443" {
 // From https://stackoverflow.com/a/66256756
 
 // URL Map that simply changes the redirected request from HTTP to HTTPS
-resource "google_compute_url_map" "http-redirect" {
+resource "google_compute_url_map" "http_redirect" {
   name = "http-redirect"
 
   default_url_redirect {
@@ -82,16 +82,16 @@ resource "google_compute_url_map" "http-redirect" {
 }
 
 // A proxy that routes incoming requests to the "http-redirect" URL Map
-resource "google_compute_target_http_proxy" "http-redirect" {
+resource "google_compute_target_http_proxy" "http_redirect" {
   name    = "frontend-http-redirect"
-  url_map = google_compute_url_map.http-redirect.self_link
+  url_map = google_compute_url_map.http_redirect.self_link
 }
 
 // Creates a forwarding rule for requests to the given ip address 
 // at port 80 using TCP
-resource "google_compute_global_forwarding_rule" "http-redirect" {
+resource "google_compute_global_forwarding_rule" "http_redirect" {
   name       = "frontend-http-redirect"
-  target     = google_compute_target_http_proxy.http-redirect.self_link
+  target     = google_compute_target_http_proxy.http_redirect.self_link
   ip_address = google_compute_global_address.lb_ip.address
   port_range = "80"
   ip_protocol = "TCP"

@@ -1,5 +1,6 @@
 import {useAuth} from 'contexts/auth';
 import {signOut} from 'lib/auth';
+import {urls} from 'lib/urls';
 import {useRouter} from 'next/router';
 import React, {useEffect} from 'react';
 
@@ -9,7 +10,7 @@ export default function profile() {
 
   useEffect(() => {
     if (user === null) {
-      router.push('/');
+      router.push(urls.pages.home);
     }
   });
 

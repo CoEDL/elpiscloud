@@ -123,10 +123,7 @@ def process_dataset_file(event, context) -> None:
 
     """
     print(
-        """This Function was triggered by messageId {} published at {} to {}
-    """.format(
-            context.event_id, context.timestamp, context.resource["name"]
-        )
+        f"This Function was triggered by messageId {context.event_id} published at {context.timestamp} to {context.resource['name']}"
     )
 
     data = base64.b64decode(event["data"]).decode("utf-8")

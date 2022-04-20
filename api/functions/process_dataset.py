@@ -2,7 +2,7 @@ import os
 import json
 import base64
 
-from typing import Callable, Dict
+from typing import Any, Callable, Dict
 from concurrent import futures
 from google.cloud import pubsub_v1
 from grpc import Future

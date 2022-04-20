@@ -1,11 +1,11 @@
 import LoadingIndicator from 'components/LoadingIndicator';
 import Prose from 'components/Prose';
 import {useAuth} from 'contexts/auth';
-import {doc, getDoc, setDoc} from 'firebase/firestore/lite';
-import {firestore} from 'lib/firestore';
+import {uploadDataset} from 'lib/api/datasets';
 import {useRouter} from 'next/router';
 import React, {useState} from 'react';
 import {DataPreparationOptions} from 'types/DataPreparationOptions';
+import {Dataset} from 'types/Dataset';
 import {UploadState} from 'types/UploadState';
 import {UserFile} from 'types/UserFile';
 
@@ -22,34 +22,29 @@ export default function DatasetUploader({options, trainingFiles}: Props) {
   const [uploadState, setUploadState] = useState<UploadState>('waiting');
   const [error, setError] = useState('');
 
-  async function uploadDataset() {
+  async function upload() {
     if (!name || user === null) {
       setError('You must be logged in and supply a valid dataset name');
       return;
     }
 
     setError('');
-
-    const docRef = doc(firestore, `users/${user.uid}/datasets/${name}`);
-    const docSnap = await getDoc(docRef);
-
-    // Check we're not overwriting anything
-    if (docSnap.exists()) {
-      setError('A dataset with this name already exists!');
-      return;
-    }
-
-    const files = trainingFiles.map(file => file.fileName);
-    setUploadState('uploading');
-    await setDoc(docRef, {
+    const dataset: Dataset = {
       name,
       options,
-      files,
+      files: trainingFiles.map(file => file.fileName),
       userId: user.uid,
       processed: false,
-    });
+    };
+    setUploadState('uploading');
+    try {
+      await uploadDataset(user, dataset);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+    }
     setUploadState('completed');
-
     router.push('/datasets');
   }
 
@@ -87,7 +82,7 @@ export default function DatasetUploader({options, trainingFiles}: Props) {
 
           <button
             className="button ml-6 mt-6"
-            onClick={uploadDataset}
+            onClick={upload}
             disabled={name === ''}
           >
             Upload Dataset

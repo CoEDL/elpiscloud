@@ -1,6 +1,6 @@
 import type {NextPage} from 'next';
 import {FormattedMessage} from 'react-intl';
-import {Container, Header, Image} from 'semantic-ui-react';
+import {Container, Image} from 'semantic-ui-react';
 
 const Home: NextPage = () => {
   return (

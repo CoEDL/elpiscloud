@@ -2,13 +2,14 @@ import os
 import json
 import base64
 
-from typing import Callable, Dict
+from typing import Any, Callable, Dict
 from concurrent import futures
 from google.cloud import pubsub_v1
 from grpc import Future
+from functions_framework import Context
 
 
-def process_dataset(data, context) -> None:
+def process_dataset(data: Dict, context: Context) -> None:
     """Begins processing a dataset so it may be used to train a model.
 
     Triggers when a new dataset is created. Reads all the files in a new dataset
@@ -16,7 +17,7 @@ def process_dataset(data, context) -> None:
 
     Parameters:
         data (dict): The event payload.
-        context (google.cloud.functions.Context): Metadata for the event.
+        context (Context): Metadata for the event.
     """
     # Set up the topic for publishing
     project_id = os.environ.get("PROJECT")
@@ -71,7 +72,7 @@ def process_dataset(data, context) -> None:
     print(f"Published messages with error handler to {topic_path}.")
 
 
-def clean_up_options(dataset_options: Dict) -> Dict:
+def clean_up_options(dataset_options: Dict) -> Dict[str, Any]:
     """Cleans up the firestore value padding in the dataset preparation options
     returned in a firestore event.
 
@@ -104,7 +105,7 @@ def clean_up_options(dataset_options: Dict) -> Dict:
     return result
 
 
-def process_dataset_file(event, context) -> None:
+def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> None:
     """Background Cloud Function which triggers from pubsub dataset-processing
     topic.
 
@@ -123,10 +124,7 @@ def process_dataset_file(event, context) -> None:
 
     """
     print(
-        """This Function was triggered by messageId {} published at {} to {}
-    """.format(
-            context.event_id, context.timestamp, context.resource["name"]
-        )
+        f"This Function was triggered by messageId {context.event_id} published at {context.timestamp} to {context.resource['name']}"
     )
 
     data = base64.b64decode(event["data"]).decode("utf-8")

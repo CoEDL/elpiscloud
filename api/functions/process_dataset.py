@@ -1,14 +1,15 @@
 import os
-from concurrent import futures
-from typing import Callable, Dict
-from google.cloud import pubsub_v1
 import json
+import base64
 
+from typing import Callable, Dict
+from concurrent import futures
+from google.cloud import pubsub_v1
 from grpc import Future
 
 
 def process_dataset(data, context) -> None:
-    """ Begins processing a dataset so it may be used to train a model.
+    """Begins processing a dataset so it may be used to train a model.
 
     Triggers when a new dataset is created. Reads all the files in a new dataset
     and publishes an event to the dataset processing topic for each one.
@@ -18,8 +19,8 @@ def process_dataset(data, context) -> None:
         context (google.cloud.functions.Context): Metadata for the event.
     """
     # Set up the topic for publishing
-    project_id = os.environ.get('PROJECT')
-    topic_id = os.environ.get('TOPIC_ID')
+    project_id = os.environ.get("PROJECT")
+    topic_id = os.environ.get("TOPIC_ID")
 
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, topic_id)
@@ -37,28 +38,31 @@ def process_dataset(data, context) -> None:
 
         return callback
 
-    dataset = data['value']
-    print(f'Firestore newly-created dataset information: {dataset}')
+    dataset = data["value"]
+    print(f"Firestore newly-created dataset information: {dataset}")
 
     # Firestore has a disgusting format for the data inside it, as seen below
-    file_names = [field['stringValue']
-                  for field in dataset['fields']['files']['arrayValue']['values']]
+    file_names = [
+        field["stringValue"]
+        for field in dataset["fields"]["files"]["arrayValue"]["values"]
+    ]
 
     # Add a processing job to the to processing topic for each one of the files
     for file_name in file_names:
         # Take the important info from the firestore object
         file_processing_data = {
-            'name': dataset['fields']['name']['stringValue'],
-            'file': file_name,
-            'options': clean_up_options(dataset['fields']['options']),
-            'userId': dataset['fields']['userId']['stringValue']
+            "name": dataset["fields"]["name"]["stringValue"],
+            "file": file_name,
+            "options": clean_up_options(dataset["fields"]["options"]),
+            "userId": dataset["fields"]["userId"]["stringValue"],
         }
         encoded_data = json.dumps(file_processing_data).encode("utf-8")
 
         # Generate the future from publishing, and add it to our list.
         publish_future: Future = publisher.publish(topic_path, encoded_data)
         publish_future.add_done_callback(
-            get_callback(publish_future, file_processing_data))
+            get_callback(publish_future, file_processing_data)
+        )
         publish_futures.append(publish_future)
 
     # Wait for all the publish futures to resolve before exiting.
@@ -77,21 +81,26 @@ def clean_up_options(dataset_options: Dict) -> Dict:
 
     Returns:
         (Dict): A dictionary of the same format as the original firestore
-            document. That is, without any value padding. 
+            document. That is, without any value padding.
     """
     result = {}
-    base = dataset_options['mapValue']['fields']
+    base = dataset_options["mapValue"]["fields"]
 
     # Clean up regular options
-    result = {option: value['stringValue'] for (
-        option, value) in base.items() if option != 'elanOptions'}
+    result = {
+        option: value["stringValue"]
+        for (option, value) in base.items()
+        if option != "elanOptions"
+    }
 
     # Clean up elan options
     elan_options = {}
-    for field in {'selectionMechanism', 'selectionValue'}:
-        elan_options[field] = base['elanOptions']['mapValue']['fields'][field]['stringValue']
+    for field in {"selectionMechanism", "selectionValue"}:
+        elan_options[field] = base["elanOptions"]["mapValue"]["fields"][field][
+            "stringValue"
+        ]
 
-    result['elanOptions'] = elan_options
+    result["elanOptions"] = elan_options
     return result
 
 
@@ -113,13 +122,15 @@ def process_dataset_file(event, context) -> None:
          context (google.cloud.functions.Context): Metadata of triggering event.
 
     """
-    import base64
+    print(
+        """This Function was triggered by messageId {} published at {} to {}
+    """.format(
+            context.event_id, context.timestamp, context.resource["name"]
+        )
+    )
 
-    print("""This Function was triggered by messageId {} published at {} to {}
-    """.format(context.event_id, context.timestamp, context.resource["name"]))
-
-    data = base64.b64decode(event['data']).decode('utf-8')
-    print(f'Event data: {data}')
+    data = base64.b64decode(event["data"]).decode("utf-8")
+    print(f"Event data: {data}")
 
     # Download the necessary file from cloud storage
 

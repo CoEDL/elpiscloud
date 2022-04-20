@@ -1,3 +1,4 @@
+from typing import Dict, Tuple
 import flask
 import json
 from enum import Enum
@@ -20,7 +21,7 @@ BUCKETS = {UploadTypes.FILES: "elpiscloud-user-upload-files"}
 VALIDATED_USER_INFO = "X-Apigateway-Api-Userinfo"
 
 
-def sign_files(request: flask.Request):
+def sign_files(request: flask.Request) -> Tuple[Dict[str, str], int, Dict[str, str]]:
     """Signs supplied upload files and returns the urls with which to commence
     uploading.
 
@@ -29,7 +30,10 @@ def sign_files(request: flask.Request):
         <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
 
     Returns:
-        A dictionary of the requested upload files to their signed urls
+        A tuple containing three values:
+            1. A dictionary of filenames to their corresponding signed upload urls
+            2. The HTTP response status
+            3. A dictionary containing CORS headers.
     """
     # CORS Preflight
     if request.method == "OPTIONS":
@@ -63,9 +67,17 @@ def sign_files(request: flask.Request):
     return cors_wrap_response(result, 200)
 
 
-def generate_resumable_upload_url(bucket_name, blob_name, origin):
-    """Generates a v4 signed URL for uploading a blob using HTTP PUT."""
+def generate_resumable_upload_url(bucket_name: str, blob_name: str, origin: str) -> str:
+    """Generates a v4 signed URL for uploading a blob using HTTP PUT.
 
+    Parameters:
+        bucket_name (str): The name of the bucket where we want to upload the file.
+        blob_bame (str): The eventual path to the file within the bucket.
+        origin (str): The origin of the request
+
+    Returns:
+        (str): The signed upload url.
+    """
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)

@@ -2,16 +2,13 @@ import React from 'react';
 import {Table, Button, Icon} from 'semantic-ui-react';
 
 type Props = {
-  title: string;
-  extensionFilter?: string;
   files: Map<string, File>;
   deleteFile: (filename: string) => void;
 };
 
-const FileList = ({title, extensionFilter = '', files, deleteFile}: Props) => {
+const FileList = ({files, deleteFile}: Props) => {
   return (
     <div>
-      <h3>{title}</h3>
       <Table>
         <Table.Header>
           <Table.Row>
@@ -24,7 +21,6 @@ const FileList = ({title, extensionFilter = '', files, deleteFile}: Props) => {
         <Table.Body>
           {Array.from(files)
             .sort()
-            .filter(([filename, _]) => filename.includes(extensionFilter))
             .map(([filename, file]) => (
               <Table.Row key={filename}>
                 <Table.Cell>{filename}</Table.Cell>

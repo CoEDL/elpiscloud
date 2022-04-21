@@ -2,7 +2,6 @@ import React from 'react';
 import {Table, Button, Icon} from 'semantic-ui-react';
 
 type Props = {
-  extensionFilter?: string;
   files: Map<string, File>;
   deleteFile: (filename: string) => void;
 };

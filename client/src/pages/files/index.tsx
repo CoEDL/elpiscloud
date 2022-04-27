@@ -1,0 +1,68 @@
+import Prose from 'components/Prose';
+import FileList from 'components/files/FileList';
+import Link from 'next/link';
+import React, {useEffect, useState} from 'react';
+import {getUserFiles} from 'lib/api/files';
+import {UserFile} from 'types/UserFile';
+
+import {useAuth} from 'contexts/auth';
+
+export default function Files() {
+  const {user} = useAuth();
+  const [userFiles, setUserFiles] = useState<UserFile[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      getUserUploadedFiles();
+    }
+  }, [user]);
+
+  async function getUserUploadedFiles() {
+    const userDatasets = await getUserFiles(user!);
+    setUserFiles(userDatasets);
+  }
+
+  return (
+    <div>
+      <Description />
+      <Link href="/files/addFiles">
+        <button className="button">Add Files</button>
+      </Link>
+      <Link href="/files/addTags">
+        <button className="button">Add Tags</button>
+      </Link>
+      {Array.from(userFiles).map(([userFile]) => (
+        <FileList
+          title={title}
+          extensionFilter={extension}
+          deleteFile={deleteFile}
+          files={files}
+        />
+      ))}
+    </div>
+  );
+}
+
+const Description = () => {
+  return (
+    <Prose>
+      <h1>Files</h1>
+      <p>
+        Here you can create Files by collecting and uploading audio. There are
+        two types of transcription supported in Elpisnet: word and phoneme.
+      </p>
+      <ul>
+        <li>
+          <b>Word transcription</b> requires recordings, corresponding
+          transcriptions and a letter-to-sound file. The letter-to-sound file is
+          required to generate a pronunciation dictionary, which we call the{' '}
+          <i>grapheme-to-phoneme</i> or <i>G2P</i> process.
+        </li>
+        <li>
+          <b>Phoneme transcription</b> only requires recordings and
+          corresponding transcriptions.
+        </li>
+      </ul>
+    </Prose>
+  );
+};

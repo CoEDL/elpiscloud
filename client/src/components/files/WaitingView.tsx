@@ -1,6 +1,5 @@
 import Dropzone from 'react-dropzone';
-import {Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import {NAME_EXTENSION_MAP} from 'lib/fileExtensions';
+import {Header, Icon, Segment} from 'semantic-ui-react';
 import FileList from 'components/files/FileList';
 import LoadingIndicator from 'components/LoadingIndicator';
 import {UploadState} from 'types/UploadState';
@@ -41,18 +40,7 @@ export default function WaitingView({
         )}
       </Dropzone>
       <br />
-      <Grid columns={2}>
-        {Array.from(NAME_EXTENSION_MAP).map(([title, extension]) => (
-          <Grid.Column key={title}>
-            <FileList
-              title={title}
-              extensionFilter={extension}
-              deleteFile={deleteFile}
-              files={files}
-            />
-          </Grid.Column>
-        ))}
-      </Grid>
+      <FileList deleteFile={deleteFile} files={files} />
       <div className="mt-8 text-center">
         <button disabled={!canUpload} className="button" onClick={uploadFiles}>
           Upload

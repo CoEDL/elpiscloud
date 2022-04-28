@@ -1,11 +1,12 @@
 import Prose from 'components/Prose';
-import FileList from 'components/files/FileList';
 import Link from 'next/link';
 import React, {useEffect, useState} from 'react';
 import {getUserFiles} from 'lib/api/files';
 import {UserFile} from 'types/UserFile';
 
 import {useAuth} from 'contexts/auth';
+
+import {Table} from 'semantic-ui-react';
 
 export default function Files() {
   const {user} = useAuth();
@@ -31,14 +32,26 @@ export default function Files() {
       <Link href="/files/addTags">
         <button className="button">Add Tags</button>
       </Link>
-      {Array.from(userFiles).map(([userFile]) => (
-        <FileList
-          title={title}
-          extensionFilter={extension}
-          deleteFile={deleteFile}
-          files={files}
-        />
-      ))}
+      <Table>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>File name</Table.HeaderCell>
+            <Table.HeaderCell>Type</Table.HeaderCell>
+            <Table.HeaderCell>File size</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {Array.from(userFiles)
+            .sort()
+            .map(userFile => (
+              <Table.Row key={userFile.fileName}>
+                <Table.Cell>{userFile.fileName}</Table.Cell>
+                <Table.Cell>{userFile.contentType}</Table.Cell>
+                <Table.Cell>{userFile.size}</Table.Cell>
+              </Table.Row>
+            ))}
+        </Table.Body>
+      </Table>
     </div>
   );
 }

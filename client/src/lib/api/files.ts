@@ -1,5 +1,12 @@
 import {User} from 'firebase/auth';
-import {collection, getDocs, orderBy, query} from 'firebase/firestore/lite';
+import {
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  doc,
+  updateDoc,
+} from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import {urls} from 'lib/urls';
 import {UserFile} from 'types/UserFile';
@@ -45,4 +52,13 @@ export async function getUserFiles(user: User) {
   const querySnapshot = await getDocs(datasetQuery);
   const files = querySnapshot.docs.map(snapshot => snapshot.data());
   return files as UserFile[];
+}
+
+export async function updateDocumentWithData(
+  user: User,
+  file: string,
+  data: string[]
+) {
+  const documentReference = doc(firestore, `users/${user!.uid}/files/${file}`);
+  await updateDoc(documentReference, 'tags', data);
 }

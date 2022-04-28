@@ -7,7 +7,7 @@ import UploadingView from 'components/files/UploadView';
 import Prose from 'components/Prose';
 import {getSignedUploadURLs} from 'lib/api/files';
 
-export default function Files() {
+export default function AddFiles() {
   const {user} = useAuth();
   const [files, setFiles] = useState(new Map<string, File>());
   const [uploadState, setUploadState] = useState<UploadState>('waiting');

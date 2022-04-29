@@ -35,8 +35,8 @@ const links = [
     link: '/datasets',
   },
   {
-    name: 'Train',
-    link: '/train',
+    name: 'Models',
+    link: '/models',
   },
   {
     name: 'Transcribe',

@@ -6,7 +6,7 @@ import {useRouter} from 'next/router';
 import React, {useState} from 'react';
 import {DataPreparationOptions} from 'types/DataPreparationOptions';
 import {Dataset} from 'types/Dataset';
-import {UploadState} from 'types/UploadState';
+import {UploadState} from 'types/LoadingStates';
 import {UserFile} from 'types/UserFile';
 
 type Props = {

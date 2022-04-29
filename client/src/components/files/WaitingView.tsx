@@ -2,7 +2,7 @@ import Dropzone from 'react-dropzone';
 import {Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import FileList from 'components/files/FileList';
 import LoadingIndicator from 'components/LoadingIndicator';
-import {UploadState} from 'types/UploadState';
+import {UploadState} from 'types/LoadingStates';
 
 interface WaitingViewProps {
   uploadState: UploadState;

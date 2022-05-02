@@ -76,6 +76,13 @@ const Description = () => {
           corresponding transcriptions.
         </li>
       </ul>
+      <p>
+        Once signed in, you will be able view all your uploaded files in the
+        table below. You can click on the <b>Add Files</b> button to upload more
+        files. You can also click on the <b>Add Tags</b> button to add tags to
+        your uploaded files. These tags can then be used to organize your
+        uploaded files.
+      </p>
     </Prose>
   );
 };

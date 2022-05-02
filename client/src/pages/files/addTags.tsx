@@ -7,7 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 
-import {getUserFiles, updateDocumentWithData} from 'lib/api/files';
+import {getUserFiles, updateDocumentTags} from 'lib/api/files';
 import {UserFile} from 'types/UserFile';
 import {Table} from 'semantic-ui-react';
 
@@ -25,7 +25,6 @@ export default function TaggingView() {
     }
   }, [user]);
 
-  // TODO Need error handling here if there are errors with fetching data
   async function getUserUploadedFiles() {
     const newUserFiles = await getUserFiles(user!);
     setUserFiles(
@@ -73,33 +72,21 @@ export default function TaggingView() {
     };
     newFiles.set(oldFileInfo[0].fileName, [newFileInfo, true]);
     setUserFiles(newFiles);
-    return true; // True if something added
+    return true; // True if a new tag is added
   };
 
   const canUploadTags = useMemo(() => !(user === null), [user]);
 
   const uploadAllTags = () => {
     if (canUploadTags) {
+      const newFiles = new Map(userFiles);
       userFiles.forEach(async ([fileInfo, reUpload], filename) => {
         if (reUpload) {
-          await updateDocumentWithData(user!, filename, fileInfo.tags);
-          const newFiles = new Map(userFiles);
-          const oldFileInfo = newFiles.get(filename)!;
-          const newFileInfo: UserFile = {
-            fileName: oldFileInfo[0].fileName,
-            size: oldFileInfo[0].size,
-            contentType: oldFileInfo[0].contentType,
-            tags: oldFileInfo[0].tags.slice(),
-            timeCreated: oldFileInfo[0].timeCreated,
-            userId: oldFileInfo[0].userId,
-          };
-          newFiles.set(oldFileInfo[0].fileName, [newFileInfo, false]);
-          // Refactor out this code that sets user files because it is used a few times
-          // and is very similar for the most part
-          setUserFiles(newFiles);
+          await updateDocumentTags(user!, filename, fileInfo.tags);
+          newFiles.set(fileInfo.fileName, [fileInfo, false]);
         }
       });
-      // After uploading, make all of them false again so you don't upload anymore
+      setUserFiles(newFiles);
     }
   };
 
@@ -158,6 +145,7 @@ type InputTagProps = {
   addTag: (tag: string) => boolean;
 };
 
+/* Adapted from https://jerrylowm.medium.com/build-a-tags-input-react-component-from-scratch-1524f02acb9a */
 const InputTag = ({fileTags, removeTag, addTag}: InputTagProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -166,7 +154,6 @@ const InputTag = ({fileTags, removeTag, addTag}: InputTagProps) => {
 
     if (e.key === 'Enter' && val) {
       if (addTag(val)) {
-        // If this false, maybe give some feedback to the user that they are trying to add a duplicate tab?
         inputRef.current!.value = '';
       }
     } else if (e.key === 'Backspace' && !val) {

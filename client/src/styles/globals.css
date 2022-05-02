@@ -36,14 +36,17 @@
   }
 }
 
+/* Taken from https://jerrylowm.medium.com/build-a-tags-input-react-component-from-scratch-1524f02acb9a */
 @layer fileTags {
   .input-tag {
     background: white;
     border: 1px solid #d6d6d6;
-    border-radius: 2px;
-    display: flex;
+    border-radius: 10px;
+    display: inline-flex;
     flex-wrap: wrap;
     padding: 5px 5px 0;
+    width: fit-content;
+    margin: 0px;
   }
   
   .input-tag input {
@@ -62,7 +65,7 @@
   .input-tag__tags li {
     align-items: center;
     background: #85A3BF;
-    border-radius: 2px;
+    border-radius: 5px;
     color: white;
     display: flex;
     font-weight: 300;

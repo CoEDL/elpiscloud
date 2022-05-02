@@ -54,11 +54,18 @@ export async function getUserFiles(user: User) {
   return files as UserFile[];
 }
 
-export async function updateDocumentWithData(
+/**
+ * For a given user, it uploads tags for a given file to Firestore.
+ *
+ * @param user The user whose files are being updated.
+ * @param file The file being updated.
+ * @param tags The list of new tags for this file.
+ */
+export async function updateDocumentTags(
   user: User,
   file: string,
-  data: string[]
+  tags: string[]
 ) {
   const documentReference = doc(firestore, `users/${user!.uid}/files/${file}`);
-  await updateDoc(documentReference, 'tags', data);
+  await updateDoc(documentReference, 'tags', tags);
 }

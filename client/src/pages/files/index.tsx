@@ -27,10 +27,10 @@ export default function Files() {
     <div>
       <Description />
       <Link href="/files/addFiles">
-        <button className="button">Add Files</button>
+        <button className="button m-5">Add Files</button>
       </Link>
       <Link href="/files/addTags">
-        <button className="button">Add Tags</button>
+        <button className="button m-5">Add Tags</button>
       </Link>
       <Table>
         <Table.Header>

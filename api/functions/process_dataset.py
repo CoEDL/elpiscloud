@@ -19,11 +19,8 @@ def process_dataset(data, context) -> None:
         context (google.cloud.functions.Context): Metadata for the event.
     """
     # Set up the topic for publishing
-    project_id = os.environ.get("PROJECT")
-    topic_id = os.environ.get("TOPIC_ID")
-
     publisher = pubsub_v1.PublisherClient()
-    topic_path = publisher.topic_path(project_id, topic_id)
+    topic_path = os.environ.get("TOPIC_ID")
     publish_futures = []
 
     def get_callback(

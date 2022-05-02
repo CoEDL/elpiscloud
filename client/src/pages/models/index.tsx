@@ -8,11 +8,11 @@ export default function Models() {
     <div>
       <Description />
       <br />
-      <Link href="/models/train">
+      <Link href="/models/new">
         <button className="button">Train new Model</button>
       </Link>
 
-      <h2 className="mt-10 text-3xl">Current Models</h2>
+      <h2 className="mt-10 mb-4 text-3xl">Current Models</h2>
       <ModelViewer />
     </div>
   );

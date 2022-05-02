@@ -7,7 +7,7 @@ import React, {useState} from 'react';
 import {DataPreparationOptions} from 'types/DataPreparationOptions';
 import {UserFile} from 'types/UserFile';
 
-export default function create() {
+export default function NewDataset() {
   const [trainingFiles, setTrainingFiles] = useState<UserFile[]>([]);
   const [dataOptions, setDataOptions] = useState<DataPreparationOptions | null>(
     null

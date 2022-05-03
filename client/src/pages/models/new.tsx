@@ -7,13 +7,10 @@ import React, {useState} from 'react';
 import {Dataset} from 'types/Dataset';
 import {TrainingOptions} from 'types/TrainingOptions';
 
-type Props = {};
-
-export default function NewModel(props: Props) {
+export default function NewModel() {
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [trainingOptions, setTrainingOptions] =
     useState<TrainingOptions | null>(null);
-  console.log(trainingOptions);
 
   const stages = [
     {

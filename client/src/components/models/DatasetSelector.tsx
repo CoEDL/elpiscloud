@@ -37,11 +37,11 @@ export default function DatasetSelector({
     setDatasets(userDatasets);
   }
 
-  const chooseDataset = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value === '') return;
+  const chooseDataset = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (event.target.value === '') return;
 
     const dataset = datasets.find(
-      (dataset: Dataset) => dataset.name === e.target.value
+      (dataset: Dataset) => dataset.name === event.target.value
     );
     selectDataset(dataset!);
   };
@@ -64,8 +64,7 @@ export default function DatasetSelector({
         <p>
           To create a new dataset, click{' '}
           <span className="text-accent">
-            {' '}
-            <Link href="/datasets/create">here</Link>
+            <Link href="/datasets/new">here</Link>
           </span>
         </p>
       </div>

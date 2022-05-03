@@ -65,7 +65,7 @@ def sign_files(request: flask.Request) -> Tuple[Dict[str, str], int, Dict[str, s
     for name in file_names:
         blob_name = f"{user_id}/{name}"
         result[name] = generate_resumable_upload_url(bucket, blob_name, origin)
-    
+
     print("result:", result)
     return cors_wrap_response(result, 200)
 

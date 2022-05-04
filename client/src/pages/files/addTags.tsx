@@ -15,10 +15,13 @@ import {useAuth} from 'contexts/auth';
 
 export default function TaggingView() {
   const {user} = useAuth();
-  const [userFiles, setUserFiles] = useState<Map<string, [UserFile, boolean]>>(
-    new Map<string, [UserFile, boolean]>()
+  const [userFiles, setUserFiles] = useState<Map<string, UserFile>>(
+    new Map<string, UserFile>()
   );
-
+  // Set of all filenames that will change in this update
+  const [filesToChange, setFilesToChange] = useState<Set<string>>(
+    new Set<string>()
+  );
   useEffect(() => {
     if (user) {
       getUserUploadedFiles();
@@ -30,7 +33,7 @@ export default function TaggingView() {
     setUserFiles(
       new Map(
         Array.from(newUserFiles).map(userFile => {
-          return [userFile.fileName, [userFile, false]];
+          return [userFile.fileName, userFile];
         })
       )
     );
@@ -40,22 +43,22 @@ export default function TaggingView() {
     const newFiles = new Map(userFiles);
     const oldFileInfo = newFiles.get(fileName)!;
     const newFileInfo: UserFile = {
-      fileName: oldFileInfo[0].fileName,
-      size: oldFileInfo[0].size,
-      contentType: oldFileInfo[0].contentType,
-      tags: oldFileInfo[0].tags.slice(),
-      timeCreated: oldFileInfo[0].timeCreated,
-      userId: oldFileInfo[0].userId,
+      ...oldFileInfo,
+      tags: oldFileInfo.tags.slice(),
     };
     newFileInfo.tags.splice(tagIndex, 1);
-    newFiles.set(oldFileInfo[0].fileName, [newFileInfo, true]);
+    newFiles.set(oldFileInfo.fileName, newFileInfo);
     setUserFiles(newFiles);
+
+    const newFilesToChange = new Set<string>(filesToChange);
+    newFilesToChange.add(fileName);
+    setFilesToChange(newFilesToChange);
   };
 
   const addTagToFile = (tag: string, fileName: string) => {
     if (
       userFiles
-        .get(fileName)![0]
+        .get(fileName)!
         .tags.find(fileTag => fileTag.toLowerCase() === tag.toLowerCase())
     ) {
       return false; // False if nothing added
@@ -63,31 +66,36 @@ export default function TaggingView() {
     const newFiles = new Map(userFiles);
     const oldFileInfo = newFiles.get(fileName)!;
     const newFileInfo: UserFile = {
-      fileName: oldFileInfo[0].fileName,
-      size: oldFileInfo[0].size,
-      contentType: oldFileInfo[0].contentType,
-      tags: [...oldFileInfo[0].tags.slice(), tag],
-      timeCreated: oldFileInfo[0].timeCreated,
-      userId: oldFileInfo[0].userId,
+      ...oldFileInfo,
+      tags: [...oldFileInfo.tags.slice(), tag],
     };
-    newFiles.set(oldFileInfo[0].fileName, [newFileInfo, true]);
+    newFiles.set(oldFileInfo.fileName, newFileInfo);
     setUserFiles(newFiles);
+
+    const newFilesToChange = new Set<string>(filesToChange);
+    newFilesToChange.add(fileName);
+    setFilesToChange(newFilesToChange);
+
     return true; // True if a new tag is added
   };
 
   const canUploadTags = useMemo(() => !(user === null), [user]);
 
-  const uploadAllTags = () => {
-    if (canUploadTags) {
-      const newFiles = new Map(userFiles);
-      userFiles.forEach(async ([fileInfo, reUpload], filename) => {
-        if (reUpload) {
-          await updateDocumentTags(user!, filename, fileInfo.tags);
-          newFiles.set(fileInfo.fileName, [fileInfo, false]);
-        }
-      });
-      setUserFiles(newFiles);
+  const uploadAllTags = async () => {
+    if (!canUploadTags) {
+      return;
     }
+
+    const allPromises: Promise<void>[] = Array.from(filesToChange).map(
+      fileName => {
+        const fileInfo = userFiles.get(fileName)!;
+        return updateDocumentTags(user!, fileName, fileInfo.tags);
+      }
+    );
+
+    Promise.all(allPromises).then(() => {
+      setFilesToChange(new Set<string>());
+    });
   };
 
   return (
@@ -115,7 +123,7 @@ export default function TaggingView() {
             .sort(([filenameA], [filenameB]) => {
               return filenameA.localeCompare(filenameB);
             })
-            .map(([filename, [userFile]]) => (
+            .map(([filename, userFile]) => (
               <Table.Row key={filename}>
                 <Table.Cell>{filename}</Table.Cell>
                 <Table.Cell>{userFile.type}</Table.Cell>

@@ -1,8 +1,8 @@
 import Dropzone from 'react-dropzone';
-import {Header, Icon, Segment} from 'semantic-ui-react';
+import {Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import FileList from 'components/files/FileList';
 import LoadingIndicator from 'components/LoadingIndicator';
-import {UploadState} from 'types/UploadState';
+import {UploadState} from 'types/LoadingStates';
 
 interface WaitingViewProps {
   uploadState: UploadState;
@@ -40,7 +40,11 @@ export default function WaitingView({
         )}
       </Dropzone>
       <br />
-      <FileList deleteFile={deleteFile} files={files} />
+      <Grid columns={1}>
+        <Grid.Column key={'default-key'}>
+          <FileList deleteFile={deleteFile} files={files} />
+        </Grid.Column>
+      </Grid>
       <div className="mt-8 text-center">
         <button disabled={!canUpload} className="button" onClick={uploadFiles}>
           Upload

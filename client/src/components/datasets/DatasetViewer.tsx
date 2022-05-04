@@ -27,8 +27,6 @@ export default function DatasetViewer() {
     return EmptyState();
   }
 
-  console.log(datasets);
-
   return (
     <Container>
       <table className="w-full rounded">

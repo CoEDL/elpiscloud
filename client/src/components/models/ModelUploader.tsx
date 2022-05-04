@@ -1,20 +1,20 @@
 import LoadingIndicator from 'components/LoadingIndicator';
 import Prose from 'components/Prose';
 import {useAuth} from 'contexts/auth';
-import {uploadDataset} from 'lib/api/datasets';
+import {uploadModel} from 'lib/api/models';
 import {useRouter} from 'next/router';
 import React, {useState} from 'react';
-import {DataPreparationOptions} from 'types/DataPreparationOptions';
 import {Dataset} from 'types/Dataset';
 import {UploadState} from 'types/LoadingStates';
-import {UserFile} from 'types/UserFile';
+import {Model} from 'types/Model';
+import {TrainingOptions} from 'types/TrainingOptions';
 
 type Props = {
-  options: DataPreparationOptions;
-  trainingFiles: UserFile[];
+  options: TrainingOptions;
+  dataset: Dataset;
 };
 
-export default function DatasetUploader({options, trainingFiles}: Props) {
+export default function ModelUploader({options, dataset}: Props) {
   const {user} = useAuth();
   const router = useRouter();
 
@@ -29,23 +29,23 @@ export default function DatasetUploader({options, trainingFiles}: Props) {
     }
 
     setError('');
-    const dataset: Dataset = {
+    const model: Model = {
       name,
       options,
-      files: trainingFiles.map(file => file.fileName),
       userId: user.uid,
-      processed: false,
+      trainingStatus: 'training',
+      dataset,
     };
     setUploadState('uploading');
     try {
-      await uploadDataset(user, dataset);
+      await uploadModel(user, model);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       }
     }
     setUploadState('completed');
-    router.push('/datasets');
+    router.push('/models');
   }
 
   return (
@@ -66,11 +66,11 @@ export default function DatasetUploader({options, trainingFiles}: Props) {
       {uploadState !== 'completed' ? (
         <div className="relative mt-8 flex items-center">
           {uploadState === 'uploading' && (
-            <LoadingIndicator text="Uploading Dataset..." />
+            <LoadingIndicator text="Uploading Model..." />
           )}
           <div className="flex flex-col">
             <label htmlFor="name" className="form-label mb-1">
-              Dataset Name*
+              Model Name*
             </label>
             <input
               type="text"
@@ -85,7 +85,7 @@ export default function DatasetUploader({options, trainingFiles}: Props) {
             onClick={upload}
             disabled={name === ''}
           >
-            Upload Dataset
+            Upload Model
           </button>
         </div>
       ) : (

@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 
 import {useAuth} from 'contexts/auth';
-import {UploadState} from 'types/UploadState';
+import {UploadState} from 'types/LoadingStates';
 import WaitingView from 'components/files/WaitingView';
 import UploadingView from 'components/files/UploadView';
 import Prose from 'components/Prose';

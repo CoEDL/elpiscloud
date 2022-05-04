@@ -8,7 +8,7 @@ export default function Datasets() {
     <div>
       <Description />
       <br />
-      <Link href="/datasets/create">
+      <Link href="/datasets/new">
         <button className="button">Create New Dataset</button>
       </Link>
       <p className="mt-8 mb-4 text-2xl font-semibold">Current datasets</p>

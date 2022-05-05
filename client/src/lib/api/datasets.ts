@@ -11,7 +11,6 @@ import {
 } from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import {Dataset} from 'types/Dataset';
-import {UserFile} from 'types/UserFile';
 
 export async function getDatasets(user: User) {
   const collectionRef = collection(firestore, `users/${user!.uid}/datasets`);

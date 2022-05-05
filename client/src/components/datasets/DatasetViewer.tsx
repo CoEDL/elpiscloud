@@ -57,7 +57,7 @@ export default function DatasetViewer() {
               </td>
               <td className="table-padding text-blue-500 underline">
                 <Link href={`/datasets/datasetContentsView/${name}`}>
-                  <p>View</p>
+                  <p className="cursor-pointer">View</p>
                 </Link>
               </td>
               <td className="table-padding text-right text-red-400">

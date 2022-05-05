@@ -1,9 +1,19 @@
 import {User} from 'firebase/auth';
-import {collection, getDocs, orderBy, query} from 'firebase/firestore/lite';
+import {
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  doc,
+  getDoc,
+  DocumentData,
+  DocumentSnapshot,
+} from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import {urls} from 'lib/urls';
 import {UserFile} from 'types/UserFile';
 import {Dataset} from 'types/Dataset';
+import Datasets from 'pages/datasets';
 
 /**
  * Generates signed upload urls for a supplied list of filenames and returns
@@ -34,46 +44,35 @@ export async function getSignedUploadURLs(user: User, fileNames: String[]) {
 }
 
 /**
+ * Get all files from the given dataset for the given user
  *
- *
- * @param user
- * @param filenames
- * @returns
+ * @param user User whose files need to be retrieved
+ * @returns A Promise that resolves to a list of UserFile objects
  */
-export async function getFilesFromDataset(user: User, datasetName: string) {
+export async function getFilesFromDataset(
+  user: User,
+  datasetName: string
+): Promise<UserFile[]> {
   const getDataset = async () => {
-    const collectionRef = collection(
-      firestore,
-      `users/${user!.uid}/datasets/${datasetName}`
-    );
-    const datasetQuery = query(collectionRef, orderBy('name'));
-    const querySnapshot = await getDocs(datasetQuery);
-    return querySnapshot.docs.map(snapshot => snapshot.data()) as Dataset[];
+    const docRef = doc(firestore, `users/${user!.uid}/datasets/${datasetName}`);
+    const docSnapShot = await getDoc(docRef);
+    const returnedDocument: DocumentData = docSnapShot.data() as DocumentData;
+    return returnedDocument as Dataset;
   };
-
-  const [dataset] = await getDataset();
-
-  const filePromises = Array.from(dataset.fileNames).map(filename => {
-    const collectionRef = collection(
-      firestore,
-      `users/${user!.uid}/files/${filename}`
-    );
-    const datasetQuery = query(collectionRef);
-    const querySnapshotPromise = getDocs(datasetQuery); // Async call
-    return querySnapshotPromise;
-  });
+  console.log(user);
+  console.log(datasetName);
+  const dataset: Dataset = await getDataset();
+  console.log(dataset);
 
   const returnedFiles = new Array<UserFile>();
-  Promise.all(filePromises).then(querySnapshots => {
-    querySnapshots.forEach(snapshot => {
-      returnedFiles.push(
-        ...(snapshot.docs.map(snapshot => snapshot.data()) as UserFile[])
-      );
-    });
-  });
-
+  for (const filename of dataset.files) {
+    const docRef = doc(firestore, `users/${user!.uid}/files/${filename}`);
+    const file: UserFile = (await getDoc(docRef)).data() as UserFile;
+    returnedFiles.push(file);
+  }
   return returnedFiles;
 }
+
 /**
  * Gets a list of UserFiles for a given user, corresponding to the Firestore
  * entries of the uploaded user files.

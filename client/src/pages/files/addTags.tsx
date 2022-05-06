@@ -86,16 +86,15 @@ export default function TaggingView() {
       return;
     }
 
-    const allPromises: Promise<void>[] = Array.from(filesToChange).map(
+    const allUploadPromises: Promise<void>[] = Array.from(filesToChange).map(
       fileName => {
         const fileInfo = userFiles.get(fileName)!;
         return updateDocumentTags(user!, fileName, fileInfo.tags);
       }
     );
 
-    Promise.all(allPromises).then(() => {
-      setFilesToChange(new Set<string>());
-    });
+    await Promise.all(allUploadPromises);
+    setFilesToChange(new Set<string>());
   };
 
   return (

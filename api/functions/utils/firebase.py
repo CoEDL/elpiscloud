@@ -3,7 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 
-def get_firestore_client():
+def get_firestore_client() -> firestore.firestore.Client:
     project_id = "elpiscloud"
 
     cred = credentials.ApplicationDefault()

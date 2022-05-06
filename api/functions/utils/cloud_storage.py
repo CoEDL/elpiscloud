@@ -34,3 +34,16 @@ def upload_blob(bucket_name: str, source_file_name: str, destination_blob_name: 
     blob.upload_from_filename(source_file_name)
 
     print(f"File {source_file_name} uploaded to {destination_blob_name}.")
+
+
+def list_blobs_with_prefix(bucket_name: str, prefix: str, delimiter: str = None):
+    """Lists all the blobs in the bucket that begin with the prefix.
+
+    This can be used to list all blobs in a "folder", e.g. "public/".
+    """
+
+    storage_client = storage.Client()
+
+    # Note: Client.list_blobs requires at least package version 1.17.0.
+    blobs = storage_client.list_blobs(bucket_name, prefix=prefix, delimiter=delimiter)
+    return blobs

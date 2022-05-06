@@ -4,7 +4,10 @@ from typing import Any, Dict
 
 from google.cloud import pubsub_v1
 from functions_framework import Context
+from api.functions.utils.cloud_storage import list_blobs_with_prefix
 from utils.cloud_storage import download_blob, upload_blob
+from utils.firebase import get_firestore_client
+from firebase_admin import firestore
 
 TRANSCRIPTION_EXTENSIONS = ["txt", "eaf"]
 AUDIO_EXTENSIONS = ["wav"]
@@ -59,6 +62,7 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     upload_blob(datasets_bucket_name, file_name, f"{uid}/{dataset_name}/{file_name}")
 
     # Check to see if we have all the files to set the dataset status as processed
+    check_finished_processing(dataset_name, uid, datasets_bucket_name)
 
 
 def process_transcription(file_name: str, options: Dict[str, Any]) -> None:
@@ -67,3 +71,35 @@ def process_transcription(file_name: str, options: Dict[str, Any]) -> None:
 
 def process_audio(file_name: str) -> None:
     pass
+
+
+def check_finished_processing(dataset_name: str, uid: str, datasets_bucket_name: str):
+    # Get the list of files included in the dataset within firestore
+    db = get_firestore_client()
+    doc_ref: firestore.firestore.DocumentReference = (
+        db.collection("users")
+        .document(uid)
+        .collection("datasets")
+        .document(dataset_name)
+    )
+    snapshot = doc_ref.get()
+
+    # Error handling  for if user deletes dataset before processing this file.
+    if not snapshot.exists:
+        raise RuntimeError(
+            f"Dataset doesn't exist at users/{uid}/datasets/{dataset_name}"
+        )
+
+    dataset = snapshot.to_dict()
+    file_names = dataset["files"]
+    print(f"Firestore dataset file names: {file_names}")
+
+    # Get the list of files currently uploaded to the bucket.
+    processed_file_names = list_blobs_with_prefix(
+        datasets_bucket_name, f"{uid}/{dataset_name}/"
+    )
+    print(f"Processed file names: {processed_file_names}")
+
+    # Check that the length of each is equal, and if so, set dataset to be processed.
+    if len(file_names) == len(processed_file_names):
+        doc_ref.update({"processed": True})

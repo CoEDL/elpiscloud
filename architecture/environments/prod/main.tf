@@ -52,6 +52,15 @@ module "user_upload_files_bucket" {
   depends_on       = [module.requirements]
 }
 
+module "user_datasets_bucket" {
+  source           = "../../modules/user_files_bucket"
+  location         = local.location
+  file_type        = "user-dataset"
+  elpis_worker     = module.requirements.elpis_worker
+
+  depends_on       = [module.requirements]
+}
+
 module "topics" {
   source = "../../modules/topics"
 }
@@ -63,7 +72,8 @@ module "functions" {
   functions_folder          = local.functions_folder
   elpis_worker              = module.requirements.elpis_worker
   user_upload_files_bucket  = module.user_upload_files_bucket.bucket
-  dataset_processing_topic = module.topics.dataset_processing_topic
+  user_datasets_bucket      = module.user_datasets_bucket.bucket
+  dataset_processing_topic  = module.topics.dataset_processing_topic
 
   depends_on = [
     module.requirements,

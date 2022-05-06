@@ -3,12 +3,12 @@ import flask
 import json
 from enum import Enum
 from google.cloud import storage
-from utils import (
+from utils.cors import (
     cors_preflight,
     cors_wrap_response,
     cors_wrap_abort,
-    decode_auth_header,
 )
+from utils.auth import decode_auth_header
 
 
 class UploadTypes(Enum):

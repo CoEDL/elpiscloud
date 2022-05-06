@@ -67,6 +67,38 @@ resource "google_compute_global_forwarding_rule" "frontend_fwd_rule_443" {
   ip_address  = google_compute_global_address.lb_ip.address
 }
 
+// HTTP redirect to HTTPS
+// From https://stackoverflow.com/a/66256756
+
+// URL Map that simply changes the redirected request from HTTP to HTTPS
+resource "google_compute_url_map" "http_redirect" {
+  name = "http-redirect"
+
+  default_url_redirect {
+    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"  // 301 redirect
+    strip_query            = false
+    https_redirect         = true  // Specifies the URL scheme in the redirected request to be set to HTTPS
+  }
+}
+
+// A proxy that routes incoming requests to the "http-redirect" URL Map
+resource "google_compute_target_http_proxy" "http_redirect" {
+  name    = "frontend-http-redirect"
+  url_map = google_compute_url_map.http_redirect.self_link
+}
+
+// Creates a forwarding rule for requests to the given ip address 
+// at port 80 using TCP
+resource "google_compute_global_forwarding_rule" "http_redirect" {
+  name       = "frontend-http-redirect"
+  target     = google_compute_target_http_proxy.http_redirect.self_link
+  ip_address = google_compute_global_address.lb_ip.address
+  port_range = "80"
+  ip_protocol = "TCP"
+}
+
+// Creates a Record Set with the given IP address associated with the dns_name in
+// the Google Cloud DNS
 resource "google_dns_record_set" "api" {
   managed_zone = var.root_zone.name
   name         = var.root_zone.dns_name

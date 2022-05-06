@@ -1,13 +1,5 @@
 import {useAuth} from 'contexts/auth';
-import {
-  query,
-  collection,
-  doc,
-  getDocs,
-  deleteDoc,
-  orderBy,
-} from 'firebase/firestore/lite';
-import {firestore} from 'lib/firestore';
+import {deleteDataset, getDatasets} from 'lib/api/datasets';
 import React, {ReactNode, useEffect, useState} from 'react';
 import {Dataset} from 'types/Dataset';
 
@@ -17,29 +9,23 @@ export default function DatasetViewer() {
 
   useEffect(() => {
     if (user) {
-      getDatasets();
+      getUserDatasets();
     }
   }, [user]);
 
-  async function getDatasets() {
-    const collectionRef = collection(firestore, `users/${user!.uid}/datasets`);
-    const datasetQuery = query(collectionRef, orderBy('name'));
-    const querySnapshot = await getDocs(datasetQuery);
-    const datasets = querySnapshot.docs.map(snapshot => snapshot.data());
-    setDatasets(datasets as Dataset[]);
+  async function getUserDatasets() {
+    const userDatasets = await getDatasets(user!);
+    setDatasets(userDatasets);
   }
 
-  async function deleteDataset(name: string) {
-    const docRef = doc(firestore, `users/${user?.uid}/datasets/${name}`);
-    await deleteDoc(docRef);
-    getDatasets();
+  async function _deleteDataset(name: string) {
+    await deleteDataset(user!, name);
+    getUserDatasets();
   }
 
   if (!user || datasets.length === 0) {
     return EmptyState();
   }
-
-  console.log(datasets);
 
   return (
     <Container>
@@ -70,7 +56,7 @@ export default function DatasetViewer() {
               </td>
               <td className="table-padding text-blue-500 underline">View</td>
               <td className="table-padding text-right text-red-400">
-                <button onClick={() => deleteDataset(name)}>Delete</button>
+                <button onClick={() => _deleteDataset(name)}>Delete</button>
               </td>
             </tr>
           ))}

@@ -1,11 +1,11 @@
 import React, {useMemo, useState} from 'react';
 
 import {useAuth} from 'contexts/auth';
-import {urls} from 'lib/urls';
-import {UploadState} from 'types/UploadState';
+import {UploadState} from 'types/LoadingStates';
 import WaitingView from 'components/files/WaitingView';
 import UploadingView from 'components/files/UploadView';
 import Prose from 'components/Prose';
+import {getSignedUploadURLs} from 'lib/api/files';
 
 export default function Files() {
   const {user} = useAuth();
@@ -42,28 +42,9 @@ export default function Files() {
   const uploadFiles = async () => {
     if (user === null || !canUpload) return;
     setUploadState('signing');
-    const signedURLs = await getSignedUploadURLs();
-    setSessionURLs(new Map<string, string>(Object.entries(signedURLs)));
+    const signedURLs = await getSignedUploadURLs(user, [...files.keys()]);
+    setSessionURLs(signedURLs);
     setUploadState('uploading');
-  };
-
-  const getSignedUploadURLs = async () => {
-    const data = {
-      file_names: [...files.keys()],
-    };
-
-    const token = await user!.getIdToken();
-    const response = await fetch(urls.api.signFiles, {
-      method: 'POST',
-      mode: 'cors',
-      headers: new Headers({
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify(data),
-    });
-
-    return response.json();
   };
 
   const reset = () => {

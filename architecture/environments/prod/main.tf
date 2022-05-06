@@ -21,6 +21,15 @@ module "zones" {
   root_zone_url  = local.website_url
 }
 
+# Documentation
+resource "google_dns_record_set" "documentation" {
+  name         = "docs.${module.zones.root_zone.dns_name}"
+  managed_zone = module.zones.root_zone.name
+  type         = "CNAME"
+  ttl          = 300
+  rrdatas      = ["elpiscloud.readthedocs.io."]
+}
+
 module "frontend_bucket" {
   source           = "../../modules/frontend_bucket"
   project          = var.project

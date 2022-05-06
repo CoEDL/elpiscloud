@@ -13,22 +13,22 @@ def storage_watcher(event, context):
     Returns:
         None; the output is written to Stackdriver Logging
     """
-    uid, file_name = event['name'].split('/')
-    content_type = event['contentType']
-    created = event['timeCreated']
-    size = event['size']
+    uid, file_name = event["name"].split("/")
+    content_type = event["contentType"]
+    created = event["timeCreated"]
+    size = event["size"]
 
     data = {
-        'userID': uid,
-        'fileName': file_name,
-        'contentType': content_type,
-        'timeCreated': created,
-        'size': size,
-        'tags': []
+        "userID": uid,
+        "fileName": file_name,
+        "contentType": content_type,
+        "timeCreated": created,
+        "size": size,
+        "tags": [],
     }
 
     db = get_firestore_client()
-    user_ref = db.collection('users').document(uid)
-    file_ref = user_ref.collection('files').document(file_name)
+    user_ref = db.collection("users").document(uid)
+    file_ref = user_ref.collection("files").document(file_name)
 
     file_ref.set(data)

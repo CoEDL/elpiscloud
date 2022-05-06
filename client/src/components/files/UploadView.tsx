@@ -48,7 +48,7 @@ export default function UploadingView({
 
   return (
     <div className="mt-8">
-      <p className="text-center text-3xl font-bold">Uploading Files</p>
+      <p className="text-center text-3xl font-bold">Uploading Files...</p>
       <div className="grid grid-cols-1">
         {uploads.map(props => (
           <FileUploader key={props.name} {...props} />

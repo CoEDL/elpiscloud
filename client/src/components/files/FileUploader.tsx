@@ -1,6 +1,6 @@
 import ProgressBar from 'components/ProgressBar';
 import React, {useEffect, useState} from 'react';
-import {UploadState} from 'types/UploadState';
+import {UploadState} from 'types/LoadingStates';
 
 interface FileUploaderProps {
   file: File;

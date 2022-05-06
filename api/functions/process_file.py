@@ -51,9 +51,9 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     extension = file_name.split(".")[-1]
 
     if extension in TRANSCRIPTION_EXTENSIONS:
-        process_transcription(file_name, options)
+        process_transcription_file(file_name, options)
     elif extension in AUDIO_EXTENSIONS:
-        process_audio(file_name)
+        process_audio_file(file_name)
     else:
         raise RuntimeError("Unrecognised file extension. Processing halted.")
 
@@ -65,15 +65,24 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     check_finished_processing(dataset_name, uid, datasets_bucket_name)
 
 
-def process_transcription(file_name: str, options: Dict[str, Any]) -> None:
+def process_transcription_file(file_name: str, options: Dict[str, Any]) -> None:
     pass
 
 
-def process_audio(file_name: str) -> None:
+def process_audio_file(file_name: str) -> None:
     pass
 
 
 def check_finished_processing(dataset_name: str, uid: str, datasets_bucket_name: str):
+    """Determine if all the files in a dataset have been processed, and if so,
+    updates the document accordingly in firestore.
+
+    Parameters:
+        dataset_name (str): The name of the dataset to process
+        uid (str): The user id
+        datasets_bucket_name (str): The name of the bucket where user dataset files
+                are stored.
+    """
     # Get the list of files included in the dataset within firestore
     db = get_firestore_client()
     doc_ref: firestore.firestore.DocumentReference = (

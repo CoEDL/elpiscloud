@@ -4,8 +4,7 @@ from typing import Any, Dict
 
 from google.cloud import pubsub_v1
 from functions_framework import Context
-from api.functions.utils.cloud_storage import list_blobs_with_prefix
-from utils.cloud_storage import download_blob, upload_blob
+from utils.cloud_storage import download_blob, upload_blob, list_blobs_with_prefix
 from utils.firebase import get_firestore_client
 from firebase_admin import firestore
 

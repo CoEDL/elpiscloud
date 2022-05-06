@@ -52,8 +52,7 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     elif extension in AUDIO_EXTENSIONS:
         process_audio(file_name)
     else:
-        print("Unrecognised file extension. Processing halted.")
-        return
+        raise RuntimeError("Unrecognised file extension. Processing halted.")
 
     # Save the processed file to the datasets folder in cloud storage
     datasets_bucket_name = os.environ.get("USER_DATASETS_BUCKET")

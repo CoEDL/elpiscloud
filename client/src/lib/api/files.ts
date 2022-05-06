@@ -6,14 +6,12 @@ import {
   query,
   doc,
   getDoc,
-  DocumentData,
-  DocumentSnapshot,
 } from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import {urls} from 'lib/urls';
+import {getDataset} from 'lib/api/datasets';
 import {UserFile} from 'types/UserFile';
 import {Dataset} from 'types/Dataset';
-import Datasets from 'pages/datasets';
 
 /**
  * Generates signed upload urls for a supplied list of filenames and returns
@@ -43,6 +41,12 @@ export async function getSignedUploadURLs(user: User, fileNames: String[]) {
   return new Map<string, string>(Object.entries(result));
 }
 
+export async function getFile(user: User, filename: string): Promise<UserFile> {
+  const docRef = doc(firestore, `users/${user!.uid}/files/${filename}`);
+  const file: UserFile = (await getDoc(docRef)).data() as UserFile;
+  return file;
+}
+
 /**
  * Get all files from the given dataset for the given user
  *
@@ -53,24 +57,8 @@ export async function getFilesFromDataset(
   user: User,
   datasetName: string
 ): Promise<UserFile[]> {
-  const getDataset = async () => {
-    const docRef = doc(firestore, `users/${user!.uid}/datasets/${datasetName}`);
-    const docSnapShot = await getDoc(docRef);
-    const returnedDocument: DocumentData = docSnapShot.data() as DocumentData;
-    return returnedDocument as Dataset;
-  };
-  console.log(user);
-  console.log(datasetName);
-  const dataset: Dataset = await getDataset();
-  console.log(dataset);
-
-  const returnedFiles = new Array<UserFile>();
-  for (const filename of dataset.files) {
-    const docRef = doc(firestore, `users/${user!.uid}/files/${filename}`);
-    const file: UserFile = (await getDoc(docRef)).data() as UserFile;
-    returnedFiles.push(file);
-  }
-  return returnedFiles;
+  const dataset: Dataset = await getDataset(user, datasetName);
+  return Promise.all(dataset.files.map(filename => getFile(user, filename)));
 }
 
 /**

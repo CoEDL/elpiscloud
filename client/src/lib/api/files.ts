@@ -1,5 +1,12 @@
 import {User} from 'firebase/auth';
-import {collection, getDocs, orderBy, query} from 'firebase/firestore/lite';
+import {
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  doc,
+  updateDoc,
+} from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import {urls} from 'lib/urls';
 import {UserFile} from 'types/UserFile';
@@ -45,4 +52,20 @@ export async function getUserFiles(user: User) {
   const querySnapshot = await getDocs(datasetQuery);
   const files = querySnapshot.docs.map(snapshot => snapshot.data());
   return files as UserFile[];
+}
+
+/**
+ * For a given user, it uploads tags for a given file to Firestore.
+ *
+ * @param user The user whose files are being updated.
+ * @param file The file being updated.
+ * @param tags The list of new tags for this file.
+ */
+export async function updateDocumentTags(
+  user: User,
+  file: string,
+  tags: string[]
+) {
+  const documentReference = doc(firestore, `users/${user!.uid}/files/${file}`);
+  await updateDoc(documentReference, 'tags', tags);
 }

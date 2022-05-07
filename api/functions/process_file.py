@@ -8,8 +8,8 @@ from utils.cloud_storage import download_blob, upload_blob, list_blobs_with_pref
 from utils.firebase import get_firestore_client
 from firebase_admin import firestore
 
-TRANSCRIPTION_EXTENSIONS = ["txt", "eaf"]
-AUDIO_EXTENSIONS = ["wav"]
+TRANSCRIPTION_EXTENSIONS = {"txt", "eaf"}
+AUDIO_EXTENSIONS = {"wav"}
 
 
 def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> None:
@@ -21,13 +21,13 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     storage so that it can be used in training with the dataset it came from.
 
     Parameters:
-         event (dict):  The dictionary with data specific to this type of
+         event:  The dictionary with data specific to this type of
                         event. The `@type` field maps to
                          `type.googleapis.com/google.pubsub.v1.PubsubMessage`.
                         The `data` field maps to the PubsubMessage data
                         in a base64-encoded string. The `attributes` field maps
                         to the PubsubMessage attributes if any is present.
-         context (google.cloud.functions.Context): Metadata of triggering event.
+         context: Metadata of triggering event.
 
     """
     print(
@@ -72,14 +72,16 @@ def process_audio_file(file_name: str) -> None:
     pass
 
 
-def check_finished_processing(dataset_name: str, uid: str, datasets_bucket_name: str):
+def check_finished_processing(
+    dataset_name: str, uid: str, datasets_bucket_name: str
+) -> None:
     """Determine if all the files in a dataset have been processed, and if so,
     updates the document accordingly in firestore.
 
     Parameters:
-        dataset_name (str): The name of the dataset to process
-        uid (str): The user id
-        datasets_bucket_name (str): The name of the bucket where user dataset files
+        dataset_name: The name of the dataset to process
+        uid: The user id
+        datasets_bucket_name: The name of the bucket where user dataset files
                 are stored.
     """
     # Get the list of files included in the dataset within firestore

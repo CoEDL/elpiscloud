@@ -1,19 +1,17 @@
 import type {AppProps} from 'next/app';
-import {NextComponentType} from 'next/types';
+import {NextPage} from 'next/types';
 import 'semantic-ui-css/semantic.min.css';
 import 'styles/globals.css';
 import MainLayout from '../layouts/MainLayout';
 
-type ElpisComponentType = NextComponentType & {
-  getLayout?: Function;
+type PageWithLayout = NextPage & {
+  getLayout?: (page: React.ReactElement) => React.ReactElement;
 };
 
-type ElpisAppProps = AppProps & {Component: ElpisComponentType};
-
-function MyApp({Component, pageProps}: ElpisAppProps) {
+function MyApp({Component, pageProps}: AppProps) {
   const getLayout =
-    Component.getLayout ||
-    ((page: ElpisComponentType) => <MainLayout>{page}</MainLayout>);
+    (Component as PageWithLayout).getLayout ||
+    (page => <MainLayout>{page}</MainLayout>);
   return getLayout(<Component {...pageProps} />);
 }
 

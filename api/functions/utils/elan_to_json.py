@@ -9,7 +9,7 @@ def process_eaf(
     tier_order: int = 0,
     tier_type: str = "",
     tier_name: str = "",
-) -> List[dict]:
+) -> List[Dict[str, str]]:
     """
     Method to process a particular tier in an eaf file (ELAN Annotation Format).
     Transcriptions are read from an elan file tier.

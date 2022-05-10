@@ -44,23 +44,25 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     options = data["options"]
     uid = data["userId"]
 
+    local_file = f"/tmp/{file_name}"
+
     # Download the necessary file from cloud storage
     files_bucket_name = os.environ.get("USER_FILES_BUCKET")
-    download_blob(files_bucket_name, f"{uid}/{file_name}", file_name)
+    download_blob(files_bucket_name, f"{uid}/{file_name}", local_file)
 
     # Process the file based on its file type.
     extension = file_name.split(".")[-1]
 
     if extension in TRANSCRIPTION_EXTENSIONS:
-        process_transcription_file(file_name, options)
+        process_transcription_file(local_file, options)
     elif extension in AUDIO_EXTENSIONS:
-        process_audio_file(file_name)
+        process_audio_file(local_file)
     else:
         raise RuntimeError("Unrecognised file extension. Processing halted.")
 
     # Save the processed file to the datasets folder in cloud storage
     datasets_bucket_name = os.environ.get("USER_DATASETS_BUCKET")
-    upload_blob(datasets_bucket_name, file_name, f"{uid}/{dataset_name}/{file_name}")
+    upload_blob(datasets_bucket_name, local_file, f"{uid}/{dataset_name}/{file_name}")
 
     # Check to see if we have all the files to set the dataset status as processed
     check_finished_processing(dataset_name, uid, datasets_bucket_name)

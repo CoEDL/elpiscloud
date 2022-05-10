@@ -1,4 +1,4 @@
-from utils import get_firestore_client
+from utils.firebase import get_firestore_client
 
 
 def storage_watcher(event, context):

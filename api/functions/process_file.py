@@ -1,5 +1,6 @@
 import base64
 import os
+import json
 from typing import Any, Dict
 
 from google.cloud import pubsub_v1
@@ -35,6 +36,7 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     )
 
     data = base64.b64decode(event["data"]).decode("utf-8")
+    data = json.loads(data)
     print(f"Event data: {data}")
 
     dataset_name = data["name"]

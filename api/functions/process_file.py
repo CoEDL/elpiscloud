@@ -1,5 +1,6 @@
 import base64
 import os
+import json
 from typing import Any, Dict
 
 from google.cloud import pubsub_v1
@@ -35,6 +36,7 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     )
 
     data = base64.b64decode(event["data"]).decode("utf-8")
+    data = json.loads(data)
     print(f"Event data: {data}")
 
     dataset_name = data["name"]
@@ -42,9 +44,11 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     options = data["options"]
     uid = data["userId"]
 
+    local_file = f"/tmp/{file_name}"
+
     # Download the necessary file from cloud storage
     files_bucket_name = os.environ.get("USER_FILES_BUCKET")
-    download_blob(files_bucket_name, f"{uid}/{file_name}", file_name)
+    download_blob(files_bucket_name, f"{uid}/{file_name}", local_file)
 
     # Process the file based on its file type.
     extension = file_name.split(".")[-1]
@@ -58,7 +62,7 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
 
     # Save the processed file to the datasets folder in cloud storage
     datasets_bucket_name = os.environ.get("USER_DATASETS_BUCKET")
-    upload_blob(datasets_bucket_name, file_name, f"{uid}/{dataset_name}/{file_name}")
+    upload_blob(datasets_bucket_name, local_file, f"{uid}/{dataset_name}/{file_name}")
 
     # Check to see if we have all the files to set the dataset status as processed
     check_finished_processing(dataset_name, uid, datasets_bucket_name)
@@ -105,8 +109,8 @@ def check_finished_processing(
     print(f"Firestore dataset file names: {file_names}")
 
     # Get the list of files currently uploaded to the bucket.
-    processed_file_names = list_blobs_with_prefix(
-        datasets_bucket_name, f"{uid}/{dataset_name}/"
+    processed_file_names = list(
+        list_blobs_with_prefix(datasets_bucket_name, f"{uid}/{dataset_name}/")
     )
     print(f"Processed file names: {processed_file_names}")
 

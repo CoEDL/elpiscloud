@@ -54,9 +54,9 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     extension = file_name.split(".")[-1]
 
     if extension in TRANSCRIPTION_EXTENSIONS:
-        process_transcription_file(local_file, options)
+        process_transcription_file(file_name, options)
     elif extension in AUDIO_EXTENSIONS:
-        process_audio_file(local_file)
+        process_audio_file(file_name)
     else:
         raise RuntimeError("Unrecognised file extension. Processing halted.")
 
@@ -109,8 +109,8 @@ def check_finished_processing(
     print(f"Firestore dataset file names: {file_names}")
 
     # Get the list of files currently uploaded to the bucket.
-    processed_file_names = list_blobs_with_prefix(
-        datasets_bucket_name, f"{uid}/{dataset_name}/"
+    processed_file_names = list(
+        list_blobs_with_prefix(datasets_bucket_name, f"{uid}/{dataset_name}/")
     )
     print(f"Processed file names: {processed_file_names}")
 

@@ -63,7 +63,7 @@ export default function DatasetViewer() {
     const tableRows = [];
     for (key in dataPrepOptions) {
       if (typeof dataPrepOptions[key] !== 'string') {
-        continue; // That means the type isn't ElanOptions
+        continue; // That means the type is ElanOptions
       }
       tableRows.push(
         <tr
@@ -73,7 +73,7 @@ export default function DatasetViewer() {
           <td className="table-padding font-normal text-slate-600">
             {keysToStrings[key]}
           </td>
-          <td className="table-padding">{dataPrepOptions[key]}</td>
+          <td className="table-padding">{dataPrepOptions[key] as string}</td>
         </tr>
       );
     }

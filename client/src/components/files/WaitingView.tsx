@@ -1,5 +1,4 @@
 import Dropzone from 'react-dropzone';
-import {Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import FileList from 'components/files/FileList';
 import LoadingIndicator from 'components/LoadingIndicator';
 import {UploadState} from 'types/LoadingStates';
@@ -29,22 +28,18 @@ export default function WaitingView({
           <section>
             <div {...getRootProps()}>
               <input {...getInputProps()} />
-              <Segment placeholder>
-                <Header icon>
-                  <Icon name="long arrow alternate down" />
+              <div className="h-60 flex-col rounded-lg bg-slate-100 align-middle">
+                {/* TODO TODO TODO add an arrow icon */}
+                <h1 className="text-2xl font-semibold">
                   Drag and drop or click to select files.
-                </Header>
-              </Segment>
+                </h1>
+              </div>
             </div>
           </section>
         )}
       </Dropzone>
       <br />
-      <Grid columns={1}>
-        <Grid.Column key={'default-key'}>
-          <FileList deleteFile={deleteFile} files={files} />
-        </Grid.Column>
-      </Grid>
+      <FileList deleteFile={deleteFile} files={files} />
       <div className="mt-8 text-center">
         <button disabled={!canUpload} className="button" onClick={uploadFiles}>
           Upload

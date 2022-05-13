@@ -21,7 +21,7 @@ export default function Models() {
 const Description = () => {
   return (
     <Prose>
-      <h1>Models</h1>
+      <h1 className="title">Models</h1>
       <p>
         Here you can train a new model from one of your processed datasets.
         Trained models can subsequently be used for transcription tasks.

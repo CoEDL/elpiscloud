@@ -1,7 +1,6 @@
 import {useAuth} from 'contexts/auth';
 import Link from 'next/link';
 import React from 'react';
-import {Button} from 'semantic-ui-react';
 
 export default function ProfileIndicator() {
   const {user} = useAuth();
@@ -9,13 +8,17 @@ export default function ProfileIndicator() {
   if (!user) {
     return (
       <Link href="/signIn">
-        <Button>Sign in</Button>
+        <button className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-900">
+          Sign in
+        </button>
       </Link>
     );
   }
   return (
     <Link href="/profile">
-      <Button>Profile</Button>
+      <button className="rounded-md bg-slate-200 px-4 py-2 font-bold text-slate-900">
+        Profile
+      </button>
     </Link>
   );
 }

@@ -6,8 +6,6 @@ import {UserFile} from 'types/UserFile';
 
 import {useAuth} from 'contexts/auth';
 
-import {Table} from 'semantic-ui-react';
-
 export default function Files() {
   const {user} = useAuth();
   const [userFiles, setUserFiles] = useState<UserFile[]>([]);
@@ -32,26 +30,29 @@ export default function Files() {
       <Link href="/files/addTags">
         <button className="button m-5">Add Tags</button>
       </Link>
-      <Table>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>File name</Table.HeaderCell>
-            <Table.HeaderCell>Type</Table.HeaderCell>
-            <Table.HeaderCell>File size</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
+      <table className="w-full rounded">
+        <thead className="bg-slate-200">
+          <tr className="text-left font-bold">
+            <th className="table-padding">File name</th>
+            <th className="table-padding">Type</th>
+            <th className="table-padding">File size</th>
+          </tr>
+        </thead>
+        <tbody>
           {Array.from(userFiles)
             .sort()
             .map(userFile => (
-              <Table.Row key={userFile.fileName}>
-                <Table.Cell>{userFile.fileName}</Table.Cell>
-                <Table.Cell>{userFile.contentType}</Table.Cell>
-                <Table.Cell>{userFile.size}</Table.Cell>
-              </Table.Row>
+              <tr
+                key={userFile.fileName}
+                className="border border-y border-slate-200 py-4 font-normal text-slate-600"
+              >
+                <td className="table-padding">{userFile.fileName}</td>
+                <td className="table-padding">{userFile.contentType}</td>
+                <td className="table-padding">{userFile.size}</td>
+              </tr>
             ))}
-        </Table.Body>
-      </Table>
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -59,7 +60,7 @@ export default function Files() {
 const Description = () => {
   return (
     <Prose>
-      <h1>Files</h1>
+      <h1 className="title">Files</h1>
       <p>
         Here you can create Files by collecting and uploading audio. There are
         two types of transcription supported in Elpisnet: word and phoneme.

@@ -1,8 +1,8 @@
 import type {AppProps} from 'next/app';
 import {NextPage} from 'next/types';
-import 'semantic-ui-css/semantic.min.css';
 import 'styles/globals.css';
 import MainLayout from '../layouts/MainLayout';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 type PageWithLayout = NextPage & {
   getLayout?: (page: React.ReactElement) => React.ReactElement;

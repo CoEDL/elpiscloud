@@ -28,11 +28,15 @@ export default function WaitingView({
           <section>
             <div {...getRootProps()}>
               <input {...getInputProps()} />
-              <div className="h-60 flex-col rounded-lg bg-slate-100 align-middle">
-                {/* TODO TODO TODO add an arrow icon */}
-                <h1 className="text-2xl font-semibold">
-                  Drag and drop or click to select files.
-                </h1>
+              <div className="grid h-60 cursor-pointer place-items-center rounded-lg bg-slate-100">
+                <div className="justify-center">
+                  <div className="grid place-items-center">
+                    <i className="bi bi-upload text-4xl"></i>
+                  </div>
+                  <h1 className="mt-3 text-xl font-semibold">
+                    Drag and drop or click to select files.
+                  </h1>
+                </div>
               </div>
             </div>
           </section>

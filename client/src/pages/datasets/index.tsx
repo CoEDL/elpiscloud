@@ -20,7 +20,7 @@ export default function Datasets() {
 const Description = () => {
   return (
     <Prose>
-      <h1>Datasets</h1>
+      <h1 className="title">Datasets</h1>
       <p>
         Here you can view the Datasets you've created and their status, or
         create a new Dataset by organising the files you've already uploaded.

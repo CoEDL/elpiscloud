@@ -60,7 +60,7 @@ export default function Files() {
 const Description = () => {
   return (
     <Prose>
-      <h1>Files</h1>
+      <h1 className="title">Files</h1>
       <p>
         Here you can create Files by collecting and uploading audio. There are
         two types of transcription supported in Elpisnet: word and phoneme.

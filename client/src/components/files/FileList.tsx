@@ -1,5 +1,4 @@
 import React from 'react';
-import {Icon} from 'semantic-ui-react';
 
 type Props = {
   files: Map<string, File>;
@@ -15,7 +14,7 @@ const FileList = ({files, deleteFile}: Props) => {
             <th className="table-padding">File name</th>
             <th className="table-padding">Type</th>
             <th className="table-padding">File size</th>
-            <th className="table-padding"></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -29,10 +28,13 @@ const FileList = ({files, deleteFile}: Props) => {
                 <td className="table-padding">{filename}</td>
                 <td className="table-padding">{file.type}</td>
                 <td className="table-padding">{file.size}</td>
-                <td className="table-padding">
+                <td className="w-fit max-w-full">
                   {/* TODO TODO TODO */}
-                  <button onClick={() => deleteFile(filename)}>
-                    <Icon name="delete" />
+                  <button
+                    onClick={() => deleteFile(filename)}
+                    className="m-0 justify-center rounded bg-slate-200 px-1"
+                  >
+                    <i className="bi bi-x"></i>
                   </button>
                 </td>
               </tr>

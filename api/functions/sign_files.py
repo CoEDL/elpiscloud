@@ -47,7 +47,7 @@ def sign_files(request: flask.Request) -> Tuple[Dict[str, str], int, Dict[str, s
     if not request.is_json:
         cors_wrap_abort(400)
 
-    if not request.headers.has_key(VALIDATED_USER_INFO):
+    if not VALIDATED_USER_INFO in request.headers:
         cors_wrap_abort(403)
 
     user_info = decode_auth_header(request.headers.get(VALIDATED_USER_INFO))

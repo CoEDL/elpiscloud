@@ -9,7 +9,6 @@ import React, {
 
 import {getUserFiles, updateDocumentTags} from 'lib/api/files';
 import {UserFile} from 'types/UserFile';
-import {Table} from 'semantic-ui-react';
 
 import {useAuth} from 'contexts/auth';
 
@@ -108,26 +107,29 @@ export default function TaggingView() {
       >
         Update Tags
       </button>
-      <Table>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>File name</Table.HeaderCell>
-            <Table.HeaderCell>Type</Table.HeaderCell>
-            <Table.HeaderCell>File size</Table.HeaderCell>
-            <Table.HeaderCell>Tags</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
+      <table className="my-5 w-full rounded">
+        <thead className="bg-slate-200 text-left font-bold">
+          <tr>
+            <th className="table-padding">File name</th>
+            <th className="table-padding">Type</th>
+            <th className="table-padding">File size</th>
+            <th className="table-padding">Tags</th>
+          </tr>
+        </thead>
+        <tbody>
           {Array.from(userFiles)
             .sort(([filenameA], [filenameB]) => {
               return filenameA.localeCompare(filenameB);
             })
             .map(([filename, userFile]) => (
-              <Table.Row key={filename}>
-                <Table.Cell>{filename}</Table.Cell>
-                <Table.Cell>{userFile.type}</Table.Cell>
-                <Table.Cell>{userFile.size}</Table.Cell>
-                <Table.Cell>
+              <tr
+                key={filename}
+                className="border border-y border-slate-200 py-4 font-light text-slate-600"
+              >
+                <td className="table-padding">{filename}</td>
+                <td className="table-padding">{userFile.type}</td>
+                <td className="table-padding">{userFile.size}</td>
+                <td className="table-padding">
                   <InputTag
                     fileTags={userFile.tags}
                     removeTag={tagIndex => {
@@ -137,11 +139,11 @@ export default function TaggingView() {
                       return addTagToFile(tag, userFile.fileName);
                     }}
                   />
-                </Table.Cell>
-              </Table.Row>
+                </td>
+              </tr>
             ))}
-        </Table.Body>
-      </Table>
+        </tbody>
+      </table>
     </div>
   );
 }

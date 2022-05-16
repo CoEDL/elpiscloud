@@ -47,61 +47,62 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     options = data["options"]
     uid = data["userId"]
 
-    local_file = f"/tmp/{file_name}"
+    local_file = Path(f"/tmp/{file_name}")
 
     # Download the necessary file from cloud storage
     files_bucket_name = os.environ.get("USER_FILES_BUCKET")
     download_blob(files_bucket_name, f"{uid}/{file_name}", local_file)
 
     # Process the file based on its file type.
-    extension = file_name.split(".")[-1]
+    extension = local_file.suffix
     if extension in TRANSCRIPTION_EXTENSIONS:
-        processed_file = process_transcription_file(file_name, options)
+        processed_file = process_transcription_file(local_file, options)
     elif extension in AUDIO_EXTENSIONS:
-        processed_file = process_audio_file(file_name)
+        processed_file = process_audio_file(local_file)
     else:
         raise RuntimeError("Unrecognised file extension. Processing halted.")
 
     # Save the processed file to the datasets folder in cloud storage
     datasets_bucket_name = os.environ.get("USER_DATASETS_BUCKET")
     upload_blob(
-        datasets_bucket_name, local_file, f"{uid}/{dataset_name}/{processed_file.name}"
+        datasets_bucket_name,
+        processed_file,
+        f"{uid}/{dataset_name}/{processed_file.name}",
     )
 
     # Check to see if we have all the files to set the dataset status as processed
     check_finished_processing(dataset_name, uid, datasets_bucket_name)
 
 
-def process_transcription_file(file_name: str, options: Dict[str, Any]) -> Path:
+def process_transcription_file(file: Path, options: Dict[str, Any]) -> Path:
     """Transforms a downloaded transcription file into a standardised json format for training.
 
     Parameters:
-        file_name: The name of the downloaded file.
+        file: The path of the downloaded file.
         options: The dataset processing options to apply while cleaning.
 
     Returns:
         The path of the processed transcription file.
     """
-    *file_prefix, extension = file_name.split(".")
-    if extension == "eaf":
-        data = extract_elan_data(file_name, options)
+    if file.suffix == "eaf":
+        data = extract_elan_data(file, options)
     else:
-        data = extract_text_data(file_name)
+        data = extract_text_data(file)
 
     data = clean_data(data, options)
-    output_file = Path(f"/tmp/{''.join(file_prefix)}.json")
 
+    output_file = Path(f"/tmp/{file.stem}.json")
     with open(output_file, "w") as data_file:
         data_file.write(json.dumps(data))
 
     return output_file
 
 
-def extract_elan_data(file_name: str, options: Dict[str, Any]) -> List[Dict[str, str]]:
+def extract_elan_data(file: Path, options: Dict[str, Any]) -> List[Dict[str, str]]:
     """Extract transcription information from an Elan file.
 
     Parameters:
-        file_name: The name of the downloaded file.
+        file: The path of the downloaded file.
         options: The dataset processing options to apply while cleaning.
 
     Returns:
@@ -109,22 +110,21 @@ def extract_elan_data(file_name: str, options: Dict[str, Any]) -> List[Dict[str,
     """
     selection_mechanism: str = options["elanOptions"]["selectionMechanism"]
     selection_value = options["elanOptions"]["selectionValue"]
-    file_path = Path(f"/tmp/{file_name}")
 
     if selection_mechanism == "tier_name":
-        return process_eaf(file_path, tier_name=selection_value)
+        return process_eaf(file, tier_name=selection_value)
     elif selection_mechanism == "tier_type":
-        return process_eaf(file_path, tier_type=selection_value)
+        return process_eaf(file, tier_type=selection_value)
     else:
         try:
             order = int(selection_value)
         except:
             order = 0
 
-        return process_eaf(file_path, tier_order=order)
+        return process_eaf(file, tier_order=order)
 
 
-def extract_text_data(file_name: str) -> List[Dict[str, str]]:
+def extract_text_data(file: Path) -> List[Dict[str, str]]:
     """Extract transcription information from a text file.
 
     Parameters:
@@ -133,16 +133,13 @@ def extract_text_data(file_name: str) -> List[Dict[str, str]]:
     Returns:
         A list of utterance information for the given file.
     """
-    *file_prefix, _ = file_name.split(".")
-    file_prefix = "".join(file_prefix)
-
-    with open(file_name) as transcription_file:
+    with open(file) as transcription_file:
         transcription = transcription_file.read()
 
     # Returning a dummy format without start and end times.
     return [
         {
-            "audio_file_name": file_prefix + ".wav",
+            "audio_file_name": file.stem + ".wav",
             "transcript": transcription,
         }
     ]
@@ -170,8 +167,8 @@ def clean_data(
     )
 
 
-def process_audio_file(file_name: str) -> Path:
-    return Path(f"/tmp/{file_name}")
+def process_audio_file(file: Path) -> Path:
+    return file
 
 
 def check_finished_processing(

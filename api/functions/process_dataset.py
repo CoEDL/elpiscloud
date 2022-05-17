@@ -1,6 +1,5 @@
 import os
 import json
-import base64
 
 from typing import Any, Callable, Dict
 from concurrent import futures
@@ -20,11 +19,8 @@ def process_dataset(data: Dict, context: Context) -> None:
         context (Context): Metadata for the event.
     """
     # Set up the topic for publishing
-    project_id = os.environ.get("PROJECT")
-    topic_id = os.environ.get("TOPIC_ID")
-
     publisher = pubsub_v1.PublisherClient()
-    topic_path = publisher.topic_path(project_id, topic_id)
+    topic_path = os.environ.get("TOPIC_ID")
     publish_futures = []
 
     def get_callback(
@@ -103,38 +99,3 @@ def clean_up_options(dataset_options: Dict) -> Dict[str, Any]:
 
     result["elanOptions"] = elan_options
     return result
-
-
-def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> None:
-    """Background Cloud Function which triggers from pubsub dataset-processing
-    topic.
-
-    This processes the incoming file, whose path it can infer from the event. It
-    cleans the data inside if it's a transcription file, and saves it to cloud
-    storage so that it can be used in training with the dataset it came from.
-
-    Parameters:
-         event (dict):  The dictionary with data specific to this type of
-                        event. The `@type` field maps to
-                         `type.googleapis.com/google.pubsub.v1.PubsubMessage`.
-                        The `data` field maps to the PubsubMessage data
-                        in a base64-encoded string. The `attributes` field maps
-                        to the PubsubMessage attributes if any is present.
-         context (google.cloud.functions.Context): Metadata of triggering event.
-
-    """
-    print(
-        f"This Function was triggered by messageId {context.event_id} published at {context.timestamp} to {context.resource['name']}"
-    )
-
-    data = base64.b64decode(event["data"]).decode("utf-8")
-    print(f"Event data: {data}")
-
-    # Download the necessary file from cloud storage
-
-    # Check to see if it's a transcription file
-    # If so, process it.
-
-    # Save the processed file to the datasets folder in cloud storage
-
-    # Check to see if we have all the files to set the dataset status as processed

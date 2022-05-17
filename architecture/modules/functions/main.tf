@@ -81,6 +81,11 @@ resource "google_cloudfunctions_function" "process_dataset_file" {
     resource   = var.dataset_processing_topic.name
   }
 
+  environment_variables = {
+    USER_FILES_BUCKET = var.user_upload_files_bucket.name
+    USER_DATASETS_BUCKET = var.user_datasets_bucket.name
+  }
+
   service_account_email = var.elpis_worker.email
 }
 

@@ -72,6 +72,7 @@ export default function DatasetViewer() {
               {keysToStrings[key]}
             </td>
             <td className="table-padding">
+              {/** key is actually a string but casting it to "keyof typeof dataPrepOptions" seems to work */}
               {dataPrepOptions[key as keyof typeof dataPrepOptions] as string}
             </td>
           </tr>
@@ -98,6 +99,7 @@ export default function DatasetViewer() {
             {keysToStrings[key]}
           </td>
           <td className="table-padding">
+            {/** key is actually a string but casting it to "keyof typeof elanOptions" seems to work */}
             {elanOptions[key as keyof typeof elanOptions] as string}
           </td>
         </tr>

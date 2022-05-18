@@ -91,7 +91,7 @@ resource "google_cloudfunctions_function" "process_dataset_file" {
 
 # A dedicated Cloud Storage bucket to store the zip source
 resource "google_storage_bucket" "source" {
-  name     = "${var.project}-functions-source"
+  name     = "${var.project}_functions_source"
   location = var.location
 }
 

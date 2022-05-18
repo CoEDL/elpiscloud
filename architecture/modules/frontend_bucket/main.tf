@@ -1,5 +1,5 @@
-resource "google_storage_bucket" "static-site" {
-  name          = "${var.project}-${var.env}-site"
+resource "google_storage_bucket" "static_site" {
+  name          = "${var.project}_${var.env}_site"
   location      = "${var.location}"
   force_destroy = true
 
@@ -34,7 +34,7 @@ resource "google_storage_bucket_iam_binding" "public" {
 }
 
 resource "google_compute_backend_bucket" "backend" {
-  name        = "site-bucket-backend"
+  name        = "site_bucket_backend"
   description = "Backend for site bucket"
   bucket_name = google_storage_bucket.static-site.name
   enable_cdn  = false
@@ -42,7 +42,7 @@ resource "google_compute_backend_bucket" "backend" {
 
 // Static IP for load balancer
 resource "google_compute_global_address" "lb_ip" {
-  name = "elb-ip"
+  name = "elb_ip"
 }
 
 resource "google_compute_url_map" "urlmap" {
@@ -53,14 +53,14 @@ resource "google_compute_url_map" "urlmap" {
 }
 
 resource "google_compute_target_https_proxy" "frontend_proxy_443" {
-  name             = "frontend-https-proxy"
+  name             = "frontend_https_proxy"
   ssl_certificates = [var.ssl_cert.id]
   url_map          = google_compute_url_map.urlmap.self_link
 }
 
 // HTTPS
 resource "google_compute_global_forwarding_rule" "frontend_fwd_rule_443" {
-  name        = "frontend-443"
+  name        = "frontend_443"
   target      = google_compute_target_https_proxy.frontend_proxy_443.id
   ip_protocol = "TCP"
   port_range  = "443"
@@ -72,7 +72,7 @@ resource "google_compute_global_forwarding_rule" "frontend_fwd_rule_443" {
 
 // URL Map that simply changes the redirected request from HTTP to HTTPS
 resource "google_compute_url_map" "http_redirect" {
-  name = "http-redirect"
+  name = "http_redirect"
 
   default_url_redirect {
     redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"  // 301 redirect
@@ -81,16 +81,16 @@ resource "google_compute_url_map" "http_redirect" {
   }
 }
 
-// A proxy that routes incoming requests to the "http-redirect" URL Map
+// A proxy that routes incoming requests to the "http_redirect" URL Map
 resource "google_compute_target_http_proxy" "http_redirect" {
-  name    = "frontend-http-redirect"
+  name    = "frontend_http_redirect"
   url_map = google_compute_url_map.http_redirect.self_link
 }
 
 // Creates a forwarding rule for requests to the given ip address 
 // at port 80 using TCP
 resource "google_compute_global_forwarding_rule" "http_redirect" {
-  name       = "frontend-http-redirect"
+  name       = "frontend_http_redirect"
   target     = google_compute_target_http_proxy.http_redirect.self_link
   ip_address = google_compute_global_address.lb_ip.address
   port_range = "80"

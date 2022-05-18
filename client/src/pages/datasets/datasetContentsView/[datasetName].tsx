@@ -60,26 +60,23 @@ export default function DatasetViewer() {
    */
   const getDataPreparationOptionsTableRows = (dataset: Dataset) => {
     const dataPrepOptions = dataset.options;
-    let key: keyof typeof dataPrepOptions;
-    const tableRows = [];
-    for (key in dataPrepOptions) {
-      if (typeof dataPrepOptions[key] !== 'string') {
-        continue; // That means the type is ElanOptions
-      }
-      tableRows.push(
-        <tr
-          key={key}
-          className="border border-y border-slate-200 py-4 font-light text-gray-400"
-        >
-          <td className="table-padding font-normal text-slate-600">
-            {keysToStrings[key]}
-          </td>
-          <td className="table-padding">{dataPrepOptions[key] as string}</td>
-        </tr>
-      );
-    }
-
-    return tableRows;
+    return Object.keys(dataPrepOptions)
+      .filter(key => key !== 'elanOptions')
+      .map(key => {
+        return (
+          <tr
+            key={key}
+            className="border border-y border-slate-200 py-4 font-light text-gray-400"
+          >
+            <td className="table-padding font-normal text-slate-600">
+              {keysToStrings[key]}
+            </td>
+            <td className="table-padding">
+              {dataPrepOptions[key as keyof typeof dataPrepOptions] as string}
+            </td>
+          </tr>
+        );
+      }) as unknown as JSX.Element[];
   };
 
   /**
@@ -91,10 +88,8 @@ export default function DatasetViewer() {
    */
   const getElanOptionsTableRows = (dataset: Dataset) => {
     const elanOptions = dataset.options.elanOptions;
-    let key: keyof typeof elanOptions;
-    const tableRows = [];
-    for (key in elanOptions) {
-      tableRows.push(
+    return Object.keys(elanOptions).map(key => {
+      return (
         <tr
           key={key}
           className="border border-y border-slate-200 py-4 font-light text-gray-400"
@@ -102,12 +97,12 @@ export default function DatasetViewer() {
           <td className="table-padding font-normal text-slate-600">
             {keysToStrings[key]}
           </td>
-          <td className="table-padding">{elanOptions[key]}</td>
+          <td className="table-padding">
+            {elanOptions[key as keyof typeof elanOptions] as string}
+          </td>
         </tr>
       );
-    }
-
-    return tableRows;
+    }) as unknown as JSX.Element[];
   };
 
   return (

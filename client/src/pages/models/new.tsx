@@ -6,6 +6,7 @@ import Stepper from 'components/Stepper';
 import React, {useState} from 'react';
 import {Dataset} from 'types/Dataset';
 import {TrainingOptions} from 'types/TrainingOptions';
+import Link from 'next/link';
 
 export default function NewModel() {
   const [dataset, setDataset] = useState<Dataset | null>(null);
@@ -35,19 +36,27 @@ export default function NewModel() {
   ];
 
   return (
-    <div>
-      <Description />
-      <br />
-      <br />
-      <Stepper stages={stages} layout={'horizontal'} automaticProgression />
-    </div>
+    <>
+      <div className="flex justify-end">
+        <Link href="/models">
+          <button className="button-secondary m-1">Back to models</button>
+        </Link>
+      </div>
+
+      <div>
+        <Description />
+        <br />
+        <br />
+        <Stepper stages={stages} layout={'horizontal'} automaticProgression />
+      </div>
+    </>
   );
 }
 
 const Description = () => {
   return (
     <Prose>
-      <h1>Train a new Model</h1>
+      <h1 className="title">Train a new Model</h1>
       <p>
         Here you can train a new model from one of your processed datasets.
         Trained models can subsequently be used for transcription tasks.

@@ -5,11 +5,14 @@ import {
   orderBy,
   query,
   doc,
+  getDoc,
   updateDoc,
 } from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import {urls} from 'lib/urls';
+import {getDataset} from 'lib/api/datasets';
 import {UserFile} from 'types/UserFile';
+import {Dataset} from 'types/Dataset';
 
 /**
  * Generates signed upload urls for a supplied list of filenames and returns
@@ -37,6 +40,26 @@ export async function getSignedUploadURLs(user: User, fileNames: String[]) {
 
   const result = await response.json();
   return new Map<string, string>(Object.entries(result));
+}
+
+export async function getFile(user: User, filename: string): Promise<UserFile> {
+  const docRef = doc(firestore, `users/${user!.uid}/files/${filename}`);
+  const file: UserFile = (await getDoc(docRef)).data() as UserFile;
+  return file;
+}
+
+/**
+ * Get all files from the given dataset for the given user
+ *
+ * @param user User whose files need to be retrieved
+ * @returns A Promise that resolves to a list of UserFile objects
+ */
+export async function getFilesFromDataset(
+  user: User,
+  datasetName: string
+): Promise<UserFile[]> {
+  const dataset: Dataset = await getDataset(user, datasetName);
+  return Promise.all(dataset.files.map(filename => getFile(user, filename)));
 }
 
 /**

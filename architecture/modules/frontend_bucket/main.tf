@@ -34,7 +34,8 @@ resource "google_storage_bucket_iam_binding" "public" {
 }
 
 resource "google_compute_backend_bucket" "backend" {
-  name        = "site_bucket_backend"
+  # --- This name needs to use dashes rather than underscores
+  name        = "site-bucket-backend"
   description = "Backend for site bucket"
   bucket_name = google_storage_bucket.static_site.name
   enable_cdn  = false

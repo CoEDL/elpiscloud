@@ -33,7 +33,8 @@ resource "google_api_gateway_gateway" "gateway" {
 
 # ----- Load balancer for api gateway (TODO Refactor later) ------
 resource "google_compute_global_network_endpoint_group" "api_neg" {
-  name                  = "elpis_apigw_neg"
+  # --- This resource name needs to use dashes rather than underscores
+  name                  = "elpis-apigw-neg"
   network_endpoint_type = "INTERNET_FQDN_PORT"
 }
 

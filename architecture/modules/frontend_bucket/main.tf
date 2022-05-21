@@ -18,7 +18,7 @@ resource "google_storage_bucket" "static_site" {
 }
 
 resource "google_storage_bucket_iam_binding" "sa" {
-  bucket  = google_storage_bucket.static-site.name
+  bucket  = google_storage_bucket.static_site.name
   role    = "roles/storage.admin"
   members = [
     "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com",
@@ -26,7 +26,7 @@ resource "google_storage_bucket_iam_binding" "sa" {
 }
 
 resource "google_storage_bucket_iam_binding" "public" {
-  bucket  = google_storage_bucket.static-site.name
+  bucket  = google_storage_bucket.static_site.name
   role    = "roles/storage.objectViewer"
   members = [
     "allUsers",
@@ -36,7 +36,7 @@ resource "google_storage_bucket_iam_binding" "public" {
 resource "google_compute_backend_bucket" "backend" {
   name        = "site_bucket_backend"
   description = "Backend for site bucket"
-  bucket_name = google_storage_bucket.static-site.name
+  bucket_name = google_storage_bucket.static_site.name
   enable_cdn  = false
 }
 

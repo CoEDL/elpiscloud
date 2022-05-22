@@ -1,18 +1,20 @@
 import os
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 from pympi.Elan import Eaf
 
 
 def process_eaf(
-    input_elan_file: str = "",
+    input_elan_file: Path,
     tier_order: int = 0,
     tier_type: str = "",
     tier_name: str = "",
 ) -> List[Dict[str, str]]:
     """
-    Method to process a particular tier in an eaf file (ELAN Annotation Format).
+    Processes a particular tier in an eaf file (ELAN Annotation Format).
     Transcriptions are read from an elan file tier.
+
     Tiers are nodes from the tree structure in the .eaf file.
     The tier to read from is determined by tier order (eg top tier would be order 1),
     tier type (eg default-lt) or tier name (eg Phrase).
@@ -33,14 +35,13 @@ def process_eaf(
     :param tier_name:  name of the elan tier to process
     :param corpus_tiers_file list of all
     :return: a list of dictionaries, where each dictionary is an annotation
+
+    TODO Change to google styling.
     """
 
     print(
         f"processing eaf {input_elan_file} using {tier_order} {tier_type} {tier_name}"
     )
-
-    _, full_file_name = os.path.split(input_elan_file)
-    file_name, _ = os.path.splitext(full_file_name)
 
     # Get tier data from Elan file
     input_eaf = Eaf(input_elan_file)
@@ -90,7 +91,7 @@ def process_eaf(
 
         print(f"annotation {annotation} {start} {end}")
         obj = {
-            "audio_file_name": f"{file_name}.wav",
+            "audio_file_name": f"{input_elan_file.stem}.wav",
             "transcript": annotation_text,
             "start_ms": start,
             "stop_ms": end,

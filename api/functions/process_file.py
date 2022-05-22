@@ -51,7 +51,11 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
 
     # Download the necessary file from cloud storage
     files_bucket_name = os.environ.get("USER_FILES_BUCKET")
-    download_blob(files_bucket_name, f"{uid}/{file_name}", local_file)
+    download_blob(
+        bucket_name=files_bucket_name,
+        source_blob_name=f"{uid}/{file_name}",
+        destination_file_name=local_file,
+    )
 
     # Process the file based on its file type.
     extension = local_file.suffix
@@ -65,12 +69,11 @@ def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> No
     # Save the processed file to the datasets folder in cloud storage
     datasets_bucket_name = os.environ.get("USER_DATASETS_BUCKET")
     upload_blob(
-        datasets_bucket_name,
-        processed_file,
-        f"{uid}/{dataset_name}/{processed_file.name}",
+        bucket_name=datasets_bucket_name,
+        source_file_name=processed_file,
+        destination_blob_name=f"{uid}/{dataset_name}/{processed_file.name}",
     )
 
-    # Check to see if we have all the files to set the dataset status as processed
     check_finished_processing(dataset_name, uid, datasets_bucket_name)
 
 
@@ -152,7 +155,7 @@ def clean_data(
     dataset processing options.
 
     Parameters:
-        transcription_data: A list of information about utternaces in the transcription.
+        transcription_data: A list of information about utterances in the transcription.
         options: A dictionary containing dataset cleaning options.
 
     Returns:
@@ -168,6 +171,7 @@ def clean_data(
 
 
 def process_audio_file(file: Path) -> Path:
+    # TODO
     return file
 
 

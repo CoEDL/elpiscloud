@@ -32,8 +32,9 @@ def clean_json_data(
     :param special_cases: a list of words to always remove from the output.
     :param translation_tags: a list of tags to always remove from the output.
     :param remove_english: whether or not to remove English from the utterances.
-    :param use_langid: whether or not to use the langid library to identify English to remove.
     :return: list of cleaned utterances (dictionaries).
+
+    TODO Change to google styling.
     """
     json_data_cleaned = []
     for utterance in json_data:
@@ -65,8 +66,8 @@ def clean_json_utterance(
     :param special_cases: a list of words to always remove from the output.
     :param translation_tags: a list of tags to always remove from the output.
     :param remove_english: whether or not to remove English from the utterances.
-    :param use_langid: whether or not to use the langid library to identify English to remove.
     :return: cleaned utterance (dictionary).
+    TODO Change to google styling.
     """
 
     # TODO make this an interface setting
@@ -118,6 +119,8 @@ def clean_utterance(
     :param remove_english: whether or not to remove English words.
     :param english_words: a list of english words to remove from the transcript (we suggest the nltk corpus).
     :return: a tuple with a list of 'cleaned' words and the number of English to remove.
+
+    TODO Change to google styling.
     """
     # TODO add interface setting to include user specific tags
     # translation_tags = {"@eng@", "<ind:", "<eng:"}
@@ -145,7 +148,10 @@ def clean_utterance(
 
 
 def get_english_words() -> Set[str]:
-    """ """
+    """Legacy method which used to download a set of english words from online.
+
+    TODO remove this and all references to english words.
+    """
     return set()
 
 
@@ -193,6 +199,8 @@ def deal_with_punctuation(
     :param punctuation_to_collapse_by: punctuation marks to strip
     :param punctuation_to_explode_by: punctuation marks to replace with spaces
     :return: cleaned text
+
+    TODO Change to google styling.
     """
     new_text: str = text
     # Prioritise exploding first, these are punctuation marks that the user sets

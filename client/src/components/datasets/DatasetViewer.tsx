@@ -2,6 +2,7 @@ import {useAuth} from 'contexts/auth';
 import {deleteDataset, getDatasets} from 'lib/api/datasets';
 import React, {ReactNode, useEffect, useState} from 'react';
 import {Dataset} from 'types/Dataset';
+import Link from 'next/link';
 
 export default function DatasetViewer() {
   const {user} = useAuth();
@@ -54,7 +55,11 @@ export default function DatasetViewer() {
                   <p className="text-green-500">Ready</p>
                 )}
               </td>
-              <td className="table-padding text-blue-500 underline">View</td>
+              <td className="table-padding text-blue-500 underline">
+                <Link href={`/datasets/datasetContentsView/${name}`}>
+                  <p className="cursor-pointer">View</p>
+                </Link>
+              </td>
               <td className="table-padding text-right text-red-400">
                 <button onClick={() => _deleteDataset(name)}>Delete</button>
               </td>

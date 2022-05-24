@@ -25,10 +25,10 @@ export default function Files() {
     <div>
       <Description />
       <Link href="/files/addFiles">
-        <button className="button m-5">Add Files</button>
+        <button className="button mx-2 mb-4 mt-3">Add Files</button>
       </Link>
       <Link href="/files/addTags">
-        <button className="button m-5">Add Tags</button>
+        <button className="button mx-2 mb-4 mt-3">Add Tags</button>
       </Link>
       <table className="w-full rounded">
         <thead className="bg-slate-200">

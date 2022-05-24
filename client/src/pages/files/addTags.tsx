@@ -197,7 +197,7 @@ const InputTag = ({fileTags, removeTag, addTag}: InputTagProps) => {
 const Description = () => {
   return (
     <Prose>
-      <h1>Adding tags to files</h1>
+      <h1 className="title">Adding tags to files</h1>
       <p>
         Here you can add tags to already uploaded files. The table below shows
         already uploaded files.

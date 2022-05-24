@@ -63,7 +63,7 @@ export default function ModelViewer() {
               <td className="table-padding">{statusView(trainingStatus)}</td>
               <td className="table-padding text-blue-500 underline">
                 <Link href={`/models/train/${name}`}>
-                  <p>View Training</p>
+                  <p className="cursor-pointer">View Training</p>
                 </Link>
               </td>
               <td className="table-padding text-right text-red-400">

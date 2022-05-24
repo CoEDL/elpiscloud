@@ -8,9 +8,27 @@ import {
   orderBy,
   query,
   setDoc,
+  DocumentData,
 } from 'firebase/firestore/lite';
 import {firestore} from 'lib/firestore';
 import {Dataset} from 'types/Dataset';
+
+/**
+ * Method to retrieve a dataset with a given filename belonging to a user
+ *
+ * @param user The user whose dataset needs to be obtained
+ * @param datasetName The dataset that needs to be retrieved
+ * @returns A Promise that resolves to an object of type Dataset
+ */
+export async function getDataset(
+  user: User,
+  datasetName: string
+): Promise<Dataset> {
+  const docRef = doc(firestore, `users/${user!.uid}/datasets/${datasetName}`);
+  const docSnapShot = await getDoc(docRef);
+  const returnedDocument: DocumentData = docSnapShot.data() as DocumentData;
+  return returnedDocument as Dataset;
+}
 
 export async function getDatasets(user: User) {
   const collectionRef = collection(firestore, `users/${user!.uid}/datasets`);

@@ -6,6 +6,7 @@ import WaitingView from 'components/files/WaitingView';
 import UploadingView from 'components/files/UploadView';
 import Prose from 'components/Prose';
 import {getSignedUploadURLs} from 'lib/api/files';
+import Link from 'next/link';
 
 export default function AddFiles() {
   const {user} = useAuth();
@@ -54,34 +55,42 @@ export default function AddFiles() {
   };
 
   return (
-    <div>
-      <Description />
+    <>
+      <div className="flex justify-end">
+        <Link href="/files">
+          <button className="button-secondary m-1">Back to Files</button>
+        </Link>
+      </div>
 
-      {uploadState === 'uploading' || uploadState === 'completed' ? (
-        <UploadingView
-          sessionURLs={sessionURLs}
-          files={files}
-          reset={reset}
-          completedUploadsCallback={() => setUploadState('completed')}
-        />
-      ) : (
-        <WaitingView
-          uploadState={uploadState}
-          files={files}
-          updateLocalFiles={updateAcceptedFiles}
-          deleteFile={deleteFile}
-          canUpload={canUpload}
-          uploadFiles={uploadFiles}
-        />
-      )}
-    </div>
+      <div>
+        <Description />
+
+        {uploadState === 'uploading' || uploadState === 'completed' ? (
+          <UploadingView
+            sessionURLs={sessionURLs}
+            files={files}
+            reset={reset}
+            completedUploadsCallback={() => setUploadState('completed')}
+          />
+        ) : (
+          <WaitingView
+            uploadState={uploadState}
+            files={files}
+            updateLocalFiles={updateAcceptedFiles}
+            deleteFile={deleteFile}
+            canUpload={canUpload}
+            uploadFiles={uploadFiles}
+          />
+        )}
+      </div>
+    </>
   );
 }
 
 const Description = () => {
   return (
     <Prose>
-      <h1>Files</h1>
+      <h1 className="title">Add New Files</h1>
       <p>
         Here you can create Files by collecting and uploading audio. There are
         two types of transcription supported in Elpisnet: word and phoneme.

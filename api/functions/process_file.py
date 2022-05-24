@@ -12,8 +12,8 @@ from utils.elan_to_json import process_eaf
 from utils.clean_json import clean_json_data
 from firebase_admin import firestore
 
-TRANSCRIPTION_EXTENSIONS = {"txt", "eaf"}
-AUDIO_EXTENSIONS = {"wav"}
+TRANSCRIPTION_EXTENSIONS = {".txt", ".eaf"}
+AUDIO_EXTENSIONS = {".wav"}
 
 
 def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> None:
@@ -87,7 +87,7 @@ def process_transcription_file(file: Path, options: Dict[str, Any]) -> Path:
     Returns:
         The path of the processed transcription file.
     """
-    if file.suffix == "eaf":
+    if file.suffix == ".eaf":
         data = extract_elan_data(file, options)
     else:
         data = extract_text_data(file)

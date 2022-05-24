@@ -12,4 +12,4 @@ def resample(file: Path, destination: Path, sample_rate: int) -> None:
         sample_rate (int): The sample rate for the resampled audio.
     """
     data, _ = sf.read(file)
-    sf.write(file=destination, data=data, samplerate=sample_rate)
+    sf.write(destination, data, sample_rate)

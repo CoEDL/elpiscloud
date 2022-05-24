@@ -67,6 +67,9 @@ resource "google_cloudfunctions_function" "process_dataset" {
 }
 
 resource "google_cloudfunctions_function" "process_dataset_file" {
+  # ---- I am not sure if this name should be using dashes instead of underscores
+  # ---- According to the GCP terraform documentation, entry_point is the name of the
+  # ---- actual cloud function
   name        = "process_dataset_file"
   description = "Process a file in a new dataset"
   runtime     = "python37"
@@ -91,7 +94,7 @@ resource "google_cloudfunctions_function" "process_dataset_file" {
 
 # A dedicated Cloud Storage bucket to store the zip source
 resource "google_storage_bucket" "source" {
-  name     = "${var.project}_functions_source"
+  name     = "${var.project}-functions-source"
   location = var.location
 }
 

@@ -4,7 +4,7 @@ resource "google_dns_managed_zone" "root_zone" {
 }
 
 resource "google_compute_managed_ssl_certificate" "ssl_cert" {
-  name = "ssl_cert"
+  name = "ssl-cert"
 
   managed {
     domains = ["${var.root_zone_url}", "api.${var.root_zone_url}"]

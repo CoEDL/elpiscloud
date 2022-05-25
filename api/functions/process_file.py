@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 
 from google.cloud import pubsub_v1
 from functions_framework import Context
+from utils.resample import resample
 from utils.cloud_storage import download_blob, upload_blob, list_blobs_with_prefix
 from utils.firebase import get_firestore_client
 from utils.elan_to_json import process_eaf
@@ -14,6 +15,7 @@ from firebase_admin import firestore
 
 TRANSCRIPTION_EXTENSIONS = {".txt", ".eaf"}
 AUDIO_EXTENSIONS = {".wav"}
+SAMPLE_RATE = 16_000
 
 
 def process_dataset_file(event: pubsub_v1.types.message, context: Context) -> None:
@@ -171,7 +173,12 @@ def clean_data(
 
 
 def process_audio_file(file: Path) -> Path:
-    # TODO
+    """Resamples an audio file at the given Path, and returns the resulting path.
+
+    Parameters:
+        file: The path of the file to process
+    """
+    resample(file=file, destination=file, sample_rate=SAMPLE_RATE)
     return file
 
 

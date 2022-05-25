@@ -1,4 +1,4 @@
-resource "google_storage_bucket" "static-site" {
+resource "google_storage_bucket" "static_site" {
   name          = "${var.project}-${var.env}-site"
   location      = "${var.location}"
   force_destroy = true
@@ -18,7 +18,7 @@ resource "google_storage_bucket" "static-site" {
 }
 
 resource "google_storage_bucket_iam_binding" "sa" {
-  bucket  = google_storage_bucket.static-site.name
+  bucket  = google_storage_bucket.static_site.name
   role    = "roles/storage.admin"
   members = [
     "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com",
@@ -26,7 +26,7 @@ resource "google_storage_bucket_iam_binding" "sa" {
 }
 
 resource "google_storage_bucket_iam_binding" "public" {
-  bucket  = google_storage_bucket.static-site.name
+  bucket  = google_storage_bucket.static_site.name
   role    = "roles/storage.objectViewer"
   members = [
     "allUsers",
@@ -36,7 +36,7 @@ resource "google_storage_bucket_iam_binding" "public" {
 resource "google_compute_backend_bucket" "backend" {
   name        = "site-bucket-backend"
   description = "Backend for site bucket"
-  bucket_name = google_storage_bucket.static-site.name
+  bucket_name = google_storage_bucket.static_site.name
   enable_cdn  = false
 }
 
@@ -81,7 +81,7 @@ resource "google_compute_url_map" "http_redirect" {
   }
 }
 
-// A proxy that routes incoming requests to the "http-redirect" URL Map
+// A proxy that routes incoming requests to the "http_redirect" URL Map
 resource "google_compute_target_http_proxy" "http_redirect" {
   name    = "frontend-http-redirect"
   url_map = google_compute_url_map.http_redirect.self_link

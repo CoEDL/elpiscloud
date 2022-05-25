@@ -1,5 +1,5 @@
 output "bucket" {
-  value = "${google_storage_bucket.static-site.name}"
+  value = "${google_storage_bucket.static_site.name}"
 }
 
 output "ip" {

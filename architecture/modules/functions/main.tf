@@ -67,7 +67,7 @@ resource "google_cloudfunctions_function" "process_dataset" {
 }
 
 resource "google_cloudfunctions_function" "process_dataset_file" {
-  name        = "process_dataset_file"
+  name        = "process-dataset-file"
   description = "Process a file in a new dataset"
   runtime     = "python37"
   region      = var.region

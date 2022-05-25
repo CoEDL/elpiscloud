@@ -21,6 +21,7 @@ export default function TaggingView() {
   const [filesToChange, setFilesToChange] = useState<Set<string>>(
     new Set<string>()
   );
+
   useEffect(() => {
     if (user) {
       getUserUploadedFiles();
@@ -78,7 +79,10 @@ export default function TaggingView() {
     return true; // True if a new tag is added
   };
 
-  const canUploadTags = useMemo(() => !(user === null), [user]);
+  const canUploadTags = useMemo(
+    () => !(user === null) && filesToChange.size !== 0,
+    [user, filesToChange]
+  );
 
   const uploadAllTags = async () => {
     if (!canUploadTags) {

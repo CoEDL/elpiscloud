@@ -13,7 +13,7 @@ resource "google_cloudfunctions_function" "function" {
 }
 
 resource "google_cloudfunctions_function" "sign_files" {
-  name        = "sign_files"
+  name        = "sign-files"
   description = "Signs files to be uploaded to the relevant storage bucket"
   runtime     = "python37"
   region      = var.region
@@ -27,7 +27,7 @@ resource "google_cloudfunctions_function" "sign_files" {
 }
 
 resource "google_cloudfunctions_function" "storage_watcher" {
-  name        = "storage_watcher"
+  name        = "storage-watcher"
   description = "Updates user file info in firestore from cloud storage events"
   runtime     = "python37"
   region      = var.region
@@ -44,7 +44,7 @@ resource "google_cloudfunctions_function" "storage_watcher" {
 }
 
 resource "google_cloudfunctions_function" "process_dataset" {
-  name        = "process_dataset"
+  name        = "process-dataset"
   description = "Process new datasets for training"
   runtime     = "python37"
   region      = var.region

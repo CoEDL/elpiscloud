@@ -7,7 +7,8 @@ def delete_blob(bucket_name: str, source_blob_name: str) -> None:
     """Deletes a blob from the bucket.
 
     Parameters:
-        bucket_name: The ID of your GCS bucket"""
+        bucket_name: The ID of your GCS bucket
+        source_blob_name: The path to the file within the GCS bucket"""
 
     storage_client = storage.Client()
 

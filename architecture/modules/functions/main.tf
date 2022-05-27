@@ -89,6 +89,29 @@ resource "google_cloudfunctions_function" "process_dataset_file" {
   service_account_email = var.elpis_worker.email
 }
 
+resource "google_cloudfunctions_function" "delete_dataset_from_bucket" {
+  name        = "delete-dataset-from-bucket"
+  description = "Deletes a dataset from GCP when a dataset is deleted from Firestore"
+  runtime     = "python37"
+  region      = var.region
+
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.source.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  entry_point           = "delete_dataset_from_bucket"
+  event_trigger {
+    event_type = "providers/cloud.firestore/eventTypes/document.delete"
+    resource   = "projects/elpiscloud/databases/(default)/documents/users/{userId}/datasets/{dataset}"
+  }
+
+  environment_variables = {
+    USER_DATASETS_BUCKET = var.user_datasets_bucket.name
+  }
+
+  service_account_email = var.elpis_worker.email
+}
+
+
 # A dedicated Cloud Storage bucket to store the zip source
 resource "google_storage_bucket" "source" {
   name     = "${var.project}-functions-source"

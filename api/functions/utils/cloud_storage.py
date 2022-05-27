@@ -3,6 +3,21 @@ from google.cloud import storage
 from google.cloud.storage.blob import Blob
 
 
+def delete_blob(bucket_name: str, source_blob_name: str) -> None:
+    """Deletes a blob from the bucket.
+
+    Parameters:
+        bucket_name: The ID of your GCS bucket"""
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+    blob.delete()
+
+    print(f"Blob {source_blob_name} deleted.")
+
+
 def download_blob(
     bucket_name: str, source_blob_name: str, destination_file_name: str
 ) -> None:

@@ -29,9 +29,14 @@ def delete_folder_blob(bucket_name: str, target_blob_prefix: str) -> None:
         target_blob_prefix: Prefix of the folder that needs to be recursively deleted
                             ('some/directory' for example)
     """
+    print(f"Deleting prefix: {target_blob_prefix}")
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
-    map(lambda blob: blob.delete(), bucket.list_blobs(prefix=target_blob_prefix))
+    blobs = bucket.list_blobs(prefix=target_blob_prefix)
+    for blob in blobs:
+        print(blob.id())
+        print(blob)
+        blob.delete()
 
 
 def download_blob(

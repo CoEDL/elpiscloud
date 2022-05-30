@@ -3,7 +3,7 @@ from google.cloud import storage
 from google.cloud.storage.blob import Blob
 
 
-def delete_blob(bucket_name: str, source_blob_name: str) -> None:
+def delete_blob(bucket_name: str, target_blob_name: str) -> None:
     """Deletes a blob from the bucket.
 
     Parameters:
@@ -13,10 +13,10 @@ def delete_blob(bucket_name: str, source_blob_name: str) -> None:
     storage_client = storage.Client()
 
     bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(source_blob_name)
+    blob = bucket.blob(target_blob_name)
     blob.delete()
 
-    print(f"Blob {source_blob_name} deleted.")
+    print(f"Blob {target_blob_name} deleted.")
 
 
 def download_blob(

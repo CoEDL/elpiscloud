@@ -34,7 +34,7 @@ def delete_folder_blob(bucket_name: str, target_blob_prefix: str) -> None:
     bucket = storage_client.get_bucket(bucket_name)
     blobs = bucket.list_blobs(prefix=target_blob_prefix)
     for blob in blobs:
-        print(blob.id())
+        print(blob.id)
         print(blob)
         blob.delete()
 

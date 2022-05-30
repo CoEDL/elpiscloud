@@ -26,5 +26,5 @@ def delete_dataset_from_bucket(data: Dict, context: Context) -> None:
 
     datasets_bucket_name = os.environ.get("USER_DATASETS_BUCKET")
     delete_blob(
-        bucket_name=datasets_bucket_name, target_blob_name=f"{uid}/{dataset_name}"
+        bucket_name=datasets_bucket_name, target_blob_name=f"{uid}/{dataset_name}/"
     )

@@ -4,3 +4,5 @@ google-auth==2.6.0
 firebase-admin==5.2.0
 pympi-ling==1.70.2
 soundfile==0.10.3.post1
+numpy==1.21.6
+functions-framework==3.*

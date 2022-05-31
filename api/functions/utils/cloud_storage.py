@@ -3,6 +3,41 @@ from google.cloud import storage
 from google.cloud.storage.blob import Blob
 
 
+def delete_blob(bucket_name: str, target_blob_name: str) -> None:
+    """Deletes a blob from the bucket.
+
+    Parameters:
+        bucket_name: The ID of the GCS bucket
+        target_blob_name: The path to the file within the GCS bucket"""
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(target_blob_name)
+    blob.delete()
+
+    print(f"Blob {target_blob_name} deleted.")
+
+
+def delete_folder_blob(bucket_name: str, target_blob_prefix: str) -> None:
+    """Deletes a blob representing a folder from the given bucket.
+
+    This recursively deletes all objects within a folder.
+
+    Parameters:
+        bucket_name: The ID of the GCS bucket
+        target_blob_prefix: Prefix of the folder that needs to be recursively deleted
+                            ('some/directory' for example)
+    """
+    print(f"Deleting prefix: {target_blob_prefix}")
+
+    blobs = list_blobs_with_prefix(bucket_name, target_blob_prefix)
+    for blob in blobs:
+        blob.delete()
+
+    print(f"Deleted prefix: {target_blob_prefix}")
+
+
 def download_blob(
     bucket_name: str, source_blob_name: str, destination_file_name: str
 ) -> None:

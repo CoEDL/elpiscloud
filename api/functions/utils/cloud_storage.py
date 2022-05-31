@@ -30,11 +30,12 @@ def delete_folder_blob(bucket_name: str, target_blob_prefix: str) -> None:
                             ('some/directory' for example)
     """
     print(f"Deleting prefix: {target_blob_prefix}")
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
-    blobs = bucket.list_blobs(prefix=target_blob_prefix)
+
+    blobs = list_blobs_with_prefix(bucket_name, target_blob_prefix)
     for blob in blobs:
         blob.delete()
+
+    print(f"Deleted prefix: {target_blob_prefix}")
 
 
 def download_blob(

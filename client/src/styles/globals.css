@@ -36,35 +36,33 @@
   }
 }
 
-/* Taken from https://jerrylowm.medium.com/build-a-tags-input-react-component-from-scratch-1524f02acb9a */
-@layer fileTags {
-  .input-tag {
-    background: white;
-    border: 1px solid #d6d6d6;
+/* 
     border-radius: 10px;
     display: inline-flex;
     flex-wrap: wrap;
     padding: 5px 5px 0;
     width: fit-content;
-    margin: 0px;
+    margin: 0px; */
+
+/* Taken from https://jerrylowm.medium.com/build-a-tags-input-react-component-from-scratch-1524f02acb9a */
+@layer fileTags {
+  .input-tag {
+    @apply m-0 inline-flex w-full flex-wrap rounded-xl border border-solid 
+    border-slate-400 bg-white px-1 pt-1;
   }
-  
+
   .input-tag input {
-    border: none;
-    width: 100%;
+    @apply w-full border-none p-1 focus:ring-white;
   }
-  
+
   .input-tag__tags {
-    display: inline-flex;
-    flex-wrap: wrap;
-    margin: 0;
-    padding: 0;
-    width: 100%;
+    @apply mb-1 inline-flex w-full flex-wrap p-0;
   }
-  
+
   .input-tag__tags li {
+    @apply m-1;
     align-items: center;
-    background: #85A3BF;
+    background: #85a3bf;
     border-radius: 5px;
     color: white;
     display: flex;
@@ -74,7 +72,7 @@
     margin-right: 5px;
     padding: 5px 10px;
   }
-  
+
   .input-tag__tags li button {
     align-items: center;
     appearance: none;
@@ -93,8 +91,9 @@
     transform: rotate(45deg); /* Replace the + with &times; and compare */
     width: 15px;
   }
-  
+
   .input-tag__tags li.input-tag__tags__input {
+    @apply ml-0;
     background: none;
     flex-grow: 1;
     padding: 0;

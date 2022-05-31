@@ -60,43 +60,16 @@
   }
 
   .input-tag__tags li {
-    @apply m-1;
-    align-items: center;
-    background: #85a3bf;
-    border-radius: 5px;
-    color: white;
-    display: flex;
-    font-weight: 300;
-    list-style: none;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    padding: 5px 10px;
+    @apply m-1 mb-1 mr-1 flex list-none items-center
+     rounded-md bg-purple-600 py-1 px-3 pr-2 font-medium text-white;
   }
 
   .input-tag__tags li button {
-    align-items: center;
-    appearance: none;
-    background: #333333;
-    border: none;
-    border-radius: 50%;
-    color: white;
-    cursor: pointer;
-    display: inline-flex;
-    font-size: 12px;
-    height: 15px;
-    justify-content: center;
-    line-height: 0;
-    margin-left: 8px;
-    padding: 0;
-    transform: rotate(45deg); /* Replace the + with &times; and compare */
-    width: 15px;
+    @apply ml-1.5 inline-flex cursor-pointer appearance-none
+     items-center border-none p-0;
   }
 
   .input-tag__tags li.input-tag__tags__input {
-    @apply ml-0;
-    background: none;
-    flex-grow: 1;
-    padding: 0;
-    color: black;
+    @apply ml-0 flex-grow bg-none p-0 text-black first:ml-1;
   }
 }

@@ -186,7 +186,7 @@ const InputTag = ({fileTags, removeTag, addTag}: InputTagProps) => {
                 removeTag(i);
               }}
             >
-              +
+              <i className="bi bi-x-circle-fill text-sm"></i>
             </button>
           </li>
         ))}

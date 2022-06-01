@@ -175,12 +175,21 @@ const InputTag = ({fileTags, removeTag, addTag}: InputTagProps) => {
   };
 
   return (
-    <div className="input-tag">
-      <ul className="input-tag__tags">
+    <div
+      className="m-0 inline-flex w-full flex-wrap rounded-xl border border-solid
+    border-slate-400 bg-white px-1 pt-1"
+    >
+      <ul className="mb-1 inline-flex w-full flex-wrap p-0">
         {fileTags.map((tag, i) => (
-          <li key={tag}>
+          <li
+            className="m-1 mb-1 mr-1 flex list-none items-center
+     rounded-md bg-purple-600 py-1 px-3 pr-2 font-medium text-white"
+            key={tag}
+          >
             {tag}
             <button
+              className="ml-1.5 inline-flex cursor-pointer appearance-none
+     items-center border-none p-0"
               type="button"
               onClick={() => {
                 removeTag(i);
@@ -190,8 +199,13 @@ const InputTag = ({fileTags, removeTag, addTag}: InputTagProps) => {
             </button>
           </li>
         ))}
-        <li className="input-tag__tags__input">
-          <input type="text" onKeyDown={inputKeyDown} ref={inputRef} />
+        <li className="ml-0 flex-grow flex-col items-center bg-none p-0 align-middle text-black first:ml-1">
+          <input
+            className="h-full w-full border-none p-1 focus:ring-white"
+            type="text"
+            onKeyDown={inputKeyDown}
+            ref={inputRef}
+          />
         </li>
       </ul>
     </div>

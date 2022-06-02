@@ -4,6 +4,7 @@ const nextConfig = {
     domains: ['github.com'],
   },
   reactStrictMode: true,
+  trailingSlash: true,
 };
 
 module.exports = nextConfig;

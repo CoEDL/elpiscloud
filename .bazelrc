@@ -1,1 +1,0 @@
-build --remote_timeout=15m --jobs=1 --local_ram_resources=HOST_RAM*.5 --local_cpu_resources=HOST_CPUS-1

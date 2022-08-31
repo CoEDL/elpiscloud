@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "trainer"
+version = "0.1.0"
+description = ""
+authors = ["Harry Keightley <harrykeightley@outlook.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^1.12.1"
+transformers = "^4.21.2"
+datasets = "^2.4.0"
+loguru = "^0.6.0"
+Flask = "^2.2.2"
+gunicorn = "^20.1.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

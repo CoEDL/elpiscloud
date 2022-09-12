@@ -1,25 +1,25 @@
 import json
-import pytest
-
 from pathlib import Path
-from trainer.model_metadata import ModelMetadata
 
-DATA_PATH = (Path(__file__).parent / 'data').resolve()
+import pytest
+from trainer.model_metadata import BASE_MODEL, ModelMetadata
+
+DATA_PATH = (Path(__file__).parent / "data").resolve()
+VALID_METADATA = Path(DATA_PATH, "valid_model_metadata.json")
+INVALID_METADATA = Path(DATA_PATH, "invalid_model_metadata.json")
+
 
 def test_valid_conversion():
-    metadata_path = Path(DATA_PATH, 'valid_model_metadata.json')
-    with open(metadata_path) as metadata_file:
+    with open(VALID_METADATA) as metadata_file:
         metadata = json.load(metadata_file)
 
-    ModelMetadata.from_dict(metadata) 
+    result = ModelMetadata.from_dict(metadata)
+    assert result.base_model == BASE_MODEL
+
 
 def test_invalid_metadata_raises_exception():
-    metadata_path = Path(DATA_PATH, 'invalid_model_metadata.json')
-    with open(metadata_path) as metadata_file:
+    with open(INVALID_METADATA) as metadata_file:
         metadata = json.load(metadata_file)
 
     with pytest.raises(Exception):
         ModelMetadata.from_dict(metadata)
-
-
-

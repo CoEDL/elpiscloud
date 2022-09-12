@@ -1,17 +1,19 @@
 import base64
-import os
 import json
+import os
 from pathlib import Path
 
 from flask import Flask, request
 from loguru import logger
 
+from .cloud_storage import download_blob, list_blobs_with_prefix
 from .model_metadata import ModelMetadata
 from .trainer import train
 
 app = Flask(__name__)
 
 DATA_PATH = Path("/data")
+DATASET_BUCKET = os.environ.get("DATASET_BUCKET", "elpiscloud-user-dataset-files")
 
 
 @app.route("/", methods=["POST"])
@@ -47,11 +49,13 @@ def index():
         logger.error(f"Error: {msg}")
         return f"Bad Request: {msg}", 400
 
-    # Download model metadata and dataset
-    setup_training_files(metadata=metadata, data_path=DATA_PATH)
+    dataset_path = DATA_PATH / "datasets" / metadata.user_id / metadata.name
+    download_dataset(metadata=metadata, dataset_path=dataset_path)
 
     # Attempt to train the model
-    model_path = train(metadata=metadata, data_path=DATA_PATH)
+    model_path = train(
+        metadata=metadata, data_path=DATA_PATH, dataset_path=dataset_path
+    )
     if model_path is None:
         msg = "Training failed, exiting without uploading model"
         logger.error(f"Error: {msg}")
@@ -61,14 +65,20 @@ def index():
     return ("", 204)
 
 
-def setup_training_files(metadata: ModelMetadata, data_path: Path) -> None:
+def download_dataset(metadata: ModelMetadata, dataset_path: Path) -> None:
     """Downloads the processed dataset to the provided path
 
     Parameters:
         metadata: The metadata of the model training job to use.
-        data_path: A path in which to store the dataset and pretrained model.
+        data_path: A path in which to store the dataset
     """
-    ...
+    dataset_prefix = f"{metadata.user_id}/{metadata.name}/"
+    dataset_path.mkdir(parents=True, exist_ok=True)
+
+    blobs = list_blobs_with_prefix(DATASET_BUCKET, dataset_prefix)
+    for blob in blobs:
+        local_path = dataset_path / str(blob.name)
+        download_blob(DATASET_BUCKET, str(blob.name), local_path)
 
 
 def upload_results(metadata: ModelMetadata, model_path: Path) -> None:

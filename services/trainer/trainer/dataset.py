@@ -5,7 +5,7 @@ from functools import reduce
 from pathlib import Path
 from typing import Dict, List
 
-from datasets import Audio, Features, Value, load_dataset
+from datasets import Audio, load_dataset
 from datasets.dataset_dict import DatasetDict
 from trainer.model_metadata import ModelMetadata
 from transformers.models.wav2vec2.processing_wav2vec2 import Wav2Vec2Processor
@@ -19,21 +19,14 @@ def create_dataset(metadata: ModelMetadata, dataset_path: Path) -> DatasetDict:
     processed_path = dataset_path / "processed"
     _process_dataset(dataset_path, processed_path)
 
-    features = Features(
-        {
-            "path": Value(dtype="string"),
-            "audio": Audio,
-            "transcription": Value(dtype="string"),
-        }
-    )
-
-    dataset = load_dataset("json", data_dir=str(processed_path), features=features)
+    dataset = load_dataset("json", data_dir=str(processed_path))
     dataset = dataset.cast_column("audio", Audio(sampling_rate=metadata.sampling_rate))
-    return dataset.train_test_split(test_size=0.2)  # type: ignore
+
+    return dataset["train"].train_test_split(test_size=0.2)  # type: ignore
 
 
-def _process_dataset(dataset_path: Path, output_dir: Path) -> None:
-    files = [dataset_path / file for file in os.listdir(dataset_path)]
+def _process_dataset(dataset_dir: Path, output_dir: Path) -> None:
+    files = [dataset_dir / file for file in os.listdir(dataset_dir)]
     files = filter(lambda file: file.suffix == ".json", files)
 
     # Make sure output dir exists
@@ -43,14 +36,10 @@ def _process_dataset(dataset_path: Path, output_dir: Path) -> None:
         with open(file) as f:
             utterances = map(Utterance.from_dict, json.load(f))
         utterance = reduce(Utterance.combine, utterances)
-        print(utterance)
 
         path = output_dir / file.name
         with open(path, "w") as out_file:
-            json.dump(utterance.to_dict(), out_file)
-
-        audio_file = dataset_path / utterance.audio_file_name
-        shutil.copy(audio_file, output_dir)
+            json.dump(utterance.to_dict(dataset_dir), out_file)
 
 
 def prepare_dataset(dataset: DatasetDict, processor: Wav2Vec2Processor) -> DatasetDict:

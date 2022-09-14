@@ -1,4 +1,5 @@
 from dataclasses import dataclass, fields
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 
@@ -19,8 +20,11 @@ class Utterance:
             speaker_id=self.speaker_id,
         )
 
-    def to_dict(self):
-        return self.__dict__
+    def to_dict(self, audio_folder: Path):
+        return {
+            "audio": str((audio_folder / self.audio_file_name).absolute()),
+            "transcript": self.transcript,
+        }
 
     @staticmethod
     def from_dict(dict: Dict[str, Any]) -> "Utterance":

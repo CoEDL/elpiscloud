@@ -21,9 +21,20 @@ def test_create_dataset(tmp_path: Path):
         shutil.copy(DATASET_PATH / file, tmp_path)
 
     result = create_dataset(METADATA, tmp_path)
-    print(result["train"])
+    assert "test" in result
+    assert "train" in result
+
+    # print(result["train"][0])
+    # assert False
+    # TODO NEED LIBROSA
 
 
 @mark.integration
-def test_training():
-    ...
+def test_training(tmp_path: Path):
+    dataset_path = tmp_path / "dataset"
+    dataset_path.mkdir(exist_ok=True, parents=True)
+
+    for file in os.listdir(DATASET_PATH):
+        shutil.copy(DATASET_PATH / file, dataset_path)
+
+    model_path = train(METADATA, tmp_path, dataset_path)

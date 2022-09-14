@@ -14,6 +14,7 @@ class TrainingStatus(Enum):
     WAITING = "waiting"
     TRAINING = "training"
     FINISHED = "finished"
+    ERROR = "error"
 
 
 @dataclass
@@ -24,25 +25,13 @@ class TrainingOptions:
     min_duration: int = 0
     max_duration: int = 60
     word_delimiter_token: str = " "
-    debug_with_subset: bool = False
-    training_size: Optional[int] = None
-    validation_size: Optional[int] = None
+    test_size: float = 0.2
 
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> "TrainingOptions":
-        kwargs = {
-            field.name: data[field.name]
-            for field in fields(TrainingOptions)
-            if field.name not in {"training_size", "validation_size"}
-        }
-        # Remove nesting of debug options
-        debug_options = data.get("debug_subset_options", {})
-        training_size = debug_options.get("training_set_size", None)
-        validation_size = debug_options.get("validation_set_size", None)
-
-        return TrainingOptions(
-            training_size=training_size, validation_size=validation_size, **kwargs
-        )
+        field_names = [field.name for field in fields(TrainingOptions)]
+        kwargs = {key: data[key] for key in data if key in field_names}
+        return TrainingOptions(**kwargs)
 
 
 @dataclass

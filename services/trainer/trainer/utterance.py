@@ -23,7 +23,7 @@ class Utterance:
     def to_dict(self, audio_folder: Path):
         return {
             "audio": str((audio_folder / self.audio_file_name).absolute()),
-            "transcript": self.transcript,
+            "transcription": self.transcript,
         }
 
     @staticmethod

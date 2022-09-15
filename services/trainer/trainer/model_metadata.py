@@ -1,9 +1,10 @@
 from dataclasses import dataclass, fields
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import humps
+import torch
 from transformers import TrainingArguments
 
 BASE_MODEL = "facebook/wav2vec2-base-960h"
@@ -50,7 +51,7 @@ class ModelMetadata:
             per_device_train_batch_size=16,
             evaluation_strategy="steps",
             num_train_epochs=self.options.epochs,
-            fp16=True,
+            fp16=True if torch.cuda.is_available() else False,
             gradient_checkpointing=True,
             learning_rate=self.options.learning_rate,
             weight_decay=0.005,

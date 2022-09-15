@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 import torch
+from loguru import logger
 from transformers import AutoModelForCTC, AutoProcessor, Trainer
 
 from .dataset import create_dataset, prepare_dataset
@@ -12,15 +13,20 @@ from .model_metadata import ModelMetadata
 def train(
     metadata: ModelMetadata, data_path: Path, dataset_path: Path
 ) -> Optional[Path]:
+    logger.info("Preparing Datasets...")
     dataset = create_dataset(metadata, dataset_path)
     processor = AutoProcessor.from_pretrained(metadata.base_model)
     dataset = prepare_dataset(dataset, processor)
+    logger.info("Finished Preparing Datasets")
 
+    logger.info("Downloading pretrained model...")
     model = AutoModelForCTC.from_pretrained(
         metadata.base_model,
         ctc_loss_reduction="mean",
         pad_token_id=processor.tokenizer.pad_token_id,
     )
+    logger.info("Downloaded model.")
+
     data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
     output_path = data_path / "output"
     output_path.mkdir(exist_ok=True, parents=True)
@@ -33,7 +39,15 @@ def train(
         tokenizer=processor.feature_extractor,
         data_collator=data_collator,
     )
+
+    logger.info(f"Begin training model...")
     trainer.train()
+    logger.info(f"Finished training!")
+
+    logger.info(f"Saving model @ {output_path}")
+    trainer.save_model()
+    trainer.save_state()
+    logger.info(f"Model written to disk.")
     return output_path
 
 

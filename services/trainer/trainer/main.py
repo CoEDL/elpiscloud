@@ -6,7 +6,7 @@ from pathlib import Path
 from flask import Flask, request
 from loguru import logger
 
-from .cloud_storage import download_blob, list_blobs_with_prefix
+from .cloud_storage import download_blob, list_blobs_with_prefix, upload_blob
 from .model_metadata import ModelMetadata
 from .trainer import train
 
@@ -14,11 +14,13 @@ app = Flask(__name__)
 
 DATA_PATH = Path("/data")
 DATASET_BUCKET = os.environ.get("DATASET_BUCKET", "elpiscloud-user-dataset-files")
+# TODO Update below when finished
+MODEL_BUCKET = os.environ.get("MODEL_BUCKET", "elpiscloud-user-models")
 
 
 @app.route("/", methods=["POST"])
 def index():
-    """Processes model training requests."""
+    """Main class for processing model training requests."""
     # Unwrap the pubsub data and check formatting
     envelope = request.get_json()
     if not envelope:
@@ -89,7 +91,12 @@ def upload_results(metadata: ModelMetadata, model_path: Path) -> None:
         metadata: The metadata of the model training job.
         model_path: The path of the trained model.
     """
-    ...
+    # Upload model files
+    for file in os.listdir(model_path):
+        blob_name = f"{metadata.user_id}/{metadata.name}/{file}"
+        upload_blob(MODEL_BUCKET, model_path / file, blob_name)
+
+    # TODO Update model metadata
 
 
 if __name__ == "__main__":

@@ -24,10 +24,6 @@ def test_create_dataset(tmp_path: Path):
     assert "test" in result
     assert "train" in result
 
-    # print(result["train"][0])
-    # assert False
-    # TODO NEED LIBROSA
-
 
 @mark.integration
 def test_training(tmp_path: Path):

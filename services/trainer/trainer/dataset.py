@@ -15,11 +15,15 @@ from .utterance import Utterance
 PROCESSOR_COUNT = 4
 
 
-def create_dataset(metadata: ModelMetadata, dataset_path: Path) -> DatasetDict:
+def create_dataset(
+    metadata: ModelMetadata, dataset_path: Path, cache_dir: Path
+) -> DatasetDict:
     processed_path = dataset_path / "processed"
     _process_dataset(dataset_path, processed_path)
 
-    dataset = load_dataset("json", data_dir=str(processed_path))
+    dataset = load_dataset(
+        "json", cache_dir=str(cache_dir), data_dir=str(processed_path)
+    )
     dataset = dataset.cast_column("audio", Audio(sampling_rate=metadata.sampling_rate))
 
     return dataset["train"].train_test_split(test_size=0.2)  # type: ignore

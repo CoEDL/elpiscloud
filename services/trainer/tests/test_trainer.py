@@ -20,7 +20,7 @@ def test_create_dataset(tmp_path: Path):
     for file in os.listdir(DATASET_PATH):
         shutil.copy(DATASET_PATH / file, tmp_path)
 
-    result = create_dataset(METADATA, tmp_path)
+    result = create_dataset(METADATA, tmp_path, tmp_path / "cache")
     assert "test" in result
     assert "train" in result
 

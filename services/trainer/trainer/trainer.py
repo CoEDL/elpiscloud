@@ -13,15 +13,18 @@ from .model_metadata import ModelMetadata
 def train(
     metadata: ModelMetadata, data_path: Path, dataset_path: Path
 ) -> Optional[Path]:
+    cache_dir = data_path / "cache"
+
     logger.info("Preparing Datasets...")
-    dataset = create_dataset(metadata, dataset_path)
-    processor = AutoProcessor.from_pretrained(metadata.base_model)
+    dataset = create_dataset(metadata, dataset_path, cache_dir)
+    processor = AutoProcessor.from_pretrained(metadata.base_model, cache_dir=cache_dir)
     dataset = prepare_dataset(dataset, processor)
     logger.info("Finished Preparing Datasets")
 
     logger.info("Downloading pretrained model...")
     model = AutoModelForCTC.from_pretrained(
         metadata.base_model,
+        cache_dir=cache_dir,
         ctc_loss_reduction="mean",
         pad_token_id=processor.tokenizer.pad_token_id,
     )

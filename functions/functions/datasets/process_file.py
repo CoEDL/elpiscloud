@@ -4,8 +4,6 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List
 
-import functions_framework
-from cloudevents.http import CloudEvent
 from firebase_admin import firestore
 from loguru import logger
 from utils.annotation import Annotation, TierSelector, process_eaf
@@ -22,8 +20,7 @@ FILES_BUCKET = os.environ.get("USER_FILES_BUCKET", "elpiscloud-user-upload-files
 DATASET_BUCKET = os.environ.get("USER_DATASETS_BUCKET", "elpiscloud-user-dataset-files")
 
 
-@functions_framework.cloud_event
-def process_dataset_file(event: CloudEvent) -> None:
+def process_dataset_file(event, context) -> None:
     """CloudEvent Function which triggers from pubsub dataset-processing
     topic.
 
@@ -36,10 +33,10 @@ def process_dataset_file(event: CloudEvent) -> None:
 
     """
     print(
-        f"This Function was triggered by messageId {event['id']} published at {event['time']} to {event['source']}"
+        f"This Function was triggered by messageId {context.event_id} published at {context.timestamp} to {context.resource['name']}"
     )
 
-    data = base64.b64decode(event.data).decode("utf-8")
+    data = base64.b64decode(event["data"]).decode("utf-8")
     data = json.loads(data)
     print(f"Event data: {data}")
 

@@ -1,8 +1,8 @@
 locals {
   env              = "prod"
   website_url      = "elpis.cloud"
-  functions_folder = "../../../api/functions"
-  swagger_api      = "../../../api/swagger_api.yaml"
+  functions_folder = "../../../functions"
+  swagger_api      = "../../../swagger_api.yaml"
   location         = "US"
 }
 

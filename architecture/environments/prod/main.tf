@@ -104,50 +104,22 @@ module "api_gateway" {
   depends_on           = [module.zones]
 }
 
-# ===== Trainer Service ===== 
-resource "google_eventarc_trigger" "trainer_trigger" {
-    name = "trainer_trigger"
-    location = local.location
-    matching_criteria {
-        attribute = "type"
-        value = "google.cloud.pubsub.topic.v1.messagePublished"
-    }
-    destination {
-        cloud_run_service {
-            service = google_cloud_run_service.trainer.name
-            region = local.location
-        }
-    }
-    pubsub {
-        topic = modules.topics.model_processing_topic.name
-    }
+module "trainer" {
+  source                    = "../../modules/service"
+  project                   = var.project
+  location                  = local.location
+  elpis_worker              = module.requirements.elpis_worker
+  user_datasets_bucket      = module.user_datasets_bucket.bucket
+  trained_models_bucket     = module.trained_models_bucket.bucket
+  topic                     = module.topics.model_processing_topic
+  image                     = "gcr.io/${local.project}/trainer"
+  service_name              = "trainer"
+
+  depends_on = [
+    module.requirements,
+    module.topics,
+    module.user_upload_files_bucket,
+    module.trained_models_bucket
+  ]
 }
-
-resource "google_cloud_run_service" "trainer" {
-    name     = "eventarc-service"
-    location = local.location
-
-    metadata {
-        namespace = var.project
-    }
-
-    template {
-        spec {
-            containers {
-                image = "gcr.io/elpiscloud/trainer"
-                ports {
-                    container_port = 8080
-                }
-            }
-            container_concurrency = 1
-            #timeout_seconds = 600
-        }
-    }
-
-    traffic {
-        percent         = 100
-        latest_revision = true
-    }
-}
-# End Trainer Service
 

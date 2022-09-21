@@ -61,6 +61,15 @@ module "user_datasets_bucket" {
   depends_on       = [module.requirements]
 }
 
+module "trained_models_bucket" {
+  source           = "../../modules/user_files_bucket"
+  location         = local.location
+  file_type        = "trained-model"
+  elpis_worker     = module.requirements.elpis_worker
+
+  depends_on       = [module.requirements]
+}
+
 module "topics" {
   source = "../../modules/topics"
 }
@@ -74,6 +83,7 @@ module "functions" {
   user_upload_files_bucket  = module.user_upload_files_bucket.bucket
   user_datasets_bucket      = module.user_datasets_bucket.bucket
   dataset_processing_topic  = module.topics.dataset_processing_topic
+  model_processing_topic    = module.topics.model_processing_topic
 
   depends_on = [
     module.requirements,
@@ -93,3 +103,51 @@ module "api_gateway" {
   ssl_cert             = module.zones.ssl_cert
   depends_on           = [module.zones]
 }
+
+# ===== Trainer Service ===== 
+resource "google_eventarc_trigger" "trainer_trigger" {
+    name = "trainer_trigger"
+    location = local.location
+    matching_criteria {
+        attribute = "type"
+        value = "google.cloud.pubsub.topic.v1.messagePublished"
+    }
+    destination {
+        cloud_run_service {
+            service = google_cloud_run_service.trainer.name
+            region = local.location
+        }
+    }
+    pubsub {
+        topic = modules.topics.model_processing_topic.name
+    }
+}
+
+resource "google_cloud_run_service" "trainer" {
+    name     = "eventarc-service"
+    location = local.location
+
+    metadata {
+        namespace = var.project
+    }
+
+    template {
+        spec {
+            containers {
+                image = "gcr.io/elpiscloud/trainer"
+                ports {
+                    container_port = 8080
+                }
+            }
+            container_concurrency = 1
+            #timeout_seconds = 600
+        }
+    }
+
+    traffic {
+        percent         = 100
+        latest_revision = true
+    }
+}
+# End Trainer Service
+

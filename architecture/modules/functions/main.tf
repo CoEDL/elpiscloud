@@ -111,6 +111,28 @@ resource "google_cloudfunctions_function" "delete_dataset_from_bucket" {
   service_account_email = var.elpis_worker.email
 }
 
+resource "google_cloudfunctions_function" "process_model" {
+  name        = "process-model"
+  description = "Publishes model training jobs to a topic"
+  runtime     = "python310"
+  region      = var.region
+
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.source.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  entry_point           = "process_model"
+  event_trigger {
+    event_type = "providers/cloud.firestore/eventTypes/document.create"
+    resource   = "projects/elpiscloud/databases/(default)/documents/users/{userId}/models/{model}"
+  }
+
+  environment_variables = {
+    TOPIC_ID = var.model_processing_topic.id
+    PROJECT = var.project
+  }
+
+  service_account_email = var.elpis_worker.email
+}
 
 # A dedicated Cloud Storage bucket to store the zip source
 resource "google_storage_bucket" "source" {

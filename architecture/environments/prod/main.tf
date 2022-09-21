@@ -112,7 +112,7 @@ module "trainer" {
   user_datasets_bucket      = module.user_datasets_bucket.bucket
   trained_models_bucket     = module.trained_models_bucket.bucket
   topic                     = module.topics.model_processing_topic
-  image                     = "gcr.io/${local.project}/trainer"
+  image                     = "gcr.io/${var.project}/trainer"
   service_name              = "trainer"
 
   depends_on = [

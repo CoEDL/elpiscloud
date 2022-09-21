@@ -32,6 +32,7 @@ resource "google_cloud_run_service_iam_binding" "binding" {
 }
 
 resource "google_project_iam_binding" "project" {
+  project = var.project
   role    = "roles/iam.serviceAccountTokenCreator"
   members = ["serviceAccount:${var.elpis_worker.email}"]
 }

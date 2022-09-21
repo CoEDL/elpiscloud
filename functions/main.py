@@ -5,5 +5,6 @@ from functions.datasets.process_file import process_dataset_file
 
 # Misc
 from functions.health_check import hello
+from functions.process_model import process_model
 from functions.sign_files import sign_files
 from functions.storage_watcher import storage_watcher

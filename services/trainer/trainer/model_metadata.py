@@ -3,8 +3,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict
 
-import humps
 import torch
+from humps.main import decamelize
 from transformers import TrainingArguments
 
 BASE_MODEL = "facebook/wav2vec2-base-960h"
@@ -37,7 +37,8 @@ class TrainingOptions:
 
 @dataclass
 class ModelMetadata:
-    name: str
+    model_name: str
+    dataset_name: str
     user_id: str
     options: TrainingOptions
     status: TrainingStatus = TrainingStatus.WAITING
@@ -61,12 +62,13 @@ class ModelMetadata:
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> "ModelMetadata":
         # Convert from JS lowerCamelCase to snake case
-        data = humps.decamelize(data)
+        data = decamelize(data)
         return ModelMetadata(
-            name=data["name"],
+            model_name=data["model_name"],
+            dataset_name=data["dataset_name"],
             user_id=data["user_id"],
             options=TrainingOptions.from_dict(data["options"]),
-            status=TrainingStatus(data["training_status"]),
+            status=TrainingStatus(data["status"]),
             base_model=data.get("base_model", BASE_MODEL),
             sampling_rate=data.get("sampling_rate", SAMPLING_RATE),
         )

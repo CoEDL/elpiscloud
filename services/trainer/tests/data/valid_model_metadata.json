@@ -1,31 +1,17 @@
 {
-  "name": "test",
-  "dataset": {
-    "name": "testDataset",
-    "userId": "zImLprGUjsQvpFipR44oQhTCT5x2",
-    "processed": true,
-    "files": [
-      "abui_1.eaf",
-      "abui_1.wav",
-      "abui_2.eaf",
-      "abui_2.wav",
-      "abui_3.eaf",
-      "abui_3.wav"
-    ]
-  },
+  "model_name": "test",
+  "dataset_name": "dataset",
+  "user_id": "zImLprGUjsQvpFipR44oQhTCT5x2",
   "options": {
-    "batchSize": 4,
-    "debugSubsetOptions": {
-      "trainingSetSize": 10,
-      "validationSetSize": 6
-    },
-    "debugWithSubset": true,
+    "batch_size": 4,
     "epochs": 10,
     "learningRate": 0.001,
     "maxDuration": 60,
     "minDuration": 0,
-    "wordDelimiterToken": ""
+    "wordDelimiterToken": " ",
+    "test_size": 0.3
   },
-  "trainingStatus": "finished",
-  "userId": "zImLprGUjsQvpFipR44oQhTCT5x2"
+  "status": "finished",
+  "base_model": "facebook/wav2vec2-base-960h",
+  "sampling_rate": 2000
 }

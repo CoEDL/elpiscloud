@@ -15,7 +15,7 @@ app = Flask(__name__)
 DATA_PATH = Path("/data")
 DATASET_BUCKET = os.environ.get("DATASET_BUCKET", "elpiscloud-user-dataset-files")
 # TODO Update below when finished
-MODEL_BUCKET = os.environ.get("MODEL_BUCKET", "elpiscloud-user-models")
+MODEL_BUCKET = os.environ.get("MODEL_BUCKET", "elpiscloud-trained-model-files")
 
 
 @app.route("/", methods=["POST"])
@@ -51,7 +51,7 @@ def index():
         logger.error(f"Error: {msg}")
         return f"Bad Request: {msg}", 400
 
-    dataset_path = DATA_PATH / "datasets" / metadata.user_id / metadata.name
+    dataset_path = DATA_PATH / "datasets" / metadata.user_id / metadata.model_name
     download_dataset(metadata=metadata, dataset_path=dataset_path)
 
     # Attempt to train the model
@@ -74,7 +74,7 @@ def download_dataset(metadata: ModelMetadata, dataset_path: Path) -> None:
         metadata: The metadata of the model training job to use.
         data_path: A path in which to store the dataset
     """
-    dataset_prefix = f"{metadata.user_id}/{metadata.name}/"
+    dataset_prefix = f"{metadata.user_id}/{metadata.model_name}/"
     dataset_path.mkdir(parents=True, exist_ok=True)
 
     blobs = list_blobs_with_prefix(DATASET_BUCKET, dataset_prefix)
@@ -93,7 +93,7 @@ def upload_results(metadata: ModelMetadata, model_path: Path) -> None:
     """
     # Upload model files
     for file in os.listdir(model_path):
-        blob_name = f"{metadata.user_id}/{metadata.name}/{file}"
+        blob_name = f"{metadata.user_id}/{metadata.model_name}/{file}"
         upload_blob(MODEL_BUCKET, model_path / file, blob_name)
 
     # TODO Update model metadata

@@ -10,7 +10,8 @@ DATA_PATH = (Path(__file__).parent / "data").resolve()
 DATASET_PATH = DATA_PATH / "dataset"
 
 METADATA = ModelMetadata(
-    name="test",
+    model_name="test",
+    dataset_name="test",
     user_id="0",
     options=TrainingOptions(epochs=1, max_duration=10),
 )

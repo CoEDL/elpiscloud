@@ -3,8 +3,7 @@ from enum import Enum
 from typing import Any, Dict
 
 from humps.main import decamelize
-
-from .firestore_event_converter import unpack
+from utils.firestore_event_converter import unpack
 
 BASE_MODEL = "facebook/wav2vec2-base-960h"
 SAMPLING_RATE = 16_000

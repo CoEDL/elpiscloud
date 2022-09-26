@@ -58,10 +58,6 @@ def index():
     model_path = train(
         metadata=metadata, data_path=DATA_PATH, dataset_path=dataset_path
     )
-    if model_path is None:
-        msg = "Training failed, exiting without uploading model"
-        logger.error(f"Error: {msg}")
-        return f"Error: {msg}", 500
 
     upload_results(metadata, model_path)
     return ("", 204)

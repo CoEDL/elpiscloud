@@ -1,18 +1,27 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 
 import torch
 from loguru import logger
+from trainer.dataset import create_dataset, prepare_dataset
+from trainer.model_metadata import ModelMetadata
 from transformers import AutoModelForCTC, AutoProcessor, Trainer
 
-from .dataset import create_dataset, prepare_dataset
-from .model_metadata import ModelMetadata
 
+def train(metadata: ModelMetadata, data_path: Path, dataset_path: Path) -> Path:
+    """Trains a model for use in transcription.
 
-def train(
-    metadata: ModelMetadata, data_path: Path, dataset_path: Path
-) -> Optional[Path]:
+    Saves the model to {data_path}/output.
+
+    Parameters:
+        metadata: Metadata about the training job, e.g. training options.
+        data_path: A directory to use for temporary working files and models.
+        dataset_path: A directory containing the dataset to train with.
+
+    Returns:
+        A path to the folder containing the trained model.
+    """
     cache_dir = data_path / "cache"
 
     logger.info("Preparing Datasets...")

@@ -1,2 +1,2 @@
-project="elpiscloud"
-project_number="289113429171"
+project        = "elpiscloud"
+project_number = "289113429171"

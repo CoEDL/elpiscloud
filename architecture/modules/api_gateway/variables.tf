@@ -1,8 +1,8 @@
 variable "function_url_map" {}
 variable "swagger_location" {}
 variable "region" {
-    type = string
-    default = "us-central1"
+  type    = string
+  default = "us-central1"
 }
 variable "project" {}
 variable "host" {}

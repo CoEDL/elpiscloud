@@ -32,13 +32,14 @@ def process_dataset_file(event, context) -> None:
          event: The cloud event.
 
     """
-    print(
+    logger.info(
         f"This Function was triggered by messageId {context.event_id} published at {context.timestamp} to {context.resource['name']}"
     )
 
+    data = base64.b64decode(event.data).decode("utf-8")
     data = base64.b64decode(event["data"]).decode("utf-8")
     data = json.loads(data)
-    print(f"Event data: {data}")
+    logger.info(f"Event data: {data}")
 
     dataset_name = data["name"]
     file_name = data["file"]
@@ -202,13 +203,13 @@ def check_finished_processing(
         return
 
     file_names = dataset["files"]
-    print(f"Firestore dataset file names: {file_names}")
+    logger.info(f"Firestore dataset file names: {file_names}")
 
     # Get the list of files currently uploaded to the bucket.
     processed_file_names = list(
         list_blobs_with_prefix(datasets_bucket_name, f"{uid}/{dataset_name}/")
     )
-    print(f"Processed file names: {processed_file_names}")
+    logger.info(f"Processed file names: {processed_file_names}")
 
     # Check that the length of each is equal, and if so, set dataset to be processed.
     if len(file_names) == len(processed_file_names):

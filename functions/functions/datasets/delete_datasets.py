@@ -2,6 +2,7 @@ import os
 from typing import Dict
 
 from functions_framework import Context
+from loguru import logger
 from utils.cloud_storage import delete_folder_blob
 
 
@@ -17,8 +18,9 @@ def delete_dataset_from_bucket(data: Dict, context: Context) -> None:
         context (Context): Metadata for the event.
 
     """
-    print(data)
-    print(context)
+    logger.info(f"Data: {data}")
+    logger.info(f"Context: {context}")
+
     dataset = data["oldValue"]
     uid = dataset["fields"]["userId"]["stringValue"]
     dataset_name = dataset["fields"]["name"]["stringValue"]

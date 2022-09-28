@@ -3,6 +3,7 @@ from typing import Iterable, Optional
 
 from google.cloud import storage
 from google.cloud.storage.blob import Blob
+from loguru import logger
 
 
 def delete_blob(bucket_name: str, target_blob_name: str) -> None:
@@ -18,7 +19,7 @@ def delete_blob(bucket_name: str, target_blob_name: str) -> None:
     blob = bucket.blob(target_blob_name)
     blob.delete()
 
-    print(f"Blob {target_blob_name} deleted.")
+    logger.info(f"Blob {target_blob_name} deleted.")
 
 
 def delete_folder_blob(bucket_name: str, target_blob_prefix: str) -> None:
@@ -31,13 +32,13 @@ def delete_folder_blob(bucket_name: str, target_blob_prefix: str) -> None:
         target_blob_prefix: Prefix of the folder that needs to be recursively deleted
                             ('some/directory' for example)
     """
-    print(f"Deleting prefix: {target_blob_prefix}")
+    logger.info(f"Deleting prefix: {target_blob_prefix}")
 
     blobs = list_blobs_with_prefix(bucket_name, target_blob_prefix)
     for blob in blobs:
         blob.delete()
 
-    print(f"Deleted prefix: {target_blob_prefix}")
+    logger.info(f"Deleted prefix: {target_blob_prefix}")
 
 
 def download_blob(
@@ -57,7 +58,7 @@ def download_blob(
     blob = bucket.blob(source_blob_name)
     blob.download_to_filename(destination_file_name)
 
-    print(
+    logger.info(
         f"Downloaded storage object {source_blob_name} from bucket {bucket_name} to local file {destination_file_name}."
     )
 
@@ -78,7 +79,7 @@ def upload_blob(
 
     blob.upload_from_filename(source_file_name)
 
-    print(f"File {source_file_name} uploaded to {destination_blob_name}.")
+    logger.info(f"File {source_file_name} uploaded to {destination_blob_name}.")
 
 
 def list_blobs_with_prefix(

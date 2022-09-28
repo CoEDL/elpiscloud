@@ -1,14 +1,12 @@
-from typing import Dict, Tuple
-import flask
 import json
 from enum import Enum
+from typing import Dict, Tuple
+
+import flask
 from google.cloud import storage
-from utils.cors import (
-    cors_preflight,
-    cors_wrap_response,
-    cors_wrap_abort,
-)
+from loguru import logger
 from utils.auth import decode_auth_header
+from utils.cors import cors_preflight, cors_wrap_abort, cors_wrap_response
 
 
 class UploadTypes(Enum):
@@ -35,7 +33,7 @@ def sign_files(request: flask.Request) -> Tuple[Dict[str, str], int, Dict[str, s
             2. The HTTP response status
             3. A dictionary containing CORS headers.
     """
-    print("Flask Request:", request)
+    logger.info("Flask Request:", request)
     # CORS Preflight
     if request.method == "OPTIONS":
         return cors_preflight(["POST"])
@@ -51,9 +49,9 @@ def sign_files(request: flask.Request) -> Tuple[Dict[str, str], int, Dict[str, s
         cors_wrap_abort(403)
 
     user_info = decode_auth_header(request.headers.get(VALIDATED_USER_INFO))
-    print("user_info as string:", str(user_info))
+    logger.info("user_info as string:", str(user_info))
     user_info = json.loads(user_info)
-    print("user_info as a Python Object:", str(user_info))
+    logger.info("user_info as a Python Object:", str(user_info))
 
     result = {}
     user_id = user_info.get("user_id")
@@ -66,7 +64,7 @@ def sign_files(request: flask.Request) -> Tuple[Dict[str, str], int, Dict[str, s
         blob_name = f"{user_id}/{name}"
         result[name] = generate_resumable_upload_url(bucket, blob_name, origin)
 
-    print("result:", result)
+    logger.info("result:", result)
     return cors_wrap_response(result, 200)
 
 

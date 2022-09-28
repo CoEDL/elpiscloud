@@ -7,6 +7,7 @@ from functions_framework import Context
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.futures import Future
 from grpc import Future
+from loguru import logger
 
 
 def process_dataset(data: Dict, context: Context) -> None:
@@ -28,14 +29,14 @@ def process_dataset(data: Dict, context: Context) -> None:
         def callback(publish_future: Future) -> None:
             try:
                 # Wait 60 seconds for the publish call to succeed.
-                print(publish_future.result(timeout=60))
+                logger.info(publish_future.result(timeout=60))
             except futures.TimeoutError:
-                print(f"Publishing {data} timed out.")
+                logger.error(f"Publishing {data} timed out.")
 
         return callback
 
     dataset = data["value"]
-    print(f"Firestore newly-created dataset information: {dataset}")
+    logger.info(f"Firestore newly-created dataset information: {dataset}")
 
     # Firestore has a disgusting format for the data inside it, as seen below
     file_names = [
@@ -64,7 +65,7 @@ def process_dataset(data: Dict, context: Context) -> None:
     # Wait for all the publish futures to resolve before exiting.
     futures.wait(publish_futures, return_when=futures.ALL_COMPLETED)
 
-    print(f"Published messages with error handler to {topic_path}.")
+    logger.success(f"Published messages with error handler to {topic_path}.")
 
 
 def clean_up_options(dataset_options: Dict) -> Dict[str, Any]:

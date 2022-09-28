@@ -1,30 +1,13 @@
 from pathlib import Path
-from pprint import pprint
 
-from pytest import raises
-from utils.annotation import (
-    Annotation,
+from utils.extract_annotations import (
     get_annotations_by_tier_name,
     get_annotations_by_tier_order,
     get_annotations_by_tier_type,
 )
 
-VALID_ANNOTATION_DATA = {"audio_file_name": "audio", "transcript": "hi there"}
-INVALID_ANNOTATION_DATA = {"audio_file_name": "audio"}
-
-DATA_DIR = Path(__file__).parent / "data"
+DATA_DIR = Path(__file__).parent.parent / "data"
 ELAN_PATH = DATA_DIR / "test.eaf"
-
-
-def test_annotation_from_valid_dict():
-    a = Annotation.from_dict(VALID_ANNOTATION_DATA)
-    assert a.audio_file_name == "audio"
-    assert a.transcript == "hi there"
-
-
-def test_annotation_from_invalid_dict():
-    with raises(Exception):
-        Annotation.from_dict(INVALID_ANNOTATION_DATA)
 
 
 def test_generate_utterances_from_tier_id():

@@ -36,9 +36,8 @@ def test_serialize_elan_options():
 # ====== Dataset Options ======
 VALID_DATASET_OPTIONS_WITHOUT_ELAN_DICT = {
     "punctuation_to_remove": ":",
-    "punctuation_to_replace": ";",
-    "tags_to_remove": "<UNK>",
-    "words_to_remove": "hello",
+    "punctuation_to_explode": ";",
+    "text_to_remove": ["<UNK>"],
 }
 
 VALID_DATASET_OPTIONS_DICT = VALID_DATASET_OPTIONS_WITHOUT_ELAN_DICT | {
@@ -49,18 +48,16 @@ VALID_DATASET_OPTIONS_DICT = VALID_DATASET_OPTIONS_WITHOUT_ELAN_DICT | {
 def test_default_dataset_options():
     options = DatasetOptions()
     assert options.punctuation_to_remove == ""
-    assert options.punctuation_to_replace == ""
-    assert options.tags_to_remove == ""
-    assert options.words_to_remove == ""
+    assert options.punctuation_to_explode == ""
+    assert options.text_to_remove == []
     assert options.elan_options is None
 
 
 def test_build_dataset_options_with_elan():
     options = DatasetOptions.from_dict(VALID_DATASET_OPTIONS_DICT)
     assert options.punctuation_to_remove == ":"
-    assert options.punctuation_to_replace == ";"
-    assert options.tags_to_remove == "<UNK>"
-    assert options.words_to_remove == "hello"
+    assert options.punctuation_to_explode == ";"
+    assert options.text_to_remove == ["<UNK>"]
     assert options.elan_options is not None
     assert options.elan_options == ElanOptions.from_dict(VALID_ELAN_OPTIONS_DICT)
 
@@ -68,18 +65,16 @@ def test_build_dataset_options_with_elan():
 def test_build_dataset_options_without_elan():
     options = DatasetOptions.from_dict(VALID_DATASET_OPTIONS_WITHOUT_ELAN_DICT)
     assert options.punctuation_to_remove == ":"
-    assert options.punctuation_to_replace == ";"
-    assert options.tags_to_remove == "<UNK>"
-    assert options.words_to_remove == "hello"
+    assert options.punctuation_to_explode == ";"
+    assert options.text_to_remove == ["<UNK>"]
     assert options.elan_options is None
 
 
 def test_serialize_dataset_options():
     options = DatasetOptions(
         punctuation_to_remove=":",
-        punctuation_to_replace=";",
-        tags_to_remove="<UNK>",
-        words_to_remove="hello",
+        punctuation_to_explode=";",
+        text_to_remove=["<UNK>"],
         elan_options=ElanOptions.from_dict(VALID_ELAN_OPTIONS_DICT),
     )
     assert options.to_dict() == VALID_DATASET_OPTIONS_DICT

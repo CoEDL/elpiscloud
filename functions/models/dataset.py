@@ -1,4 +1,4 @@
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
@@ -28,18 +28,18 @@ class ElanOptions:
 @dataclass
 class DatasetOptions:
     punctuation_to_remove: str = ""
-    punctuation_to_replace: str = ""
-    tags_to_remove: str = ""
-    words_to_remove: str = ""
+    punctuation_to_explode: str = ""
+    text_to_remove: List[str] = field(default_factory=list)
     elan_options: Optional[ElanOptions] = None
 
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> "DatasetOptions":
         kwargs = {
-            field.name: data.get(field.name, "")
+            field.name: data[field.name]
             for field in fields(DatasetOptions)
             if field.name != "elan_options"
         }
+
         if "elan_options" in data:
             elan_options = ElanOptions.from_dict(data["elan_options"])
         else:

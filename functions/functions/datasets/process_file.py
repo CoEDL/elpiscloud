@@ -6,11 +6,11 @@ from typing import Any, Dict, List
 
 from firebase_admin import firestore
 from loguru import logger
+from models import Annotation, TierSelector
 from utils.clean_json import clean_json_data
 from utils.cloud_storage import download_blob, list_blobs_with_prefix, upload_blob
 from utils.extract_annotations import extract_annotations
 from utils.firebase import get_firestore_client
-from utils.models import Annotation, TierSelector
 from utils.resample import resample
 
 TRANSCRIPTION_EXTENSIONS = {".txt", ".eaf"}

@@ -37,7 +37,7 @@ class TrainingOptions:
 
 
 @dataclass
-class ModelMetadata:
+class Model:
     model_name: str
     dataset_name: str
     user_id: str
@@ -47,13 +47,13 @@ class ModelMetadata:
     sampling_rate: int = SAMPLING_RATE
 
     @staticmethod
-    def from_firestore_event(data: Dict[str, Any]) -> "ModelMetadata":
+    def from_firestore_event(data: Dict[str, Any]) -> "Model":
         """Generates a metadata class from a google firestore event dictionary
         representing changes to a model within firestore.
         """
         # Unpack value dictionary and convert to snake case
         data = decamelize(unpack(data))
-        return ModelMetadata(
+        return Model(
             model_name=data["model_name"],
             dataset_name=data["dataset_name"],
             user_id=data["user_id"],

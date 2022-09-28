@@ -6,10 +6,11 @@ from typing import Any, Dict, List
 
 from firebase_admin import firestore
 from loguru import logger
-from utils.annotation import Annotation, TierSelector, process_eaf
 from utils.clean_json import clean_json_data
 from utils.cloud_storage import download_blob, list_blobs_with_prefix, upload_blob
+from utils.extract_annotations import extract_annotations
 from utils.firebase import get_firestore_client
+from utils.models import Annotation, TierSelector
 from utils.resample import resample
 
 TRANSCRIPTION_EXTENSIONS = {".txt", ".eaf"}
@@ -111,7 +112,7 @@ def extract_elan_data(file: Path, options: Dict[str, Any]) -> List[Annotation]:
     selection_mechanism: str = options["elanOptions"]["selectionMechanism"]
     selection_value = options["elanOptions"]["selectionValue"]
 
-    return process_eaf(file, TierSelector(selection_mechanism), selection_value)
+    return extract_annotations(file, TierSelector(selection_mechanism), selection_value)
 
 
 def extract_text_data(file: Path) -> List[Annotation]:

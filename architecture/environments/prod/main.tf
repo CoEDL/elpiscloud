@@ -1,8 +1,8 @@
 locals {
   env              = "prod"
   website_url      = "elpis.cloud"
-  functions_folder = "../../../api/functions"
-  swagger_api      = "../../../api/swagger_api.yaml"
+  functions_folder = "../../../functions"
+  swagger_api      = "../../../swagger_api.yaml"
   location         = "US"
 }
 
@@ -61,6 +61,15 @@ module "user_datasets_bucket" {
   depends_on       = [module.requirements]
 }
 
+module "trained_models_bucket" {
+  source           = "../../modules/user_files_bucket"
+  location         = local.location
+  file_type        = "trained-model"
+  elpis_worker     = module.requirements.elpis_worker
+
+  depends_on       = [module.requirements]
+}
+
 module "topics" {
   source = "../../modules/topics"
 }
@@ -74,6 +83,7 @@ module "functions" {
   user_upload_files_bucket  = module.user_upload_files_bucket.bucket
   user_datasets_bucket      = module.user_datasets_bucket.bucket
   dataset_processing_topic  = module.topics.dataset_processing_topic
+  model_processing_topic    = module.topics.model_processing_topic
 
   depends_on = [
     module.requirements,
@@ -93,3 +103,23 @@ module "api_gateway" {
   ssl_cert             = module.zones.ssl_cert
   depends_on           = [module.zones]
 }
+
+module "trainer" {
+  source                    = "../../modules/service"
+  project                   = var.project
+  location                  = local.location
+  elpis_worker              = module.requirements.elpis_worker
+  user_datasets_bucket      = module.user_datasets_bucket.bucket
+  trained_models_bucket     = module.trained_models_bucket.bucket
+  topic                     = module.topics.model_processing_topic
+  image                     = "gcr.io/${var.project}/trainer"
+  service_name              = "trainer"
+
+  depends_on = [
+    module.requirements,
+    module.topics,
+    module.user_upload_files_bucket,
+    module.trained_models_bucket
+  ]
+}
+

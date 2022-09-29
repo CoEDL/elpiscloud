@@ -1,7 +1,7 @@
 resource "google_cloudfunctions_function" "function" {
   name        = "hello"
   description = "test function"
-  runtime     = "python37"
+  runtime     = "python310"
   region      = var.region
 
   available_memory_mb   = 128
@@ -15,7 +15,7 @@ resource "google_cloudfunctions_function" "function" {
 resource "google_cloudfunctions_function" "sign_files" {
   name        = "sign-files"
   description = "Signs files to be uploaded to the relevant storage bucket"
-  runtime     = "python37"
+  runtime     = "python310"
   region      = var.region
 
   available_memory_mb   = 128
@@ -29,7 +29,7 @@ resource "google_cloudfunctions_function" "sign_files" {
 resource "google_cloudfunctions_function" "storage_watcher" {
   name        = "storage-watcher"
   description = "Updates user file info in firestore from cloud storage events"
-  runtime     = "python37"
+  runtime     = "python310"
   region      = var.region
 
   available_memory_mb   = 128
@@ -46,7 +46,7 @@ resource "google_cloudfunctions_function" "storage_watcher" {
 resource "google_cloudfunctions_function" "process_dataset" {
   name        = "process-dataset"
   description = "Process new datasets for training"
-  runtime     = "python37"
+  runtime     = "python310"
   region      = var.region
 
   available_memory_mb   = 128
@@ -69,7 +69,7 @@ resource "google_cloudfunctions_function" "process_dataset" {
 resource "google_cloudfunctions_function" "process_dataset_file" {
   name        = "process-dataset-file"
   description = "Process a file in a new dataset"
-  runtime     = "python37"
+  runtime     = "python310"
   region      = var.region
 
   available_memory_mb   = 128
@@ -92,7 +92,7 @@ resource "google_cloudfunctions_function" "process_dataset_file" {
 resource "google_cloudfunctions_function" "delete_dataset_from_bucket" {
   name        = "delete-dataset-from-bucket"
   description = "Deletes a dataset from GCP when a dataset is deleted from Firestore"
-  runtime     = "python37"
+  runtime     = "python310"
   region      = var.region
 
   available_memory_mb   = 128
@@ -111,6 +111,28 @@ resource "google_cloudfunctions_function" "delete_dataset_from_bucket" {
   service_account_email = var.elpis_worker.email
 }
 
+resource "google_cloudfunctions_function" "process_model" {
+  name        = "process-model"
+  description = "Publishes model training jobs to a topic"
+  runtime     = "python310"
+  region      = var.region
+
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.source.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  entry_point           = "process_model"
+  event_trigger {
+    event_type = "providers/cloud.firestore/eventTypes/document.create"
+    resource   = "projects/elpiscloud/databases/(default)/documents/users/{userId}/models/{model}"
+  }
+
+  environment_variables = {
+    TOPIC_ID = var.model_processing_topic.id
+    PROJECT = var.project
+  }
+
+  service_account_email = var.elpis_worker.email
+}
 
 # A dedicated Cloud Storage bucket to store the zip source
 resource "google_storage_bucket" "source" {

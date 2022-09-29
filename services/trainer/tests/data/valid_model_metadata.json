@@ -1,0 +1,17 @@
+{
+  "model_name": "test",
+  "dataset_name": "dataset",
+  "user_id": "zImLprGUjsQvpFipR44oQhTCT5x2",
+  "options": {
+    "batch_size": 4,
+    "epochs": 10,
+    "learningRate": 0.001,
+    "maxDuration": 60,
+    "minDuration": 0,
+    "wordDelimiterToken": " ",
+    "test_size": 0.3
+  },
+  "status": "finished",
+  "base_model": "facebook/wav2vec2-base-960h",
+  "sampling_rate": 2000
+}

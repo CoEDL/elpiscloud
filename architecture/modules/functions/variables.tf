@@ -10,3 +10,4 @@ variable "user_upload_files_bucket" {}
 variable "user_datasets_bucket" {}
 
 variable "dataset_processing_topic" {}
+variable "model_processing_topic" {}

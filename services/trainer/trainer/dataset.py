@@ -1,6 +1,5 @@
 import json
 import os
-import shutil
 from functools import reduce
 from pathlib import Path
 from typing import Dict, List
@@ -8,9 +7,8 @@ from typing import Dict, List
 from datasets import Audio, load_dataset
 from datasets.dataset_dict import DatasetDict
 from trainer.model_metadata import ModelMetadata
-from transformers.models.wav2vec2.processing_wav2vec2 import Wav2Vec2Processor
-
-from .utterance import Utterance
+from trainer.utterance import Utterance
+from transformers import Wav2Vec2Processor
 
 PROCESSOR_COUNT = 4
 
@@ -18,6 +16,18 @@ PROCESSOR_COUNT = 4
 def create_dataset(
     metadata: ModelMetadata, dataset_path: Path, cache_dir: Path
 ) -> DatasetDict:
+    """Creates a dataset with test/train splits from the data within a given
+    directory.
+
+    Parameters:
+        metadata: The metadata for the model training job.
+        dataset_path: The path to the unprocessed dataset files.
+        cache_dir: The path to save the processed dataset.
+
+    Returns:
+        A dataset dictionary with test and train splits.
+    """
+
     processed_path = dataset_path / "processed"
     _process_dataset(dataset_path, processed_path)
 
@@ -26,10 +36,26 @@ def create_dataset(
     )
     dataset = dataset.cast_column("audio", Audio(sampling_rate=metadata.sampling_rate))
 
-    return dataset["train"].train_test_split(test_size=0.2)  # type: ignore
+    return dataset["train"].train_test_split(test_size=metadata.options.test_size)  # type: ignore
 
 
 def _process_dataset(dataset_dir: Path, output_dir: Path) -> None:
+    """Processes the files contained within a dataset directory, and writes
+    the processed files to the output dir.
+
+    Note: This is a workaround function which came about because currently,
+    one transcript json file has many utterances generated from the same
+    audio file. This causes some annoyance when wanting to generate a dataset-
+    ideally we'd want the input audio files to be split into utterances.
+    As a temporary fix, we just combine the utterances into one larger one.
+
+    Parameters:
+        datset_dir: The path to the unprocessed dataset
+        output_dir: The path in which to put the processed dataset
+
+    TODO: Delete/rework this as soon as the process_dataset cloud function
+    improves.
+    """
     files = [dataset_dir / file for file in os.listdir(dataset_dir)]
     files = filter(lambda file: file.suffix == ".json", files)
 
@@ -47,7 +73,17 @@ def _process_dataset(dataset_dir: Path, output_dir: Path) -> None:
 
 
 def prepare_dataset(dataset: DatasetDict, processor: Wav2Vec2Processor) -> DatasetDict:
-    def prepare_dataset(batch: Dict[str, List]) -> Dict[str, List]:
+    """Runs some preprocessing over the given dataset.
+
+    TODO: I'm going to be honest, I have no idea what this does, and need some
+    smart ML knight in shining armour to write a propert description.
+
+    Parameters:
+        dataset: The dataset to apply the preprocessing
+        processor: The processor to apply over the dataset
+    """
+
+    def prepare_dataset(batch: Dict) -> Dict[str, List]:
         audio = batch["audio"]
 
         batch["input_values"] = processor(

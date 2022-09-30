@@ -9,6 +9,9 @@ TRANSCRIPTION_EXTENSIONS = {".eaf", ".txt"}
 
 @dataclass
 class ElanOptions:
+    """A class representing options for how to extract utterance information
+    from an elan file."""
+
     selection_mechanism: TierSelector
     selection_value: str
 
@@ -27,6 +30,8 @@ class ElanOptions:
 
 @dataclass
 class DatasetOptions:
+    """A class representing processing options for a dataset."""
+
     punctuation_to_remove: str = ""
     punctuation_to_explode: str = ""
     text_to_remove: List[str] = field(default_factory=list)
@@ -52,6 +57,32 @@ class DatasetOptions:
         if self.elan_options is not None:
             result["elan_options"] = self.elan_options.to_dict()
         return result
+
+
+@dataclass
+class ProcessingJob:
+    """A class encapsulating the data needed for an individual processing job"""
+
+    user_id: str
+    transcription_file_name: str
+    audio_file_name: str
+    dataset_name: str
+    options: DatasetOptions
+
+    def to_dict(self) -> Dict[str, Any]:
+        result = dict(self.__dict__)
+        result["options"] = self.options.to_dict()
+        return result
+
+    @staticmethod
+    def from_dict(data: Dict[str, Any]) -> "ProcessingJob":
+        kwargs = {
+            field.name: data[field.name]
+            for field in fields(ProcessingJob)
+            if field.name != "options"
+        }
+        options = DatasetOptions.from_dict(data["options"])
+        return ProcessingJob(options=options, **kwargs)
 
 
 @dataclass
@@ -81,6 +112,11 @@ class Dataset:
             and len(self.colliding_files()) == 0
         )
 
+    @staticmethod
+    def corresponding_audio_file(transcript_file: str) -> str:
+        """Gets the corresponding audio file name for a given transcript file."""
+        return Path(transcript_file).stem + ".wav"
+
     def mismatched_files(self) -> Set[str]:
         """Returns the list of transcript file names with no corresponding
         audio files and vice versa.
@@ -91,18 +127,14 @@ class Dataset:
         Returns:
             A list of the mismatched file names.
         """
-
-        def corresponding_audio_file(transcript_file: str) -> str:
-            return Path(transcript_file).stem + ".wav"
-
         transcripts_with_audio = set(
             filter(
-                lambda file: corresponding_audio_file(file) in self.files,
+                lambda file: Dataset.corresponding_audio_file(file) in self.files,
                 self._transcript_files(),
             )
         )
         matched_files = transcripts_with_audio | set(
-            corresponding_audio_file(file) for file in transcripts_with_audio
+            Dataset.corresponding_audio_file(file) for file in transcripts_with_audio
         )
 
         return set(self.files).difference(matched_files)
@@ -141,6 +173,21 @@ class Dataset:
         }
         options = DatasetOptions.from_dict(data["options"])
         return Dataset(options=options, **kwargs)
+
+    def to_batch(self) -> List["ProcessingJob"]:
+        """Converts a valid dataset to a list of processing jobs, matching
+        transcript and audio files.
+        """
+        return [
+            ProcessingJob(
+                dataset_name=self.name,
+                transcription_file_name=transcription_file_name,
+                audio_file_name=self.corresponding_audio_file(transcription_file_name),
+                options=self.options,
+                user_id=self.user_id,
+            )
+            for transcription_file_name in self._transcript_files()
+        ]
 
     def to_dict(self) -> Dict[str, Any]:
         result = dict(self.__dict__)

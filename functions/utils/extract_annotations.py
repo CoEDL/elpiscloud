@@ -1,13 +1,68 @@
 from itertools import chain
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from loguru import logger
 from models import Annotation, TierSelector
+from models.dataset import ElanOptions
 from pympi.Elan import Eaf
 
 
 def extract_annotations(
+    transcription_file: Path, elan_options: Optional[ElanOptions]
+) -> List[Annotation]:
+    """Extracts annotations from the supplied transcription file.
+
+    If the transcription file is an elan file, elan_options is required.
+
+    Parameters:
+        transcription_file: The file from which to extract annotations
+        elan_options: Options to include for determining how to extract annotations
+                from elan data.
+
+    Returns:
+        A list of found annotations.
+        Returns an empty list if there was a problem.
+    """
+    if transcription_file.suffix == ".txt":
+        return extract_text_annotations(transcription_file)
+
+    if transcription_file.suffix != ".eaf":
+        logger.error(f"Unrecognised file format: {transcription_file}")
+        return []
+
+    if elan_options is None:
+        logger.error(f"Missing elan options for extraction job.")
+        return []
+
+    return extract_elan_annotations(
+        transcription_file,
+        selection_type=elan_options.selection_mechanism,
+        selection_data=elan_options.selection_value,
+    )
+
+
+def extract_text_annotations(file: Path) -> List[Annotation]:
+    """Extract transcription information from a text file.
+
+    Parameters:
+        file_name: The name of the downloaded file.
+
+    Returns:
+        A list of utterance information for the given file.
+    """
+    with open(file) as transcription_file:
+        transcription = transcription_file.read()
+
+    return [
+        Annotation(
+            audio_file_name=file.stem + ".wav",
+            transcript=transcription,
+        )
+    ]
+
+
+def extract_elan_annotations(
     elan_file_path: Path, selection_type: TierSelector, selection_data: str
 ) -> List[Annotation]:
     """Extracts annotations from a particular tier in an eaf file (ELAN

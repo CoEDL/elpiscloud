@@ -1,13 +1,14 @@
-import json
 import os
-from concurrent import futures
-from typing import Any, Callable, Dict
+from typing import Dict
 
 from functions_framework import Context
-from google.cloud import pubsub_v1
-from google.cloud.pubsub_v1.futures import Future
-from grpc import Future
+from humps.main import decamelize
 from loguru import logger
+from models.dataset import Dataset, ProcessingJob
+from utils.firestore_event_converter import unpack
+from utils.pubsub import publish_to_topic
+
+TOPIC_NAME = os.environ.get("TOPIC_ID", "dataset_processing_topic")
 
 
 def process_dataset(data: Dict, context: Context) -> None:
@@ -20,82 +21,11 @@ def process_dataset(data: Dict, context: Context) -> None:
         data (dict): The event payload.
         context (Context): Metadata for the event.
     """
-    # Set up the topic for publishing
-    publisher = pubsub_v1.PublisherClient()
-    topic_path = os.environ.get("TOPIC_ID")
-    publish_futures = []
+    # Convert the firestore event into a dataset object.
+    dataset = decamelize(unpack(data["value"]))
+    dataset = Dataset.from_dict(dataset)
 
-    def get_callback(publish_future: Future, data: str) -> Callable[[Future], None]:
-        def callback(publish_future: Future) -> None:
-            try:
-                # Wait 60 seconds for the publish call to succeed.
-                logger.info(publish_future.result(timeout=60))
-            except futures.TimeoutError:
-                logger.error(f"Publishing {data} timed out.")
-
-        return callback
-
-    dataset = data["value"]
     logger.info(f"Firestore newly-created dataset information: {dataset}")
 
-    # Firestore has a disgusting format for the data inside it, as seen below
-    file_names = [
-        field["stringValue"]
-        for field in dataset["fields"]["files"]["arrayValue"]["values"]
-    ]
-
-    # Add a processing job to the to processing topic for each one of the files
-    for file_name in file_names:
-        # Take the important info from the firestore object
-        file_processing_data = {
-            "name": dataset["fields"]["name"]["stringValue"],
-            "file": file_name,
-            "options": clean_up_options(dataset["fields"]["options"]),
-            "userId": dataset["fields"]["userId"]["stringValue"],
-        }
-        encoded_data = json.dumps(file_processing_data).encode("utf-8")
-
-        # Generate the future from publishing, and add it to our list.
-        publish_future: Future = publisher.publish(topic_path, encoded_data)
-        publish_future.add_done_callback(
-            get_callback(publish_future, file_processing_data)
-        )
-        publish_futures.append(publish_future)
-
-    # Wait for all the publish futures to resolve before exiting.
-    futures.wait(publish_futures, return_when=futures.ALL_COMPLETED)
-
-    logger.success(f"Published messages with error handler to {topic_path}.")
-
-
-def clean_up_options(dataset_options: Dict) -> Dict[str, Any]:
-    """Cleans up the firestore value padding in the dataset preparation options
-    returned in a firestore event.
-
-    Parameters:
-        dataset_options (Dict): A dictionary containing the preparation options
-            with copious value padding.
-
-    Returns:
-        (Dict): A dictionary of the same format as the original firestore
-            document. That is, without any value padding.
-    """
-    result = {}
-    base = dataset_options["mapValue"]["fields"]
-
-    # Clean up regular options
-    result = {
-        option: value["stringValue"]
-        for (option, value) in base.items()
-        if option != "elanOptions"
-    }
-
-    # Clean up elan options
-    elan_options = {}
-    for field in {"selectionMechanism", "selectionValue"}:
-        elan_options[field] = base["elanOptions"]["mapValue"]["fields"][field][
-            "stringValue"
-        ]
-
-    result["elanOptions"] = elan_options
-    return result
+    jobs = map(ProcessingJob.to_dict, dataset.to_batch())
+    publish_to_topic(topic_name=TOPIC_NAME, data=jobs)

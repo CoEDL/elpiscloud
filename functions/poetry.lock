@@ -628,6 +628,20 @@ tomli = ">=1.0.0"
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
 
 [[package]]
+name = "pytest-mock"
+version = "3.9.0"
+description = "Thin-wrapper around the mock package for easier use with pytest"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+pytest = ">=5.0"
+
+[package.extras]
+dev = ["pre-commit", "tox", "pytest-asyncio"]
+
+[[package]]
 name = "requests"
 version = "2.28.1"
 description = "Python HTTP for Humans."
@@ -746,7 +760,7 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "e9a5b056ae8cd1f0c5df1765cb5e30e0d7e97400cf7dfb08b29f1a471ab3078c"
+content-hash = "ccdfd8c6661f3b3cc2a9ac5f846843c2e6992da295340e96af262f17eb3ce2d2"
 
 [metadata.files]
 attrs = []
@@ -800,6 +814,7 @@ pympi-ling = []
 pyparsing = []
 pyright = []
 pytest = []
+pytest-mock = []
 requests = []
 rsa = []
 six = []

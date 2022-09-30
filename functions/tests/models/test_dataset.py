@@ -1,4 +1,4 @@
-from models import Dataset, DatasetOptions, ElanOptions, TierSelector
+from models import Dataset, DatasetOptions, ElanOptions, ProcessingJob, TierSelector
 from pytest import raises
 
 # ====== Elan Options ======
@@ -80,7 +80,7 @@ def test_serialize_dataset_options():
     assert options.to_dict() == VALID_DATASET_OPTIONS_DICT
 
 
-# ======  Dataset ======
+# ====== Dataset ======
 FILES_WITH_ELAN = ["1.eaf", "1.wav"]
 FILES_WITHOUT_ELAN = ["1.txt", "1.wav"]
 MISMATCHED_FILES = ["1.eaf", "1.wav", "2.wav", "3.txt"]
@@ -140,3 +140,40 @@ def test_duplicate_files():
 
     dataset.files = COLLIDING_FILES
     assert set(dataset.colliding_files()) == {"1.eaf", "1.txt"}
+
+
+def test_dataset_batching():
+    dataset = Dataset.from_dict(VALID_DATASET_DICT)
+    batch = dataset.to_batch()
+    assert len(batch) == 1
+    job = batch[0]
+    assert job.user_id == dataset.user_id
+    assert job.dataset_name == dataset.name
+    transcript_file_name, audio_file_name = FILES_WITH_ELAN
+    assert job.transcription_file_name == transcript_file_name
+    assert job.audio_file_name == audio_file_name
+    assert job.options == dataset.options
+
+
+# ====== Processing Job ======
+VALID_JOB_DICT = {
+    "user_id": VALID_DATASET_DICT["user_id"],
+    "dataset_name": VALID_DATASET_DICT["name"],
+    "transcription_file_name": FILES_WITH_ELAN[0],
+    "audio_file_name": FILES_WITH_ELAN[1],
+    "options": VALID_DATASET_OPTIONS_DICT,
+}
+
+
+def test_build_processing_job():
+    job = ProcessingJob.from_dict(VALID_JOB_DICT)
+    assert job.user_id == VALID_DATASET_DICT["user_id"]
+    assert job.dataset_name == VALID_DATASET_DICT["name"]
+    assert job.transcription_file_name == FILES_WITH_ELAN[0]
+    assert job.audio_file_name == FILES_WITH_ELAN[1]
+    assert job.options == DatasetOptions.from_dict(VALID_DATASET_OPTIONS_DICT)
+
+
+def test_serialize_processing_job():
+    job = ProcessingJob.from_dict(VALID_JOB_DICT)
+    assert job.to_dict() == VALID_JOB_DICT

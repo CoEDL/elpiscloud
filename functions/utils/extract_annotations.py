@@ -9,7 +9,7 @@ from pympi.Elan import Eaf
 
 
 def extract_annotations(
-    transcription_file: Path, elan_options: Optional[ElanOptions]
+    transcription_file: Path, elan_options: Optional[ElanOptions] = None
 ) -> List[Annotation]:
     """Extracts annotations from the supplied transcription file.
 

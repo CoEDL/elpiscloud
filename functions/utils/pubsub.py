@@ -1,13 +1,13 @@
 import json
 from concurrent import futures
-from typing import Any, Callable, List
+from typing import Any, Callable, Iterable
 
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.futures import Future
 from loguru import logger
 
 
-def publish_to_topic(topic_name: str, data: List[Any], timeout: int = 60) -> None:
+def publish_to_topic(topic_name: str, data: Iterable[Any], timeout: int = 60) -> None:
     """Publish each object in the provided data list as a separate pubsub message
     to the given topic.
 

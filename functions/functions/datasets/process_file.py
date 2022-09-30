@@ -1,22 +1,22 @@
 import base64
 import json
 import os
+from copy import copy
+from itertools import chain
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import List, Tuple
 
+import utils.audio as audio
 from firebase_admin import firestore
 from loguru import logger
-from models import Annotation, TierSelector
-from utils.clean_json import clean_json_data
+from models import Annotation, DatasetOptions, ProcessingJob
+from utils.clean_text import clean_text
 from utils.cloud_storage import download_blob, list_blobs_with_prefix, upload_blob
 from utils.extract_annotations import extract_annotations
 from utils.firebase import get_firestore_client
-from utils.resample import resample
 
-TRANSCRIPTION_EXTENSIONS = {".txt", ".eaf"}
-AUDIO_EXTENSIONS = {".wav"}
-SAMPLE_RATE = 16_000
-
+DEFAULT_DIR = Path("/tmp/")
+TARGET_SAMPLE_RATE = 16_000
 FILES_BUCKET = os.environ.get("USER_FILES_BUCKET", "elpiscloud-user-upload-files")
 DATASET_BUCKET = os.environ.get("USER_DATASETS_BUCKET", "elpiscloud-user-dataset-files")
 
@@ -33,185 +33,189 @@ def process_dataset_file(event, context) -> None:
          event: The cloud event.
 
     """
-    logger.info(
-        f"This Function was triggered by messageId {context.event_id} published at {context.timestamp} to {context.resource['name']}"
-    )
-
-    data = base64.b64decode(event.data).decode("utf-8")
+    # Decode and deserialize the processing job
     data = base64.b64decode(event["data"]).decode("utf-8")
     data = json.loads(data)
     logger.info(f"Event data: {data}")
+    job = ProcessingJob.from_dict(data)
 
-    dataset_name = data["name"]
-    file_name = data["file"]
-    options = data["options"]
-    uid = data["userId"]
+    transcription_file, audio_file = download_files(job)
+    annotations = extract_annotations(transcription_file, job.options.elan_options)
 
-    local_file = Path(f"/tmp/{file_name}")
+    # Resample audio and annotations to standardise for training
+    sample_rate = audio.get_sample_rate(audio_file)
+    for annotation in annotations:
+        annotation.sample_rate = sample_rate
 
-    # Download the necessary file from cloud storage
+    audio.resample(
+        file=audio_file, destination=audio_file, sample_rate=TARGET_SAMPLE_RATE
+    )
+    annotations = map(
+        lambda annotation: annotation.rescale_timestamps(sample_rate), annotations
+    )
+
+    # Clean the annotations
+    annotations = map(
+        lambda annotation: clean_annotation(annotation, job.options), annotations
+    )
+
+    # Generate training files from the annotations
+    processed_files = chain(
+        *map(
+            lambda annotation: generate_training_files(annotation, audio_file),
+            annotations,
+        )
+    )
+
+    # Upload all the training files
+    for file in processed_files:
+        upload_blob(
+            DATASET_BUCKET, file, f"{job.user_id}/{job.dataset_name}/{file.name}"
+        )
+
+    post_processing_hook(job)
+
+
+def download_files(job: ProcessingJob, dir: Path = DEFAULT_DIR) -> Tuple[Path, Path]:
+    """Download the required transcription and audio files for the job.
+
+    Parameters:
+        job: The processing job.
+        dir: The directory in which to store the files.
+
+    Returns:
+        A tuple containing the path of the downloaded transcription,
+        and audio files.
+    """
+    # Download transcription file
+    transcription_file = dir / job.transcription_file_name
     download_blob(
         bucket_name=FILES_BUCKET,
-        source_blob_name=f"{uid}/{file_name}",
-        destination_file_name=local_file,
+        source_blob_name=f"{job.user_id}/{job.transcription_file_name}",
+        destination_file_name=transcription_file,
     )
 
-    # Process the file based on its file type.
-    extension = local_file.suffix
-    if extension in TRANSCRIPTION_EXTENSIONS:
-        processed_file = process_transcription_file(local_file, options)
-    elif extension in AUDIO_EXTENSIONS:
-        processed_file = process_audio_file(local_file)
-    else:
-        raise RuntimeError("Unrecognised file extension. Processing halted.")
-
-    # Save the processed file to the datasets folder in cloud storage
-    upload_blob(
-        bucket_name=DATASET_BUCKET,
-        source_file_name=processed_file,
-        destination_blob_name=f"{uid}/{dataset_name}/{processed_file.name}",
+    # Download audio file
+    audio_file = dir / job.audio_file_name
+    download_blob(
+        bucket_name=FILES_BUCKET,
+        source_blob_name=f"{job.user_id}/{job.audio_file_name}",
+        destination_file_name=audio_file,
     )
-
-    check_finished_processing(dataset_name, uid, DATASET_BUCKET)
-
-
-def process_transcription_file(file: Path, options: Dict[str, Any]) -> Path:
-    """Transforms a downloaded transcription file into a standardised json format for training.
-
-    Parameters:
-        file: The path of the downloaded file.
-        options: The dataset processing options to apply while cleaning.
-
-    Returns:
-        The path of the processed transcription file.
-    """
-    if file.suffix == ".eaf":
-        data = extract_elan_data(file, options)
-    else:
-        data = extract_text_data(file)
-
-    data = clean_data(data, options)
-
-    output_file = Path(f"/tmp/{file.stem}.json")
-    with open(output_file, "w") as data_file:
-        data_file.write(json.dumps([annotation.to_dict() for annotation in data]))
-
-    return output_file
+    return transcription_file, audio_file
 
 
-def extract_elan_data(file: Path, options: Dict[str, Any]) -> List[Annotation]:
-    """Extract transcription information from an Elan file.
+def clean_annotation(annotation: Annotation, options: DatasetOptions) -> Annotation:
+    """Cleans the text within an annotation.
 
     Parameters:
-        file: The path of the downloaded file.
-        options: The dataset processing options to apply while cleaning.
+        annotation: The annotation to clean.
+        options: The cleaning options for the dataset.
 
     Returns:
-        A list of utterance information for the given file.
+        A new annotation whose transcript has been cleaned.
     """
-    selection_mechanism: str = options["elanOptions"]["selectionMechanism"]
-    selection_value = options["elanOptions"]["selectionValue"]
+    transcript = clean_text(annotation.transcript, options)
+    result = copy(annotation)
+    result.transcript = transcript
+    return result
 
-    return extract_annotations(file, TierSelector(selection_mechanism), selection_value)
 
+def generate_training_files(
+    annotation: Annotation, audio_file: Path, dir: Path = DEFAULT_DIR
+) -> Tuple[Path, Path]:
+    """Generates a transcript and audio file pairing for this annotation.
 
-def extract_text_data(file: Path) -> List[Annotation]:
-    """Extract transcription information from a text file.
+    If the annotation is timed (has a start and stop time), we return a path
+    to a new audio file, which is constrained to the given times.
 
     Parameters:
-        file_name: The name of the downloaded file.
+        annotation: The annotation for a given section of audio within the
+            supplied audio_file.
+        audio_file: The file which the annotation references.
 
     Returns:
-        A list of utterance information for the given file.
+        A tuple containing a transcription and audio file path for the given
+            annotation.
     """
-    with open(file) as transcription_file:
-        transcription = transcription_file.read()
+    # Get a unique name prefix based on annotation start time
+    name = audio_file.stem
+    if annotation.start_ms is not None:
+        name = f"{name}_{annotation.start_ms}"
 
-    # Returning a dummy format without start and end times.
-    return [
-        Annotation(
-            audio_file_name=file.stem + ".wav",
-            transcript=transcription,
+    # Save transcription_file
+    transcription_file = dir / f"{name}.json"
+    with open(transcription_file, "w") as f:
+        json.dump(annotation.to_dict(), f)
+
+    # Save audio file.
+    # Type ignoring is because is_timed ensures sample_rate, start_ms and stop_ms exist
+    if annotation.is_timed():
+        cut_audio_file = dir / f"{name}.wav"
+        audio.cut(
+            audio_file,
+            cut_audio_file,
+            annotation.sample_rate,  # type: ignore
+            annotation.start_ms,  # type: ignore
+            annotation.stop_ms,  # type: ignore
         )
-    ]
+        audio_file = cut_audio_file
+
+    return transcription_file, audio_file
 
 
-def clean_data(
-    annotations: List[Annotation], options: Dict[str, Any]
-) -> List[Annotation]:
-    """Takes a list of utterance information and cleans it based off the provided
-    dataset processing options.
-
-    Parameters:
-        annotations: A list of Annotations
-        options: A dictionary containing dataset cleaning options.
-
-    Returns:
-        A cleaned list of annotations with the cleaning options applied.
-    """
-
-    annotation_data = clean_json_data(
-        [annotation.to_dict() for annotation in annotations],
-        punctuation_to_collapse_by=options["punctuationToRemove"],
-        punctuation_to_explode_by=options["punctuationToReplace"],
-        special_cases=options["wordsToRemove"].split("\n"),
-        translation_tags=options["tagsToRemove"].split("\n"),
-    )
-    return [Annotation.from_dict(data) for data in annotation_data]
-
-
-def process_audio_file(file: Path) -> Path:
-    """Resamples an audio file at the given Path, and returns the resulting path.
-
-    Parameters:
-        file: The path of the file to process
-    """
-    resample(file=file, destination=file, sample_rate=SAMPLE_RATE)
-    return file
-
-
-def check_finished_processing(
-    dataset_name: str, uid: str, datasets_bucket_name: str
-) -> None:
+def post_processing_hook(job: ProcessingJob) -> None:
     """Determine if all the files in a dataset have been processed, and if so,
     updates the document accordingly in firestore.
 
     Parameters:
-        dataset_name: The name of the dataset to process
-        uid: The user id
-        datasets_bucket_name: The name of the bucket where user dataset files
-                are stored.
+        job: The dataset processing job to check
     """
     # Get the list of files included in the dataset within firestore
     db = get_firestore_client()
     doc_ref: firestore.firestore.DocumentReference = (
         db.collection("users")
-        .document(uid)
+        .document(job.user_id)
         .collection("datasets")
-        .document(dataset_name)
+        .document(job.dataset_name)
     )
     snapshot = doc_ref.get()
 
     # Error handling  for if user deletes dataset before processing this file.
     if not snapshot.exists:
         raise RuntimeError(
-            f"Dataset doesn't exist at users/{uid}/datasets/{dataset_name}"
+            f"Dataset doesn't exist at users/{job.user_id}/datasets/{job.dataset_name}"
         )
 
     dataset = snapshot.to_dict()
     if dataset is None:
-        logger.error(f"Dataset users/{uid}/datasets{dataset_name} not found!!")
+        logger.error(
+            f"Dataset users/{job.user_id}/datasets/{job.dataset_name} not found!!"
+        )
         return
 
-    file_names = dataset["files"]
+    file_names: List[str] = dataset["files"]
     logger.info(f"Firestore dataset file names: {file_names}")
 
     # Get the list of files currently uploaded to the bucket.
-    processed_file_names = list(
-        list_blobs_with_prefix(datasets_bucket_name, f"{uid}/{dataset_name}/")
-    )
+    processed_file_names = [
+        str(blob.name)
+        for blob in list_blobs_with_prefix(
+            DATASET_BUCKET, f"{job.user_id}/{job.dataset_name}/"
+        )
+    ]
     logger.info(f"Processed file names: {processed_file_names}")
 
-    # Check that the length of each is equal, and if so, set dataset to be processed.
-    if len(file_names) == len(processed_file_names):
+    if has_finished_processing(file_names, processed_file_names):
         doc_ref.update({"processed": True})
+
+
+def has_finished_processing(
+    dataset_files: List[str], processed_files: List[str]
+) -> bool:
+
+    # Check that the length of each is equal, and if so, set dataset to be processed.
+    required_stems = {Path(name).stem for name in dataset_files}
+    # Gives back the
+    uploaded_stems = {Path(name).stem.split("_")[0] for name in processed_files}
+    return required_stems == uploaded_stems

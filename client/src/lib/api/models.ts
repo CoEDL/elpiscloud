@@ -21,7 +21,7 @@ export async function getModels(user: User) {
 }
 
 export async function uploadModel(user: User, model: Model) {
-  const docRef = doc(firestore, `users/${user.uid}/models/${model.name}`);
+  const docRef = doc(firestore, `users/${user.uid}/models/${model.modelName}`);
   const docSnap = await getDoc(docRef);
 
   // Check we're not overwriting anything

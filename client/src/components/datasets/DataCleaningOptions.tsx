@@ -13,19 +13,9 @@ export default function CleaningOptions({options, setOptions}: CleaningProps) {
       value: options.punctuationToRemove,
     },
     {
-      title: 'Punctuation to replace',
-      option: 'punctuationToReplace',
-      value: options.punctuationToReplace,
-    },
-    {
-      title: 'Words to remove',
-      option: 'wordsToRemove',
-      value: options.wordsToRemove,
-    },
-    {
-      title: 'Tags to remove',
-      option: 'tagsToRemove',
-      value: options.tagsToRemove,
+      title: 'Punctuation to explode',
+      option: 'punctuationToExplode',
+      value: options.punctuationToExplode,
     },
   ];
   return (

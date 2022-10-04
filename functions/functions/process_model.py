@@ -3,7 +3,7 @@ from typing import Dict
 
 from functions_framework import Context
 from loguru import logger
-from utils.model_metadata import ModelMetadata
+from models import Model
 from utils.pubsub import publish_to_topic
 
 PUBSUB_TOPIC = os.environ.get("TOPIC_ID", "process_model")
@@ -21,11 +21,11 @@ def process_model(data: Dict, context: Context) -> None:
     """
 
     try:
-        metadata = ModelMetadata.from_firestore_event(data["value"])
-        logger.info(f"Firestore newly-created model information: {metadata}")
+        model = Model.from_firestore_event(data["value"])
+        logger.info(f"Firestore newly-created model information: {model}")
     except:
         msg = f'Invalid model data structure: {data["value"]}'
         logger.error(msg)
         return
 
-    publish_to_topic(PUBSUB_TOPIC, [metadata.to_dict()])
+    publish_to_topic(PUBSUB_TOPIC, [model.to_dict()])

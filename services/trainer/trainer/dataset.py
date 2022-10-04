@@ -43,29 +43,19 @@ def _process_dataset(dataset_dir: Path, output_dir: Path) -> None:
     """Processes the files contained within a dataset directory, and writes
     the processed files to the output dir.
 
-    Note: This is a workaround function which came about because currently,
-    one transcript json file has many utterances generated from the same
-    audio file. This causes some annoyance when wanting to generate a dataset-
-    ideally we'd want the input audio files to be split into utterances.
-    As a temporary fix, we just combine the utterances into one larger one.
-
     Parameters:
         datset_dir: The path to the unprocessed dataset
         output_dir: The path in which to put the processed dataset
-
-    TODO: Delete/rework this as soon as the process_dataset cloud function
-    improves.
     """
     files = [dataset_dir / file for file in os.listdir(dataset_dir)]
-    files = filter(lambda file: file.suffix == ".json", files)
+    transcription_files = filter(lambda file: file.suffix == ".json", files)
 
     # Make sure output dir exists
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    for file in files:
-        with open(file) as f:
-            utterances = map(Utterance.from_dict, json.load(f))
-        utterance = reduce(Utterance.combine, utterances)
+    for file in transcription_files:
+        with open(file) as utterance_file:
+            utterance = Utterance.from_dict(json.load(utterance_file))
 
         path = output_dir / file.name
         with open(path, "w") as out_file:

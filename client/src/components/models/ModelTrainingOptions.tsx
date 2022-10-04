@@ -8,17 +8,13 @@ type Props = {
 };
 
 const defaultOptions: TrainingOptions = {
-  wordDelimiterToken: '',
+  wordDelimiterToken: ' ',
   epochs: 10,
   minDuration: 0,
   maxDuration: 60,
   learningRate: 0.0001,
   batchSize: 4,
-  debugWithSubset: false,
-  debugSubsetOptions: {
-    trainingSetSize: 10,
-    validationSetSize: 6,
-  },
+  testSize: 0.2,
 };
 
 export default function ModelTrainingOptions({options, saveOptions}: Props) {
@@ -28,7 +24,7 @@ export default function ModelTrainingOptions({options, saveOptions}: Props) {
 
   const inputs = [
     {
-      title: 'Word delimiter token',
+      title: 'Word delimiter token (default: " ")',
       option: 'wordDelimiterToken',
       value: trainingOptions.wordDelimiterToken,
       min: 0,
@@ -68,6 +64,13 @@ export default function ModelTrainingOptions({options, saveOptions}: Props) {
       value: trainingOptions.batchSize,
       min: 1,
       step: 1,
+    },
+    {
+      title: 'Test split (0, 1)',
+      option: 'testSize',
+      value: trainingOptions.testSize,
+      min: 0,
+      step: 0.05,
     },
   ];
 

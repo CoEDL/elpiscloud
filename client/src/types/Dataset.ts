@@ -1,7 +1,6 @@
-import {DocumentData} from 'firebase/firestore/lite';
 import {DataPreparationOptions} from './DataPreparationOptions';
 
-export interface Dataset extends DocumentData {
+export interface Dataset {
   name: string;
   files: string[];
   options: DataPreparationOptions;

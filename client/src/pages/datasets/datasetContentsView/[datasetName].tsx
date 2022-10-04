@@ -89,6 +89,8 @@ export default function DatasetViewer() {
    */
   const getElanOptionsTableRows = (dataset: Dataset) => {
     const elanOptions = dataset.options.elanOptions;
+    if (!elanOptions) return [];
+
     return Object.keys(elanOptions).map(key => {
       return (
         <tr

@@ -14,10 +14,9 @@ type Props = {
 };
 
 const defaultOptions: DataPreparationOptions = {
-  wordsToRemove: '',
   punctuationToRemove: '',
-  punctuationToReplace: '',
-  tagsToRemove: '',
+  punctuationToExplode: '',
+  textToRemove: [],
   elanOptions: {
     selectionMechanism: 'tier_name',
     selectionValue: '',
@@ -39,7 +38,7 @@ export default function DataPreparation({trainingFiles, saveOptions}: Props) {
 
   const canSave = () => {
     if (!usesElan()) return true;
-    return options.elanOptions.selectionValue !== '';
+    return options.elanOptions!.selectionValue !== '';
   };
 
   return (
@@ -48,7 +47,7 @@ export default function DataPreparation({trainingFiles, saveOptions}: Props) {
       <CleaningOptions options={options} setOptions={setOptions} />
       {usesElan() && (
         <ElanSelectionOptions
-          options={options}
+          options={options.elanOptions}
           save={(elanOptions: ElanOptions) =>
             setOptions({...options, elanOptions})
           }

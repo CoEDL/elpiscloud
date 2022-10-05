@@ -26,11 +26,11 @@ class TrainingOptions:
     word_delimiter_token: str = " "
     test_size: float = 0.2
 
-    @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "TrainingOptions":
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "TrainingOptions":
         field_names = [field.name for field in fields(TrainingOptions)]
         kwargs = {key: data[key] for key in data if key in field_names}
-        return TrainingOptions(**kwargs)
+        return cls(**kwargs)
 
     def to_dict(self) -> Dict[str, Any]:
         return dict(self.__dict__)
@@ -46,14 +46,14 @@ class Model:
     base_model: str = BASE_MODEL
     sampling_rate: int = SAMPLING_RATE
 
-    @staticmethod
-    def from_firestore_event(data: Dict[str, Any]) -> "Model":
+    @classmethod
+    def from_firestore_event(cls, data: Dict[str, Any]) -> "Model":
         """Generates a metadata class from a google firestore event dictionary
         representing changes to a model within firestore.
         """
         # Unpack value dictionary and convert to snake case
         data = decamelize(unpack(data))
-        return Model(
+        return cls(
             model_name=data["model_name"],
             dataset_name=data["dataset_name"],
             user_id=data["user_id"],

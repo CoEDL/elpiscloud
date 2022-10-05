@@ -127,7 +127,9 @@ def generate_training_files(
     """Generates a transcript and audio file pairing for this annotation.
 
     If the annotation is timed (has a start and stop time), we return a path
-    to a new audio file, which is constrained to the given times.
+    to a new audio file, which is constrained to the given times. Otherwise,
+    the annotation spans the entire audio path, and so we return this path,
+    unmodified.
 
     Parameters:
         annotation: The annotation for a given section of audio within the

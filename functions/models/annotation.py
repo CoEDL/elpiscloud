@@ -49,13 +49,13 @@ class Annotation:
         """Converts an annotation to a serializable dictionary"""
         return dict(self.__dict__)
 
-    @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "Annotation":
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Annotation":
         """Builds an annotation from a serializable dictionary
 
         Throws an error if the required keys are not found.
         """
-        return Annotation(
+        return cls(
             audio_file_name=data["audio_file_name"],
             transcript=data["transcript"],
             start_ms=data.get("start_ms"),

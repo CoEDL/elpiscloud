@@ -15,9 +15,9 @@ class ElanOptions:
     selection_mechanism: TierSelector
     selection_value: str
 
-    @staticmethod
-    def from_dict(data: Dict[str, str]) -> "ElanOptions":
-        return ElanOptions(
+    @classmethod
+    def from_dict(cls, data: Dict[str, str]) -> "ElanOptions":
+        return cls(
             selection_mechanism=TierSelector(data["selection_mechanism"]),
             selection_value=data["selection_value"],
         )
@@ -37,8 +37,8 @@ class DatasetOptions:
     text_to_remove: List[str] = field(default_factory=list)
     elan_options: Optional[ElanOptions] = None
 
-    @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "DatasetOptions":
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "DatasetOptions":
         kwargs = {
             field.name: data[field.name]
             for field in fields(DatasetOptions)
@@ -50,7 +50,7 @@ class DatasetOptions:
         else:
             elan_options = None
 
-        return DatasetOptions(elan_options=elan_options, **kwargs)
+        return cls(elan_options=elan_options, **kwargs)
 
     def to_dict(self) -> Dict[str, Any]:
         result = dict(self.__dict__)
@@ -74,15 +74,15 @@ class ProcessingJob:
         result["options"] = self.options.to_dict()
         return result
 
-    @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "ProcessingJob":
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "ProcessingJob":
         kwargs = {
             field.name: data[field.name]
             for field in fields(ProcessingJob)
             if field.name != "options"
         }
         options = DatasetOptions.from_dict(data["options"])
-        return ProcessingJob(options=options, **kwargs)
+        return cls(options=options, **kwargs)
 
 
 @dataclass
@@ -164,15 +164,15 @@ class Dataset:
             )
         )
 
-    @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "Dataset":
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Dataset":
         kwargs = {
             field.name: data[field.name]
             for field in fields(Dataset)
             if field.name != "options"
         }
         options = DatasetOptions.from_dict(data["options"])
-        return Dataset(options=options, **kwargs)
+        return cls(options=options, **kwargs)
 
     def to_batch(self) -> List["ProcessingJob"]:
         """Converts a valid dataset to a list of processing jobs, matching

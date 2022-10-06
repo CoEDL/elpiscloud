@@ -15,7 +15,7 @@ resource "google_api_gateway_api_config" "api_cfg" {
     document {
       path = "spec.yaml"
       contents = base64encode(
-        templatefile(var.swagger_location, var.function_url_map))
+      templatefile(var.swagger_location, var.function_url_map))
     }
   }
   lifecycle {
@@ -44,11 +44,11 @@ resource "google_compute_global_network_endpoint" "api_endpoint" {
 }
 
 resource "google_compute_backend_service" "api_lb_backend" {
-  provider               = google-beta
-  project                = var.project
-  name                   = "apigw-lb-backend"
-  enable_cdn             = true
-  protocol               = "HTTPS"
+  provider   = google-beta
+  project    = var.project
+  name       = "apigw-lb-backend"
+  enable_cdn = true
+  protocol   = "HTTPS"
   custom_request_headers = [
     "Host: ${google_compute_global_network_endpoint.api_endpoint.fqdn}",
     "Access-Control-Origin: *",

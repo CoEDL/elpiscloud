@@ -1,41 +1,41 @@
 # Enable services
 resource "google_project_service" "run" {
-  service = "run.googleapis.com"
+  service            = "run.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_project_service" "iam" {
-  service = "iam.googleapis.com"
+  service            = "iam.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_project_service" "dns" {
-  service = "dns.googleapis.com"
+  service            = "dns.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_project_service" "cloudbuild" {
-  service = "cloudbuild.googleapis.com"
+  service            = "cloudbuild.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_project_service" "cloudfunctions" {
-  service = "cloudfunctions.googleapis.com"
+  service            = "cloudfunctions.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_project_service" "apigateway" {
-  service = "apigateway.googleapis.com"
+  service            = "apigateway.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_project_service" "servicemanagement" {
-  service = "servicemanagement.googleapis.com"
+  service            = "servicemanagement.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_project_service" "servicecontrol" {
-  service = "servicecontrol.googleapis.com"
+  service            = "servicecontrol.googleapis.com"
   disable_on_destroy = false
 }
 
@@ -43,7 +43,7 @@ resource "google_project_service" "servicecontrol" {
 resource "google_service_account" "elpis_worker" {
   account_id   = "elpis-worker"
   display_name = "Elpis Worker SA"
-  
+
   depends_on = [google_project_service.iam]
 }
 
@@ -54,7 +54,7 @@ resource "google_project_iam_binding" "service_permissions" {
     "cloudfunctions.invoker",
     "iam.serviceAccountTokenCreator"
   ])
-  
+
   project    = var.project
   role       = "roles/${each.key}"
   members    = ["serviceAccount:${google_service_account.elpis_worker.email}"]

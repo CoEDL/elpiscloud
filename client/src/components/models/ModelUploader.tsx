@@ -30,11 +30,11 @@ export default function ModelUploader({options, dataset}: Props) {
 
     setError('');
     const model: Model = {
-      name,
+      modelName: name,
+      datasetName: dataset.name,
       options,
       userId: user.uid,
-      trainingStatus: 'training',
-      dataset,
+      status: 'waiting',
     };
     setUploadState('uploading');
     try {

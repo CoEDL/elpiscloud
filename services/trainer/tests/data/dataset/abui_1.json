@@ -1,9 +1,7 @@
-[
-  {
-    "audio_file_name": "abui_1.wav",
-    "transcript": "amakaang di kaai hada muila",
-    "start_ms": 290,
-    "stop_ms": 1910,
-    "speaker_id": "SL"
-  }
-]
+{
+  "audio_file_name": "abui_1.wav",
+  "transcript": "amakaang di kaai hada muila",
+  "start_ms": 290,
+  "stop_ms": 1910,
+  "speaker_id": "SL"
+}

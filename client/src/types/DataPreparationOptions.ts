@@ -1,9 +1,8 @@
 export interface DataPreparationOptions {
   punctuationToRemove: string;
-  punctuationToReplace: string;
-  tagsToRemove: string;
-  wordsToRemove: string;
-  elanOptions: ElanOptions;
+  punctuationToExplode: string;
+  textToRemove: string[];
+  elanOptions?: ElanOptions;
 }
 
 export interface ElanOptions {

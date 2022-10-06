@@ -52,22 +52,22 @@ export default function ModelViewer() {
           </tr>
         </thead>
         <tbody>
-          {models.map(({name, trainingStatus}) => (
+          {models.map(({modelName, status}) => (
             <tr
-              key={name}
+              key={modelName}
               className="border border-y border-slate-200 py-4 font-light text-gray-400"
             >
               <td className="table-padding font-normal text-slate-600">
-                {name}
+                {modelName}
               </td>
-              <td className="table-padding">{statusView(trainingStatus)}</td>
+              <td className="table-padding">{statusView(status)}</td>
               <td className="table-padding text-blue-500 underline">
-                <Link href={`/models/train/${name}`}>
+                <Link href={`/models/train/${modelName}`}>
                   <p className="cursor-pointer">View Training</p>
                 </Link>
               </td>
               <td className="table-padding text-right text-red-400">
-                <button onClick={() => _deleteModel(name)}>Delete</button>
+                <button onClick={() => _deleteModel(modelName)}>Delete</button>
               </td>
             </tr>
           ))}

@@ -34,6 +34,7 @@ OSError: cannot load library ... blah blah ... libsndfile.dylib' (no such file)
 Here are the steps I took to fix this:
 
 ```
+
 brew install libsndfile
 ...
 

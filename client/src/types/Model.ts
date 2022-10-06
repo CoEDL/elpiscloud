@@ -1,13 +1,13 @@
-import {Dataset} from './Dataset';
 import {TrainingOptions} from './TrainingOptions';
 
 export type Model = {
-  name: string;
+  modelName: string;
+  datasetName: string;
   options: TrainingOptions;
-  dataset: Dataset;
   userId: string;
-  trainingStatus: ModelTrainingStatus;
-  logPath?: string;
+  status: ModelTrainingStatus;
+  baseModel?: string;
+  samplingRate?: number;
 };
 
-export type ModelTrainingStatus = 'training' | 'finished' | 'error';
+export type ModelTrainingStatus = 'waiting' | 'training' | 'finished' | 'error';

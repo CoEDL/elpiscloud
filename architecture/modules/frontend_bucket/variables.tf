@@ -6,8 +6,8 @@ variable "project" {}
 variable "project_number" {}
 
 variable "region" {
-    type = string
-    default = "us-central1"
+  type    = string
+  default = "us-central1"
 }
 
 variable "root_zone" {}

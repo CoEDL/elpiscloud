@@ -60,7 +60,7 @@ resource "google_cloudfunctions_function" "process_dataset" {
 
   environment_variables = {
     TOPIC_ID = var.dataset_processing_topic.id
-    PROJECT = var.project
+    PROJECT  = var.project
   }
 
   service_account_email = var.elpis_worker.email
@@ -82,7 +82,7 @@ resource "google_cloudfunctions_function" "process_dataset_file" {
   }
 
   environment_variables = {
-    USER_FILES_BUCKET = var.user_upload_files_bucket.name
+    USER_FILES_BUCKET    = var.user_upload_files_bucket.name
     USER_DATASETS_BUCKET = var.user_datasets_bucket.name
   }
 
@@ -128,7 +128,7 @@ resource "google_cloudfunctions_function" "process_model" {
 
   environment_variables = {
     TOPIC_ID = var.model_processing_topic.id
-    PROJECT = var.project
+    PROJECT  = var.project
   }
 
   service_account_email = var.elpis_worker.email

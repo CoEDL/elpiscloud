@@ -1,6 +1,6 @@
 resource "google_storage_bucket" "static_site" {
   name          = "${var.project}-${var.env}-site"
-  location      = "${var.location}"
+  location      = var.location
   force_destroy = true
 
   uniform_bucket_level_access = true
@@ -18,16 +18,16 @@ resource "google_storage_bucket" "static_site" {
 }
 
 resource "google_storage_bucket_iam_binding" "sa" {
-  bucket  = google_storage_bucket.static_site.name
-  role    = "roles/storage.admin"
+  bucket = google_storage_bucket.static_site.name
+  role   = "roles/storage.admin"
   members = [
     "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com",
   ]
 }
 
 resource "google_storage_bucket_iam_binding" "public" {
-  bucket  = google_storage_bucket.static_site.name
-  role    = "roles/storage.objectViewer"
+  bucket = google_storage_bucket.static_site.name
+  role   = "roles/storage.objectViewer"
   members = [
     "allUsers",
   ]
@@ -75,9 +75,9 @@ resource "google_compute_url_map" "http_redirect" {
   name = "http-redirect"
 
   default_url_redirect {
-    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"  // 301 redirect
+    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT" // 301 redirect
     strip_query            = false
-    https_redirect         = true  // Specifies the URL scheme in the redirected request to be set to HTTPS
+    https_redirect         = true // Specifies the URL scheme in the redirected request to be set to HTTPS
   }
 }
 
@@ -90,10 +90,10 @@ resource "google_compute_target_http_proxy" "http_redirect" {
 // Creates a forwarding rule for requests to the given ip address 
 // at port 80 using TCP
 resource "google_compute_global_forwarding_rule" "http_redirect" {
-  name       = "frontend-http-redirect"
-  target     = google_compute_target_http_proxy.http_redirect.self_link
-  ip_address = google_compute_global_address.lb_ip.address
-  port_range = "80"
+  name        = "frontend-http-redirect"
+  target      = google_compute_target_http_proxy.http_redirect.self_link
+  ip_address  = google_compute_global_address.lb_ip.address
+  port_range  = "80"
   ip_protocol = "TCP"
 }
 

@@ -1,16 +1,20 @@
 import {
-  DataPreparationOptions,
   ElanOptions,
   ElanSelectionMechanism,
 } from 'types/DataPreparationOptions';
 
 type ElanSelectionProps = {
-  options: DataPreparationOptions;
+  options?: ElanOptions;
   save(elanOptions: ElanOptions): void;
 };
 
+const DEFAULT_OPTIONS: ElanOptions = {
+  selectionMechanism: 'tier_name',
+  selectionValue: '',
+};
+
 export default function ElanSelectionOptions({
-  options,
+  options = DEFAULT_OPTIONS,
   save,
 }: ElanSelectionProps) {
   return (
@@ -25,10 +29,10 @@ export default function ElanSelectionOptions({
           className="textbox col-span-2"
           name="selection"
           id="selection"
-          value={options.elanOptions?.selectionMechanism ?? 'tier_name'}
+          value={options.selectionMechanism ?? 'tier_name'}
           onChange={e =>
             save({
-              ...options.elanOptions,
+              ...options,
               selectionMechanism: e.target.value as ElanSelectionMechanism,
             })
           }
@@ -41,17 +45,17 @@ export default function ElanSelectionOptions({
         </select>
 
         <label htmlFor="selectionValue" className="form-label">
-          {options.elanOptions.selectionMechanism.split('_').join(' ') + '*'}
+          {options.selectionMechanism.split('_').join(' ') + '*'}
         </label>
         <input
           className="textbox col-span-2"
           type="text"
           name="selectionValue"
           id="selectionValue"
-          value={options.elanOptions.selectionValue}
+          value={options.selectionValue}
           onChange={e =>
             save({
-              ...options.elanOptions,
+              ...options,
               selectionValue: e.target.value,
             })
           }

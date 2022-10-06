@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "transcriber"
+version = "0.1.0"
+description = ""
+authors = ["Harry Keightley <harrykeightley@outlook.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Flask = "^2.2.2"
+gunicorn = "^20.1.0"
+loguru = "^0.6.0"
+google-cloud-storage = "^2.5.0"
+transformers = "^4.22.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+pyright = "^1.1.273"
+
+[tool.pyright]
+reportPrivateImportUsage = false
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

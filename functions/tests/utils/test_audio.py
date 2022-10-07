@@ -1,7 +1,6 @@
+import wave
 from pathlib import Path
-from unittest.mock import Mock
 
-import soundfile as sf
 from loguru import logger
 from utils.audio import cut, get_sample_rate, resample
 
@@ -19,12 +18,13 @@ def test_cut(tmp_path: Path):
     cut(
         file=audio,
         destination=cut_audio,
-        sample_rate=sample_rate,
         start_ms=start_ms,
         stop_ms=stop_ms,
     )
-    data, _ = sf.read(cut_audio)
-    assert len(data) == (stop_ms - start_ms) * sample_rate / 1000
+    with open(cut_audio, "rb") as f:
+        obj = wave.open(f, "rb")
+        assert obj.getnframes() == (stop_ms - start_ms) * sample_rate / 1000
+        assert obj.getframerate() == sample_rate
 
 
 def test_resample(tmp_path: Path):
@@ -33,11 +33,11 @@ def test_resample(tmp_path: Path):
     resample(audio, resampled_audio, TARGET_SAMPLE_RATE)
     assert resampled_audio.exists()
 
-    _, sample_rate = sf.read(resampled_audio)
-    assert sample_rate == TARGET_SAMPLE_RATE
+    with open(resampled_audio, "rb") as f:
+        obj = wave.open(f, "rb")
+        assert obj.getframerate() == TARGET_SAMPLE_RATE
 
 
-def test_get_sample_rate(mocker):
-    sf_mock: Mock = mocker.patch("utils.audio.sf.read")
-    sf_mock.return_value = None, 69
-    assert get_sample_rate(Path()) == 69
+def test_get_sample_rate():
+    audio = DATA_DIR / "test.wav"
+    assert get_sample_rate(audio) == 16_000

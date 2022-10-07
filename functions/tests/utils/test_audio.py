@@ -25,6 +25,7 @@ def test_cut(tmp_path: Path):
     audio_wave = wave.open(str(cut_audio), "rb")
     assert audio_wave.getnframes() == (stop_ms - start_ms) * sample_rate / 1000
     assert audio_wave.getframerate() == sample_rate
+    audio_wave.close()
 
 
 def test_resample(tmp_path: Path):
@@ -35,6 +36,7 @@ def test_resample(tmp_path: Path):
 
     resampled_audio_wave = wave.open(str(resampled_audio), "rb")
     assert resampled_audio_wave.getframerate() == TARGET_SAMPLE_RATE
+    resampled_audio_wave.close()
 
 
 def test_get_sample_rate():

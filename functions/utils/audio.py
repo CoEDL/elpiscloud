@@ -43,6 +43,15 @@ def resample(file: Path, destination: Path, sample_rate: int) -> None:
 
 
 def cut(file: Path, destination: Path, start_ms: int, stop_ms: int) -> None:
+    """Creates a new wav file at the destination, restricted to the given start
+    and stop times.
+
+    Parameters:
+        file (Path): The path of the file to resample.
+        destination (Path): The destination at which to create the resampled file.
+        start_ms (int): The start time in milliseconds to record from.
+        stop_ms (int):  The stop time in milliseconds to record to.
+    """
     with open(file, "rb") as f:
         wave_object = wave.open(f, "rb")
         params = wave_object.getparams()

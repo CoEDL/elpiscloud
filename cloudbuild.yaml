@@ -17,6 +17,7 @@ steps:
       - -c
       - |
         if [ $BRANCH_NAME = main ]; then
+          cd services/trainer 
           docker build -t gcr.io/${PROJECT_ID}/${_TRAINER_SERVICE_NAME} .
         else
           echo "Skipping building trainer image for branch: $BRANCH_NAME"

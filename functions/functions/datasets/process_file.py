@@ -155,11 +155,10 @@ def generate_training_files(
     if annotation.is_timed():
         cut_audio_file = dir / f"{name}.wav"
         audio.cut(
-            audio_file,
-            cut_audio_file,
-            annotation.sample_rate,  # type: ignore
-            annotation.start_ms,  # type: ignore
-            annotation.stop_ms,  # type: ignore
+            file=audio_file,
+            destination=cut_audio_file,
+            start_ms=annotation.start_ms,  # type: ignore
+            stop_ms=annotation.stop_ms,  # type: ignore
         )
         audio_file = cut_audio_file
 

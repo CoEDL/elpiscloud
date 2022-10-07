@@ -45,17 +45,6 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
-name = "cffi"
-version = "1.15.1"
-description = "Foreign Function Interface for Python calling C code."
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-pycparser = "*"
-
-[[package]]
 name = "charset-normalizer"
 version = "2.1.1"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
@@ -555,14 +544,6 @@ python-versions = "*"
 pyasn1 = ">=0.4.6,<0.5.0"
 
 [[package]]
-name = "pycparser"
-version = "2.21"
-description = "C parser in Python"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-
-[[package]]
 name = "pyhumps"
 version = "3.7.3"
 description = "🐫  Convert strings (and dictionary keys) between snake case, camel case and pascal case in Python. Inspired by Humps for Node"
@@ -679,20 +660,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
-name = "soundfile"
-version = "0.10.3.post1"
-description = "An audio library based on libsndfile, CFFI and NumPy"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-cffi = ">=1.0"
-
-[package.extras]
-numpy = ["numpy"]
-
-[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -760,14 +727,13 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "ccdfd8c6661f3b3cc2a9ac5f846843c2e6992da295340e96af262f17eb3ce2d2"
+content-hash = "41fe1f2cdb82afc084f05a37bd463590594fe11bb3eecdf5dd34610531c1baf3"
 
 [metadata.files]
 attrs = []
 cachecontrol = []
 cachetools = []
 certifi = []
-cffi = []
 charset-normalizer = []
 click = []
 cloudevents = []
@@ -808,7 +774,6 @@ protobuf = []
 py = []
 pyasn1 = []
 pyasn1-modules = []
-pycparser = []
 pyhumps = []
 pympi-ling = []
 pyparsing = []
@@ -818,7 +783,6 @@ pytest-mock = []
 requests = []
 rsa = []
 six = []
-soundfile = []
 tomli = []
 uritemplate = []
 urllib3 = []

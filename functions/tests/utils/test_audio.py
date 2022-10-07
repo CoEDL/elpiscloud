@@ -16,15 +16,15 @@ def test_cut(tmp_path: Path):
     stop_ms = 1000
     sample_rate = get_sample_rate(audio)
     cut(
-        file=audio,
+        audio_file=audio,
         destination=cut_audio,
         start_ms=start_ms,
         stop_ms=stop_ms,
     )
-    with open(cut_audio, "rb") as f:
-        obj = wave.open(f, "rb")
-        assert obj.getnframes() == (stop_ms - start_ms) * sample_rate / 1000
-        assert obj.getframerate() == sample_rate
+
+    audio_wave = wave.open(str(cut_audio), "rb")
+    assert audio_wave.getnframes() == (stop_ms - start_ms) * sample_rate / 1000
+    assert audio_wave.getframerate() == sample_rate
 
 
 def test_resample(tmp_path: Path):
@@ -33,9 +33,8 @@ def test_resample(tmp_path: Path):
     resample(audio, resampled_audio, TARGET_SAMPLE_RATE)
     assert resampled_audio.exists()
 
-    with open(resampled_audio, "rb") as f:
-        obj = wave.open(f, "rb")
-        assert obj.getframerate() == TARGET_SAMPLE_RATE
+    resampled_audio_wave = wave.open(str(resampled_audio), "rb")
+    assert resampled_audio_wave.getframerate() == TARGET_SAMPLE_RATE
 
 
 def test_get_sample_rate():

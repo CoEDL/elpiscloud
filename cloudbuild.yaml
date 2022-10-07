@@ -9,33 +9,6 @@ steps:
         echo "$BRANCH_NAME"
         echo "***********************"
 
-  - id: "build trainer image"
-    waitFor: ["-"]
-    name: "gcr.io/cloud-builders/docker"
-    entrypoint: "sh"
-    args:
-      - -c
-      - |
-        if [ $BRANCH_NAME = main ]; then
-          cd services/trainer 
-          docker build -t gcr.io/${PROJECT_ID}/${_TRAINER_SERVICE_NAME} .
-        else
-          echo "Skipping building trainer image for branch: $BRANCH_NAME"
-        fi
-
-  - id: "push trainer image"
-    waitFor: ["build trainer image"]
-    name: "gcr.io/cloud-builders/docker"
-    entrypoint: "sh"
-    args:
-      - -c
-      - |
-        if [ $BRANCH_NAME = main ]; then
-          docker push gcr.io/${PROJECT_ID}/${_TRAINER_SERVICE_NAME}
-        else
-          echo "Skipping pushing trainer image."
-        fi
-
   - id: "freeze cloud function requirements"
     waitFor: ["-"]
     name: "fnndsc/python-poetry"
@@ -110,10 +83,3 @@ steps:
           echo "*******************************************************************************"
         fi
   # [END tf-apply]
-
-substitutions:
-  _TRAINER_SERVICE_NAME: trainer
-  _TRANSCRIBER_SERVICE_NAME: transcriber
-
-images:
-  - "gcr.io/${PROJECT_ID}/${_TRAINER_SERVICE_NAME}"

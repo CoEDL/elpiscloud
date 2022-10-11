@@ -104,6 +104,13 @@ module "api_gateway" {
   depends_on = [module.zones]
 }
 
+resource "google_project_service" "cloud_run" {
+  provider                   = google-beta
+  project                    = google_project.default.project_id
+  service                    = "run.googleapis.com"
+  disable_dependent_services = true
+}
+
 module "trainer" {
   source                = "../../modules/service"
   project               = var.project

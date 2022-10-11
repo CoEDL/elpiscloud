@@ -113,7 +113,7 @@ module "trainer" {
   trained_models_bucket = module.trained_models_bucket.bucket
   topic                 = module.topics.model_processing_topic
   image                 = "gcr.io/${var.project}/trainer"
-  service_name          = "trainer"
+  service_name          = "elpiscloud-trainer"
 
   depends_on = [
     module.requirements,

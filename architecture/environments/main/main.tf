@@ -104,13 +104,6 @@ module "api_gateway" {
   depends_on = [module.zones]
 }
 
-resource "google_project_service" "cloud_run" {
-  provider                   = google-beta
-  project                    = var.project
-  service                    = "run.googleapis.com"
-  disable_dependent_services = true
-}
-
 module "trainer" {
   source                = "../../modules/service"
   project               = var.project
@@ -120,7 +113,7 @@ module "trainer" {
   trained_models_bucket = module.trained_models_bucket.bucket
   topic                 = module.topics.model_processing_topic
   image                 = "gcr.io/${var.project}/trainer"
-  service_name          = "elpiscloud-trainer"
+  service_name          = "trainer"
 
   depends_on = [
     module.requirements,

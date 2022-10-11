@@ -106,7 +106,7 @@ module "api_gateway" {
 
 resource "google_project_service" "cloud_run" {
   provider                   = google-beta
-  project                    = google_project.default.project_id
+  project                    = var.project
   service                    = "run.googleapis.com"
   disable_dependent_services = true
 }

@@ -1,66 +1,61 @@
-import wave
 from pathlib import Path
 
+from pedalboard.io import ReadableAudioFile, WriteableAudioFile
 
-def get_sample_rate(audio_file: Path) -> int:
-    """Gets the current sample rate of the given wav file.
+
+def get_sample_rate(audio_path: Path) -> int:
+    """Gets the current sample rate of the given audio file.
 
     Parameters:
-        audio_file: The path to the audio file.
+        audio_path: The path to the audio file.
 
     Returns:
         The sample rate of the given file.
     """
-    audio_wave = wave.open(str(audio_file), "rb")
-    sample_rate = audio_wave.getframerate()
-    audio_wave.close()
-
-    return sample_rate
+    with ReadableAudioFile(str(audio_path)) as audio_file:
+        return int(audio_file.samplerate)
 
 
-def resample(audio_file: Path, destination: Path, sample_rate: int) -> None:
+def resample(audio_path: Path, destination: Path, sample_rate: int) -> None:
     """Copies a wav file to the destination, with the given
     sample rate.
 
     Parameters:
-        audio_file (Path): The path of the file to resample
+        audio_path (Path): The path of the file to resample
         destination (Path): The destination at which to create the resampled file
         sample_rate (int): The sample rate for the resampled audio.
     """
-    audio_wave = wave.open(str(audio_file), "rb")
-    params = audio_wave.getparams()
-    frames = audio_wave.readframes(audio_wave.getnframes())
-    audio_wave.close()
+    with ReadableAudioFile(str(audio_path)).resampled_to(sample_rate) as audio_file:
+        data = audio_file.read(audio_file.frames)
+        num_channels = audio_file.num_channels
 
-    destination_wave = wave.open(str(destination), "wb")
-    destination_wave.setparams(params)
-    destination_wave.setframerate(sample_rate)
-    destination_wave.writeframes(frames)
-    destination_wave.close()
+    with WriteableAudioFile(
+        str(destination), samplerate=sample_rate, num_channels=num_channels
+    ) as destination_file:
+        destination_file.write(data)
 
 
-def cut(audio_file: Path, destination: Path, start_ms: int, stop_ms: int) -> None:
+def cut(audio_path: Path, destination: Path, start_ms: int, stop_ms: int) -> None:
     """Creates a new wav file at the destination, restricted to the given start
     and stop times.
 
     Parameters:
-        audio_file (Path): The path of the file to resample.
+        audio_path (Path): The path of the file to resample.
         destination (Path): The destination at which to create the resampled file.
         start_ms (int): The start time in milliseconds to record from.
         stop_ms (int):  The stop time in milliseconds to record to.
     """
-    audio_wave = wave.open(str(audio_file), "rb")
-    params = audio_wave.getparams()
-    frames = audio_wave.readframes(audio_wave.getnframes())
-    width = audio_wave.getsampwidth()
-    sample_rate = audio_wave.getframerate()
-    audio_wave.close()
 
-    start = round(sample_rate * start_ms / 1000)
-    stop = round(sample_rate * stop_ms / 1000)
+    with ReadableAudioFile(str(audio_path)) as audio_file:
+        start = int(start_ms * audio_file.samplerate / 1000)
+        stop = int(stop_ms * audio_file.samplerate / 1000)
 
-    destination_wave = wave.open(str(destination), "wb")
-    destination_wave.setparams(params)
-    # Have to multiply by sample width to get proper byte indices
-    destination_wave.writeframes(frames[start * width : stop * width])
-    destination_wave.close()
+        audio_file.seek(start)
+        data = audio_file.read(stop - start)
+        num_channels = audio_file.num_channels
+        sample_rate = audio_file.samplerate
+
+    with WriteableAudioFile(
+        str(destination), samplerate=sample_rate, num_channels=num_channels
+    ) as destination_file:
+        destination_file.write(data)

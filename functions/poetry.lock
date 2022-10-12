@@ -484,6 +484,17 @@ python-versions = ">=3.6"
 pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 
 [[package]]
+name = "pedalboard"
+version = "0.6.2"
+description = "A Python library for adding effects to audio."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = "*"
+
+[[package]]
 name = "pluggy"
 version = "0.13.1"
 description = "plugin and hook calling mechanisms for python"
@@ -727,7 +738,7 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "41fe1f2cdb82afc084f05a37bd463590594fe11bb3eecdf5dd34610531c1baf3"
+content-hash = "2cdeba3b22b57b492726842a971db65116e86019f09a1b734e85b7a179ef0e4b"
 
 [metadata.files]
 attrs = []
@@ -768,6 +779,7 @@ msgpack = []
 nodeenv = []
 numpy = []
 packaging = []
+pedalboard = []
 pluggy = []
 proto-plus = []
 protobuf = []

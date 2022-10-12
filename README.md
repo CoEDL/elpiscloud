@@ -30,8 +30,12 @@ We're using:
 - `docs/`: The documentation source.
 - `scripts/`: Some useful utilities.
 
-## Uploading the frontend
+## Exporting the frontend files.
 
 _(TODO, move this to docs)_
-From the root directory, run `./scripts/upload_frontend.sh prod`. The frontend
-will make a static export, and then copy these files across to the bucket.
+For the steps below, the `gcloud` CLI tools are required [(see here)](https://formulae.brew.sh/cask/google-cloud-sdk).
+
+1. Make sure you are signed into an account with iam privileges for the elpis frontend bucket.
+2. Set your project to 'elpiscloud': `gcloud config set project elpiscloud`
+3. From the root directory, run `./scripts/upload_frontend.sh prod`. The frontend
+   will make a static export, and then copy these files across to the bucket.

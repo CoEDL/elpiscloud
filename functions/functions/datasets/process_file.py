@@ -42,16 +42,9 @@ def process_dataset_file(event, context) -> None:
     transcription_file, audio_file = download_files(job)
     annotations = extract_annotations(transcription_file, job.options.elan_options)
 
-    # Resample audio and annotations to standardise for training
-    sample_rate = audio.get_sample_rate(audio_file)
-    for annotation in annotations:
-        annotation.sample_rate = sample_rate
-
+    # Resample audio to standardise for training
     audio.resample(
         audio_path=audio_file, destination=audio_file, sample_rate=TARGET_SAMPLE_RATE
-    )
-    annotations = map(
-        lambda annotation: annotation.rescale_timestamps(sample_rate), annotations
     )
 
     # Clean the annotations

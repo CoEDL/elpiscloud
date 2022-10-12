@@ -6,4 +6,4 @@ cd client
 yarn install && yarn build
 
 # Upload static files
-gcloud storage cp --recursive "out" "gs://elpiscloud-$env-site"
+gcloud storage cp --recursive "out/*" "gs://elpiscloud-$env-site"

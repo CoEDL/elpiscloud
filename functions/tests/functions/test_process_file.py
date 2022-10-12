@@ -5,7 +5,6 @@ from unittest.mock import Mock
 from models import Annotation, DatasetOptions, ProcessingJob
 
 from functions.datasets.process_file import (
-    TARGET_SAMPLE_RATE,
     clean_annotation,
     download_files,
     generate_training_files,
@@ -18,7 +17,6 @@ TEST_ANNOTATION_TIMED = Annotation(
     transcript="hi",
     start_ms=0,
     stop_ms=1000,
-    sample_rate=TARGET_SAMPLE_RATE,
 )
 
 TEST_JOB = ProcessingJob(

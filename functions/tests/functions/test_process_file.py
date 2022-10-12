@@ -90,6 +90,13 @@ def test_has_finished_processing():
     assert has_finished_processing(ABUI_DATASET_FILES, processed_files)
 
 
+def test_has_finished_procesing_with_path_prefixes():
+    processed_files = ["abui_1.json", "abui_1.wav", "abui_2.json", "abui_2.wav"]
+    prefix = "someUserId/datasetName/"
+    processed_files = [prefix + name for name in processed_files]
+    assert has_finished_processing(ABUI_DATASET_FILES, processed_files)
+
+
 def test_has_finished_processing_with_incomplete_files_should_return_false():
     processed_files = ["abui_1.json", "abui_1.wav"]
     assert not has_finished_processing(ABUI_DATASET_FILES, processed_files)

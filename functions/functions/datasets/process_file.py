@@ -48,7 +48,7 @@ def process_dataset_file(event, context) -> None:
         annotation.sample_rate = sample_rate
 
     audio.resample(
-        audio_file=audio_file, destination=audio_file, sample_rate=TARGET_SAMPLE_RATE
+        audio_path=audio_file, destination=audio_file, sample_rate=TARGET_SAMPLE_RATE
     )
     annotations = map(
         lambda annotation: annotation.rescale_timestamps(sample_rate), annotations
@@ -155,7 +155,7 @@ def generate_training_files(
     if annotation.is_timed():
         cut_audio_file = dir / f"{name}.wav"
         audio.cut(
-            audio_file=audio_file,
+            audio_path=audio_file,
             destination=cut_audio_file,
             start_ms=annotation.start_ms,  # type: ignore
             stop_ms=annotation.stop_ms,  # type: ignore

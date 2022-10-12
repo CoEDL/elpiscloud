@@ -214,9 +214,23 @@ def post_processing_hook(job: ProcessingJob) -> None:
 def has_finished_processing(
     dataset_files: List[str], processed_files: List[str]
 ) -> bool:
+    """Checks whether the dataset has finished processing.
 
-    # Check that the length of each is equal, and if so, set dataset to be processed.
+    Parameters:
+        dataset_files: A list of names of the files in the dataset.
+        processed_files: A list of names of files uploaded to cloud storage for
+            the corresponding dataset.
+
+    Returns:
+        true iff the supplied list of processed files would be a valid
+        processed dataset for the initial files.
+    """
+
     required_stems = {Path(name).stem for name in dataset_files}
-    # Gives back the
-    uploaded_stems = {Path(name).stem.split("_")[0] for name in processed_files}
-    return required_stems == uploaded_stems
+    uploaded_stems = {Path(name).stem for name in processed_files}
+
+    def is_processed(required_stem: str) -> bool:
+        starts_with_required_stem = lambda stem: stem.startswith(required_stem)
+        return any(map(starts_with_required_stem, uploaded_stems))
+
+    return all(map(is_processed, required_stems))

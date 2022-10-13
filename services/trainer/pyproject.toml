@@ -22,6 +22,7 @@ librosa = "^0.9.2"
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 pyright = "^1.1.270"
+pytest-mock = "^3.10.0"
 
 [tool.pyright]
 reportPrivateImportUsage = false
@@ -30,6 +31,9 @@ reportPrivateImportUsage = false
 markers = [
   "integration: mark a test as integration (deselect with '-m \"not integration\"')",
 ]
+
+[pytest]
+mock_traceback_monkeypatch = false
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

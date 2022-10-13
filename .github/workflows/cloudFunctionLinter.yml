@@ -1,42 +1,26 @@
 name: Cloud Functions Linter
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
   push:
     branches:
-      - dev
+      - main
+    paths:
+      - "functions/**.py"
   pull_request:
     branches:
-      - dev
+      - main
+    paths:
+      - "functions/**.py"
 
 jobs:
-  build:
-    # Name the Job
-    name: Linter
-    # Set the agent to run on
+  lint:
+    name: Run Black
     runs-on: ubuntu-latest
 
-    ##################
-    # Load all steps #
-    ##################
     steps:
-      ##########################
-      # Checkout the code base #
-      ##########################
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
         with:
-          # Full git history is needed to get a proper list of changed files within `super-linter`
-          fetch-depth: 0
-
-      ################################
-      # Run Linter against code base #
-      ################################
-      - name: Lint Code Base
-        uses: github/super-linter@v4
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_PYTHON_BLACK: true
-          DEFAULT_BRANCH: dev
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          options: "--check --verbose"
+          src: "./functions"
+          version: "21.5b1"

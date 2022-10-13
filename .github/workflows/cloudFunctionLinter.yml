@@ -23,4 +23,4 @@ jobs:
         with:
           options: "--check --verbose"
           src: "./functions"
-          version: "21.5b1"
+          version: "~= 22.3"

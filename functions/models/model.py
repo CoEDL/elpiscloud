@@ -66,4 +66,5 @@ class Model:
     def to_dict(self) -> Dict[str, Any]:
         result = dict(self.__dict__)
         result["options"] = self.options.to_dict()
+        result["status"] = self.status.value
         return result

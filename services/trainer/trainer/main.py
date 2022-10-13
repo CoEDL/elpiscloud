@@ -1,66 +1,89 @@
 import base64
 import json
 import os
+from http import HTTPStatus
 from pathlib import Path
 
-from flask import Flask, request
+from flask import Flask, Response, request
 from loguru import logger
-
-from .cloud_storage import download_blob, list_blobs_with_prefix, upload_blob
-from .model_metadata import ModelMetadata
-from .trainer import train
+from trainer.cloud_storage import download_blob, list_blobs_with_prefix, upload_blob
+from trainer.model_metadata import ModelMetadata
+from trainer.trainer import train
 
 app = Flask(__name__)
 
 DATA_PATH = Path("/data")
 DATASET_BUCKET = os.environ.get("DATASET_BUCKET", "elpiscloud-user-dataset-files")
-# TODO Update below when finished
-MODEL_BUCKET = os.environ.get("MODEL_BUCKET", "elpiscloud-trained-model-files")
+MODEL_BUCKET = os.environ.get("MODEL_BUCKET", "elpiscloud-trained-models")
+
+NO_ENVELOPE = "No Pub/Sub message received"
+BAD_PUBSUB_MESSAGE_FORMAT = "Invalid Pub/Sub message format"
+MISSING_PUBSUB_DATA = "Missing data from Pub/Sub message"
+BAD_MODEL_METADATA_FORMAT = "Invalid model metadata format"
 
 
 @app.route("/", methods=["POST"])
 def index():
     """Main class for processing model training requests."""
     # Unwrap the pubsub data and check formatting
-    envelope = request.get_json()
+    envelope = request.get_json(silent=True)
     if not envelope:
-        msg = "no Pub/Sub message received"
-        logger.error(f"Error: {msg}")
-        return f"Bad Request: {msg}", 400
+        return bad_request(NO_ENVELOPE)
 
     if not isinstance(envelope, dict) or "message" not in envelope:
-        msg = "invalid Pub/Sub message format"
-        logger.error(f"Error: {msg}")
-        return f"Bad Request: {msg}", 400
+        return bad_request(BAD_PUBSUB_MESSAGE_FORMAT)
 
     pubsub_message = envelope["message"]
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
         data = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
-        logger.info(f"Received training job with info: {data}!")
+        logger.info(f"Received training job with data: {data}!")
     else:
-        msg = "Missing data from Pub/Sub message"
-        logger.error(f"Error: {msg}")
-        return f"Bad Request: {msg}", 400
+        return bad_request(MISSING_PUBSUB_DATA)
 
-    # Convert data to dict
-    data = json.loads(data)
+    # Attempt to convert data to Model
     try:
+        data = json.loads(data)
         metadata = ModelMetadata.from_dict(data)
     except Exception:
-        msg = f"Invalid data format: {data}"
-        logger.error(f"Error: {msg}")
-        return f"Bad Request: {msg}", 400
+        msg = f"{BAD_MODEL_METADATA_FORMAT}: {data}"
+        return bad_request(msg)
+
+    response = Response(status=HTTPStatus.NO_CONTENT)
+
+    # Queue the training to happen after returning an ACK response for the
+    # pubsub subscription, so it doesn't keep retrying.
+    response.call_on_close(lambda: process_training_request(metadata))
+
+    logger.info("Responding with ACK")
+    return response
+
+
+def bad_request(error_message: str) -> Response:
+    """Logs the given error message and builds a 400 response to return.
+
+    Parameters:
+        error_message: The error message to include in the logs and response.
+    """
+    logger.error(f"Error: {error_message}")
+    return Response(f"Bad Request: {error_message}", status=HTTPStatus.BAD_REQUEST)
+
+
+def process_training_request(metadata: ModelMetadata):
+    """Performs the training workflow given some information about the model.
+
+    Paramters:
+        metadata: The metadata of the model training job to perform.
+    """
+    logger.info("Begin executing training job")
 
     dataset_path = DATA_PATH / "datasets" / metadata.user_id / metadata.model_name
     download_dataset(metadata=metadata, dataset_path=dataset_path)
 
-    # Attempt to train the model
     model_path = train(
         metadata=metadata, data_path=DATA_PATH, dataset_path=dataset_path
     )
 
-    upload_results(metadata, model_path)
-    return ("", 204)
+    upload_model(metadata, model_path)
 
 
 def download_dataset(metadata: ModelMetadata, dataset_path: Path) -> None:
@@ -79,20 +102,16 @@ def download_dataset(metadata: ModelMetadata, dataset_path: Path) -> None:
         download_blob(DATASET_BUCKET, str(blob.name), local_path)
 
 
-def upload_results(metadata: ModelMetadata, model_path: Path) -> None:
-    """Uploads the trained model to cloud storage, and updates the model metadata
-    in firebase.
+def upload_model(metadata: ModelMetadata, model_path: Path) -> None:
+    """Uploads the trained model to cloud storage.
 
     Parameters:
         metadata: The metadata of the model training job.
         model_path: The path of the trained model.
     """
-    # Upload model files
     for file in os.listdir(model_path):
         blob_name = f"{metadata.user_id}/{metadata.model_name}/{file}"
         upload_blob(MODEL_BUCKET, model_path / file, blob_name)
-
-    # TODO Update model metadata
 
 
 if __name__ == "__main__":

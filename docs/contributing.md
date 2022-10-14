@@ -279,14 +279,26 @@ in the upper right-hand corner.
 - The head repository will be your work (`your-user-name/elpiscloud`),
   and the branch will be whatever name you gave your branch.
 
-Click _"create pull request"_ when you're ready.
+Click _"Create pull request"_ when you're ready.
 
-Make sure that the changes you made are included in the PR.
-Fill in some details about your potential patch,
-using the pull request template provided.
+- Make sure that the changes you made are included in the PR.
+- Fill in some details about your changes using the pull request template provided.
+- If your PR address an issue, make sure to add it in the description.
 
-When finished, click "Create pull request".
+When finished, click _"Create pull request"_ again.
 
 ### PR Feedback
 
-### Branch History
+Most pull requests will go through a few iterations before they get merged.
+Different contributors will sometimes have different opinions, and often,
+fixes/features will need to be revised.
+
+If changes are requested, push to your forked feature branch, and those changes
+should now be visible on the PR.
+
+When addressing feedback comments in a PR, if your latest commit fixes a comment
+from a previous revision, mark it as resolved to keep the PR clean.
+
+While you're waiting for feedback on your pull request, open up a few other
+pull requests and give someone else some! They'll appreciate it in the same
+way that you appreciate feedback on your patches.

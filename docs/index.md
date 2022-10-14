@@ -1,17 +1,7 @@
-# Welcome to MkDocs
+# Welcome to Elpis Cloud
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Elpis is a tool for language workers with minimal computational experience
+to build their own speech recognition system for automatically transcribing audio.
 
-## Commands
-
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+_Elpis Cloud_ puts elpis in the cloud, resulting in all the benefits to users
+while avoiding a complicated setup process.

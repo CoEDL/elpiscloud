@@ -316,6 +316,6 @@ should now be visible on the PR.
 When addressing feedback comments in a PR, if your latest commit fixes a comment
 from a previous revision, mark it as resolved to keep the PR clean.
 
-While you're waiting for feedback on your pull request, open up a few other
-pull requests and give someone else some! They'll appreciate it in the same
-way that you appreciate feedback on your patches.
+While you're waiting for feedback on your pull request, open up another
+pull request, or give someone else feedback on theirs! They'll appreciate 
+it in the same way that you appreciate feedback on your patches.

@@ -247,7 +247,7 @@ it's time to proceed.
 
 ### Forking (Public Contributors)
 
-If you're not part of the CoEDL organisation on Github, you won't have push
+If you're not part of the CoEDL organisation on GitHub, you won't have push
 access to the elpiscloud repository, and therefore won't be able to push your
 branch directly to the remote before you make a Pull Request.
 
@@ -258,7 +258,7 @@ repository.
 
 The steps to do so are provided below:
 
-First, navigate to the [elpiscloud github repo](https://github.com/CoEDL/elpiscloud)
+First, navigate to the [elpiscloud GitHub repo](https://github.com/CoEDL/elpiscloud)
 and click the fork button at the top right of the screen.
 
 On the new page, click **Create Fork**

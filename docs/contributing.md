@@ -1,8 +1,11 @@
 # Contributing to Elpis Cloud
 
+<!---
 ## Reporting an Issue
 
 ## Making feature requests
+
+-->
 
 ## Contributing to the Documentation
 
@@ -14,7 +17,7 @@ The easiest way to do this is with `pip install mkdocs` (or `pip3` for mac users
 After that, from the project root, run `mkdocs serve` to serve the local version
 of the documentation. Now any changes you make should be live at [localhost:8000](localhost:8000)
 
-### Adding new pages
+### Adding New Pages
 
 There are a few steps to adding a new page to the online documentation.
 
@@ -34,16 +37,15 @@ nav:
 
 Your should now see your page in the sidebar!
 
-### `mkdocs` development commands
+### `mkdocs` Development Commands
 
-- `mkdocs new [dir-name]` - Create a new project.
 - `mkdocs serve` - Start the live-reloading docs server.
 - `mkdocs build` - Build the documentation site.
 - `mkdocs -h` - Print help message and exit.
 
 For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
-## Contributing code
+## Contributing Code
 
 To be able to contribute code, you'll first need to clone the monorepo:
 
@@ -58,12 +60,12 @@ git checkout -b your_branch_name
 
 Make sure your branch name is descriptive of the proposed changes.
 
-### Setting up the appropriate dev environment
+### Setting up the Appropriate Dev Environment
 
 The elpiscloud repo is split into 4 main development "sub-projects". You should
 only setup the parts you'll need to implement your required feature.
 
-#### The frontend client
+#### The Frontend Client
 
 To get started with the frontend client, jump into its directory:
 
@@ -84,28 +86,28 @@ browser.
 
 #### Cloud Functions
 
-To prepare the cloud functions devlopment environment, [make sure you have poetry installed](https://python-poetry.org/docs/),
-and optionally, setup the appropriate python version with a tool like `asdf` or `pyenv`.
+To prepare the cloud functions devlopment environment, [make sure you have Poetry installed](https://python-poetry.org/docs/),
+and optionally, setup the appropriate Python version with a tool like `asdf` or `pyenv`.
 
-Currently we're using python 3.10 for our python functions and services.
+Currently we're using Python 3.10 for our Python functions and services.
 
 Navigate to the cloud functions folder:
 
 `cd functions`
 
-And install the poetry dependencies:
+And install the Poetry dependencies:
 
 `poetry install`
 
 And you're ready to go!
 
-#### Cloud run Services
+#### Cloud Run Services
 
 To prepare the services devlopment environment:
 
-- [Make sure you have poetry installed](https://python-poetry.org/docs/)
-- Optionally, setup the appropriate python version with a tool like `asdf` or `pyenv`.
-  Currently we're using python 3.10 for our python functions and services.
+- [Make sure you have Poetry installed](https://python-poetry.org/docs/)
+- Optionally, setup the appropriate Python version with a tool like `asdf` or `pyenv`.
+  Currently we're using Python 3.10 for our Python functions and services.
 - If applicable, make sure you have a version of docker to build the container.
 
 Navigate to the relevant service folder:
@@ -116,17 +118,19 @@ or
 
 `cd services/transcriber`
 
-And install the poetry dependencies:
+And install the Poetry dependencies:
 
 `poetry install`
 
 And you should be ready to go.
 
-#### Terraform architecture files
-
+<!--
 TODO
 
-### Write your Code
+#### Terraform architecture files
+-->
+
+### Write Your Code
 
 Now it's time to write some code! While doing so, here are some things you may
 want to keep in mind:
@@ -134,18 +138,18 @@ want to keep in mind:
 - We have a set of fairly opinionated linters/formatters for our stack.
   [Make sure to run them](#formatting-your-code) before creating a PR.
 - Write appropriate documentation for any changes you make.
-  - For python code, this means [google-style docstrings](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)
+  - For Python code, this means [google-style docstrings](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)
     for any functions/classes you add.
   - For tsx files, we don't currently have a standard documentation format.
   - If your changes would change our online documentation, make sure to [update it](#contributing-to-the-documentation)!
 
-### Formatting your code
+### Formatting Your Code
 
 We've decided that it's too much of a hassle to have to eyeball style-guides,
 and to that end, have provided some linters/formatters for front and backend
 development.
 
-#### Frontend linting/formatting
+#### Frontend Linting/Formatting
 
 Within the client folder, you can run the linter with `yarn lint`.
 
@@ -153,17 +157,17 @@ The `.eslintrc.json` and `.prettierrc.js` files should work with common IDE
 extensions (eslint and prettier respectively on vscode), so that the diagnostics
 and formatting are provided automatically when you're editing a frontend file.
 
-#### Backend linting/formatting
+#### Backend Linting/Formatting
 
-All of our python related components of elpiscloud use [black](https://github.com/psf/black)
+All of our Python related components of elpiscloud use [black](https://github.com/psf/black)
 for formatting/linting.
 
-Within a poetry folder (`functions` or `services/**`), after you've installed  
+Within a Poetry folder (`functions` or `services/**`), after you've installed  
 the dependencies, you can run `poetry run black .` to format the directory.
 
 This can also be done through vscode extensions, but whatever floats your boat.
 
-### Testing your code
+### Testing Your Code
 
 Before you start the process of submitting a PR, it is important to write some
 tests for your feature (if applicable).
@@ -171,9 +175,9 @@ tests for your feature (if applicable).
 For our backend, we're using `pytest` and `pytest-mock` for testing.
 On the frontend, we don't currently have tests, but this may change in the future.
 
-#### Testing poetry environments
+#### Testing Poetry Environments
 
-From within a poetry folder (`functions` or `services/**`), you can run the
+From within a Poetry folder (`functions` or `services/**`), you can run the
 full test suite with `poetry run pytest`.
 
 For the services, this isn't always recommended since in the integration tests,
@@ -185,10 +189,10 @@ To run the non-integration tests from within a service, you can instead run:
 
 Which will skip those tests.
 
-#### Writing your own tests
+#### Writing Your Own Tests
 
 When writing your own tests, I'd recommend following the style of the preexisting
-tests for that folder. Generally in poetry folders, the tests exist under the
+tests for that folder. Generally in Poetry folders, the tests exist under the
 `tests` directory.
 
 As a general naming convention for tests you write, we recommend:
@@ -208,7 +212,7 @@ write, but as with the source code, if you're making an assertion about some
 expected value that might not be immediately clear in the code, there's no harm
 in adding a comment.
 
-### Commit your changes
+### Commit Your Changes
 
 When you're happy with the code on your computer, you need to commit your changes:
 
@@ -217,9 +221,11 @@ When you're happy with the code on your computer, you need to commit your change
 This should fire up your editor to write a commit message. When you have finished,
 save, and close to continue.
 
-**TODO** Commit format
+<!---
+TODO Describe Commit format
+-->
 
-### Update your branch
+### Update Your Branch
 
 It's likely that other changes to `main` may have happened while you were working.
 To update your branch with these changes:
@@ -236,10 +242,21 @@ git rebase my_new_branch
 git checkout my_new_branch
 ```
 
-If there are no conflicts, and after running the tests, all seems well at the inn,
-its time to proceed.
+If there are no merge conflicts, and the tests are still passing,
+it's time to proceed.
 
-### Forking (general contributors)
+### Forking (Public Contributors)
+
+If you're not part of the CoEDL organisation on Github, you won't have push
+access to the elpiscloud repository, and therefore won't be able to push your
+branch directly to the remote before you make a Pull Request.
+
+Instead, what public contributors will have to do is make a _fork_ of the repo
+(which can be thought of as a copy of the entire project),
+and then make the PR from a forked branch to the main branch on the original
+repository.
+
+The steps to do so are provided below:
 
 First, navigate to the [elpiscloud github repo](https://github.com/CoEDL/elpiscloud)
 and click the fork button at the top right of the screen.
@@ -256,7 +273,7 @@ Push your feature branch to the forked repository:
 
 Now you should be ready to [open a pull request](#opening-a-pr)!
 
-### Pushing your branch to the remote (CoEDL members)
+### Pushing Your Branch to the Remote (CoEDL Members)
 
 If you have push access to the repository already, you don't have to make a
 fork and can instead run the following:
@@ -270,7 +287,7 @@ your PR.
 
 ### Opening a PR
 
-Navigate to the Rails repository you just pushed to
+Navigate to the repository you just pushed to
 (e.g. https://github.com/your-user-name/elpiscloud) and click on "Pull Requests"
 in the top bar (just above the code). On the next page, click "New pull request"
 in the upper right-hand corner.

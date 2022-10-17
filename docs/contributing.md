@@ -9,7 +9,7 @@
 
 ## Contributing to the Documentation
 
-To help flesh out our documentation at `docs.elpis.com`, you'll first need to install
+To help flesh out our documentation at [docs.elpis.com](https://docs.elpis.com), you'll first need to install
 [mkdocs](https://www.mkdocs.org/getting-started/).
 
 The easiest way to do this is with `pip install mkdocs` (or `pip3` for mac users).

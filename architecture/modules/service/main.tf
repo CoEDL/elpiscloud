@@ -38,9 +38,10 @@ resource "google_project_iam_binding" "project" {
 }
 
 resource "google_pubsub_subscription" "subscription" {
-  name                 = "${var.service_name}_subscription"
-  topic                = var.topic.name
-  ack_deadline_seconds = 30
+  name                       = "${var.service_name}_subscription"
+  topic                      = var.topic.name
+  ack_deadline_seconds       = 30
+  message_retention_duration = "600s"
 
   push_config {
     push_endpoint = google_cloud_run_service.default.status[0].url

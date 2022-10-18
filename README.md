@@ -1,10 +1,14 @@
 # ElpisCloud
 
-[elpis.cloud](https://elpis.cloud)
+:cloud: [elpis.cloud](https://elpis.cloud) :cloud:
 
 A rework of the [ELPIS Project](https://github.com/CoEDL/elpis), but cloud-based and chic.
 
-Our documentation is being written [here](https://docs.elpis.cloud).
+Our documentation is being written [here](https://docs.elpis.cloud). :book:
+
+## Want to help?
+
+Check out our [guide on how to contribute](CONTRIBUTING.md). 
 
 ## Overview
 

@@ -3,11 +3,14 @@ import json
 import os
 from http import HTTPStatus
 from pathlib import Path
+from typing import Optional
 
 from flask import Flask, Response, request
+from google.cloud.firestore import DocumentReference
 from loguru import logger
 from trainer.cloud_storage import download_blob, list_blobs_with_prefix, upload_blob
-from trainer.model_metadata import ModelMetadata
+from trainer.firebase import get_firestore_client
+from trainer.model_metadata import ModelMetadata, TrainingStatus
 from trainer.trainer import train
 
 app = Flask(__name__)
@@ -74,16 +77,32 @@ def process_training_request(metadata: ModelMetadata):
     Paramters:
         metadata: The metadata of the model training job to perform.
     """
-    logger.info("Begin executing training job")
+    status = get_model_status(metadata)
+    if status is None:
+        logger.info("Model was deleted from firestore. Exiting.")
+        return
 
-    dataset_path = DATA_PATH / "datasets" / metadata.user_id / metadata.model_name
-    download_dataset(metadata=metadata, dataset_path=dataset_path)
+    logger.info(f"Firestore model status: {status}")
+    if status == TrainingStatus.TRAINING:
+        logger.info(f"Already training! Exiting.")
+        return
 
-    model_path = train(
-        metadata=metadata, data_path=DATA_PATH, dataset_path=dataset_path
-    )
+    set_model_status(metadata, TrainingStatus.TRAINING)
 
-    upload_model(metadata, model_path)
+    try:
+        dataset_path = DATA_PATH / "datasets" / metadata.user_id / metadata.model_name
+        download_dataset(metadata=metadata, dataset_path=dataset_path)
+        model_path = train(
+            metadata=metadata, data_path=DATA_PATH, dataset_path=dataset_path
+        )
+
+        upload_model(metadata, model_path)
+        set_model_status(metadata, TrainingStatus.FINISHED)
+        logger.success("Training successful!")
+
+    except:
+        logger.error(f"Training failed for model: {metadata}")
+        set_model_status(metadata, TrainingStatus.ERROR)
 
 
 def download_dataset(metadata: ModelMetadata, dataset_path: Path) -> None:
@@ -112,6 +131,56 @@ def upload_model(metadata: ModelMetadata, model_path: Path) -> None:
     for file in os.listdir(model_path):
         blob_name = f"{metadata.user_id}/{metadata.model_name}/{file}"
         upload_blob(MODEL_BUCKET, model_path / file, blob_name)
+
+
+def get_model_status(metadata: ModelMetadata) -> Optional[TrainingStatus]:
+    """Gets the current status of the model, if it exists.
+
+    Parameters:
+        metadata: Some information about the model to be trained.
+
+    Returns:
+        The status of the model, or None if the model was deleted.
+    """
+    document = _get_model_document_reference(metadata)
+    snapshot = document.get()
+
+    data = snapshot.to_dict()
+    # Checks if dataset was deleted before we start training.
+    if data is None:
+        return
+
+    try:
+        updated_model = ModelMetadata.from_dict(data)
+        return updated_model.status
+    except:
+        return
+
+
+def set_model_status(metadata: ModelMetadata, status: TrainingStatus) -> None:
+    """Sets the current status of the model, if it exists.
+
+    Parameters:
+        metadata: Some information about the model to be trained.
+        status: The status to set on the firestore model.
+    """
+    document = _get_model_document_reference(metadata)
+    snapshot = document.get()
+
+    if not snapshot.exists:
+        return
+
+    document.update({"status": status.value})
+
+
+def _get_model_document_reference(metadata: ModelMetadata) -> DocumentReference:
+    db = get_firestore_client()
+    return (
+        db.collection("users")
+        .document(metadata.user_id)
+        .collection("models")
+        .document(metadata.model_name)
+    )
 
 
 if __name__ == "__main__":

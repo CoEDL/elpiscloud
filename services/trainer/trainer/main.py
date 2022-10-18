@@ -134,7 +134,7 @@ def upload_model(metadata: ModelMetadata, model_path: Path) -> None:
 
 
 def get_model_status(metadata: ModelMetadata) -> Optional[TrainingStatus]:
-    """Gets the current status of the model, if it exists.
+    """Gets the current status of the model in firestore, if it exists.
 
     Parameters:
         metadata: Some information about the model to be trained.
@@ -158,7 +158,7 @@ def get_model_status(metadata: ModelMetadata) -> Optional[TrainingStatus]:
 
 
 def set_model_status(metadata: ModelMetadata, status: TrainingStatus) -> None:
-    """Sets the current status of the model, if it exists.
+    """Sets the current status of the model in firestore, if it exists.
 
     Parameters:
         metadata: Some information about the model to be trained.

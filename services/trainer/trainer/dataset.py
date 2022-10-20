@@ -1,16 +1,14 @@
-import json
 import os
-from functools import reduce
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from datasets import Audio, load_dataset
 from datasets.dataset_dict import DatasetDict
 from trainer.model_metadata import ModelMetadata
-from trainer.utterance import Utterance
 from transformers import Wav2Vec2Processor
 
 PROCESSOR_COUNT = 4
+AUDIO_COLUMN = "audio"
 
 
 def create_dataset(
@@ -28,38 +26,28 @@ def create_dataset(
         A dataset dictionary with test and train splits.
     """
 
-    processed_path = dataset_path / "processed"
-    _process_dataset(dataset_path, processed_path)
-
+    transcript_files = [
+        str(dataset_path / file)
+        for file in os.listdir(dataset_path)
+        if (dataset_path / file).suffix == ".json"
+    ]
     dataset = load_dataset(
-        "json", cache_dir=str(cache_dir), data_dir=str(processed_path)
+        "json", cache_dir=str(cache_dir), data_files=transcript_files
     )
-    dataset = dataset.cast_column("audio", Audio(sampling_rate=metadata.sampling_rate))
+
+    # Convert the audio file name column into the matching audio data
+    dataset = dataset.rename_column("audio_file_name", AUDIO_COLUMN)
+
+    def resolve_audio_path(row: Dict[str, Any]) -> Dict[str, Any]:
+        row[AUDIO_COLUMN] = str(dataset_path / row[AUDIO_COLUMN])
+        return row
+
+    dataset = dataset.map(resolve_audio_path)
+    dataset = dataset.cast_column(
+        AUDIO_COLUMN, Audio(sampling_rate=metadata.sampling_rate)
+    )
 
     return dataset["train"].train_test_split(test_size=metadata.options.test_size)  # type: ignore
-
-
-def _process_dataset(dataset_dir: Path, output_dir: Path) -> None:
-    """Processes the files contained within a dataset directory, and writes
-    the processed files to the output dir.
-
-    Parameters:
-        datset_dir: The path to the unprocessed dataset
-        output_dir: The path in which to put the processed dataset
-    """
-    files = [dataset_dir / file for file in os.listdir(dataset_dir)]
-    transcription_files = filter(lambda file: file.suffix == ".json", files)
-
-    # Make sure output dir exists
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    for file in transcription_files:
-        with open(file) as utterance_file:
-            utterance = Utterance.from_dict(json.load(utterance_file))
-
-        path = output_dir / file.name
-        with open(path, "w") as out_file:
-            json.dump(utterance.to_dict(dataset_dir), out_file)
 
 
 def prepare_dataset(dataset: DatasetDict, processor: Wav2Vec2Processor) -> DatasetDict:
@@ -82,7 +70,7 @@ def prepare_dataset(dataset: DatasetDict, processor: Wav2Vec2Processor) -> Datas
         batch["input_length"] = len(batch["input_values"])
 
         with processor.as_target_processor():
-            batch["labels"] = processor(batch["transcription"]).input_ids
+            batch["labels"] = processor(batch["transcript"]).input_ids
 
         return batch
 

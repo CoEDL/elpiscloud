@@ -93,13 +93,20 @@ def download_dataset(metadata: ModelMetadata, dataset_path: Path) -> None:
         metadata: The metadata of the model training job to use.
         data_path: A path in which to store the dataset
     """
-    dataset_prefix = f"{metadata.user_id}/{metadata.model_name}/"
     dataset_path.mkdir(parents=True, exist_ok=True)
 
+    dataset_prefix = f"{metadata.user_id}/{metadata.dataset_name}/"
+    logger.info(f"Downloading dataset at: {DATASET_BUCKET}/{dataset_prefix}")
+
     blobs = list_blobs_with_prefix(DATASET_BUCKET, dataset_prefix)
-    for blob in blobs:
-        local_path = dataset_path / str(blob.name)
-        download_blob(DATASET_BUCKET, str(blob.name), local_path)
+    names = [str(blob.name) for blob in blobs]
+    logger.info(f"Found blobs: {names}")
+
+    for name in names:
+        local_path = dataset_path / name
+        download_blob(DATASET_BUCKET, name, local_path)
+
+    logger.info("Finished downloading dataset.")
 
 
 def upload_model(metadata: ModelMetadata, model_path: Path) -> None:
@@ -109,9 +116,14 @@ def upload_model(metadata: ModelMetadata, model_path: Path) -> None:
         metadata: The metadata of the model training job.
         model_path: The path of the trained model.
     """
+    model_prefix = f"{metadata.user_id}/{metadata.model_name}"
+    logger.info(f"Uploading model files to {MODEL_BUCKET}/{model_prefix}")
+
     for file in os.listdir(model_path):
-        blob_name = f"{metadata.user_id}/{metadata.model_name}/{file}"
+        blob_name = f"{model_prefix}/{file}"
         upload_blob(MODEL_BUCKET, model_path / file, blob_name)
+
+    logger.info("Finished uploading model.")
 
 
 if __name__ == "__main__":

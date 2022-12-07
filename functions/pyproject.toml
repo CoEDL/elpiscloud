@@ -20,6 +20,7 @@ cloudevents = "^1.6.1"
 pyhumps = "^3.7.3"
 pedalboard = "^0.6.2"
 elpis = "^0.1.5"
+setuptools = "60.3.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"

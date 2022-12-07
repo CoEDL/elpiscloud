@@ -2,7 +2,7 @@ import json
 from concurrent import futures
 from typing import Any, Callable, Iterable
 
-from google.cloud import pubsub_v1
+from google.cloud.pubsub_v1 import PublisherClient
 from google.cloud.pubsub_v1.futures import Future
 from loguru import logger
 
@@ -16,7 +16,7 @@ def publish_to_topic(topic_name: str, data: Iterable[Any], timeout: int = 60) ->
         data: A list of objects to serialize, encode and publish as separate messages
         timeout: How long the publishing should wait until erroring.
     """
-    publisher = pubsub_v1.PublisherClient()
+    publisher = PublisherClient()
     publish_futures = []
 
     def get_callback(publish_future: Future, data: str) -> Callable[[Future], None]:

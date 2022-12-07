@@ -4,7 +4,7 @@ from typing import Dict
 from functions_framework import Context
 from humps.main import decamelize
 from loguru import logger
-from models import Dataset
+from models.dataset import CloudDataset
 from utils.cloud_storage import delete_folder_blob
 from utils.firestore_event_converter import unpack
 
@@ -27,7 +27,7 @@ def delete_dataset_from_bucket(data: Dict, context: Context) -> None:
     logger.info(f"Raw firestore dataset event: {data}")
 
     dataset = decamelize(unpack(data["oldValue"]))
-    dataset = Dataset.from_dict(dataset)
+    dataset = CloudDataset.from_dict(dataset)
 
     delete_folder_blob(
         bucket_name=DATASET_BUCKET_NAME,

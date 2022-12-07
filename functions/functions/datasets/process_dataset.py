@@ -4,7 +4,7 @@ from typing import Dict
 from functions_framework import Context
 from humps.main import decamelize
 from loguru import logger
-from models.dataset import Dataset, ProcessingJob
+from models.dataset import CloudDataset, ProcessingJob
 from utils.firestore_event_converter import unpack
 from utils.pubsub import publish_to_topic
 
@@ -23,9 +23,9 @@ def process_dataset(data: Dict, context: Context) -> None:
     """
     # Convert the firestore event into a dataset object.
     dataset = decamelize(unpack(data["value"]))
-    dataset = Dataset.from_dict(dataset)
+    dataset = CloudDataset.from_dict(dataset)
 
     logger.info(f"Firestore newly-created dataset information: {dataset}")
 
-    jobs = map(ProcessingJob.to_dict, dataset.to_batch())
+    jobs = map(ProcessingJob.to_dict, dataset.to_jobs())
     publish_to_topic(topic_name=TOPIC_NAME, data=jobs)

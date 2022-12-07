@@ -1,18 +1,14 @@
 import base64
 import json
 import os
-from copy import copy
-from itertools import chain
 from pathlib import Path
 from typing import List, Tuple
 
-import utils.audio as audio
+from elpis.datasets import process_batch
 from firebase_admin import firestore
 from loguru import logger
-from models import Annotation, DatasetOptions, ProcessingJob
-from utils.clean_text import clean_text
+from models import ProcessingJob
 from utils.cloud_storage import download_blob, list_blobs_with_prefix, upload_blob
-from utils.extract_annotations import extract_annotations
 from utils.firebase import get_firestore_client
 
 DEFAULT_DIR = Path("/tmp/")
@@ -36,29 +32,18 @@ def process_dataset_file(event, context) -> None:
     # Decode and deserialize the processing job
     data = base64.b64decode(event["data"]).decode("utf-8")
     data = json.loads(data)
-    logger.info(f"Event data: {data}")
-    job = ProcessingJob.from_dict(data)
+    try:
+        job = ProcessingJob.from_dict(data)
+    except Exception as error:
+        logger.error(f"Failed to deserialize job: {data}")
+        logger.error(error)
+        return
 
     transcription_file, audio_file = download_files(job)
-    annotations = extract_annotations(transcription_file, job.options.elan_options)
+    job.transcription_file = transcription_file
+    job.audio_file = audio_file
 
-    # Resample audio to standardise for training
-    audio.resample(
-        audio_path=audio_file, destination=audio_file, sample_rate=TARGET_SAMPLE_RATE
-    )
-
-    # Clean the annotations
-    annotations = map(
-        lambda annotation: clean_annotation(annotation, job.options), annotations
-    )
-
-    # Generate training files from the annotations
-    processed_files = chain(
-        *map(
-            lambda annotation: generate_training_files(annotation, audio_file),
-            annotations,
-        )
-    )
+    processed_files = process_batch(job, output_dir=DEFAULT_DIR)
 
     # Upload all the training files
     for file in processed_files:
@@ -73,7 +58,7 @@ def download_files(job: ProcessingJob, dir: Path = DEFAULT_DIR) -> Tuple[Path, P
     """Download the required transcription and audio files for the job.
 
     Parameters:
-        job: The processing job.
+        job: The job to process.
         dir: The directory in which to store the files.
 
     Returns:
@@ -81,80 +66,20 @@ def download_files(job: ProcessingJob, dir: Path = DEFAULT_DIR) -> Tuple[Path, P
         and audio files.
     """
     # Download transcription file
-    transcription_file = dir / job.transcription_file_name
+    transcription_file = dir / job.transcription_file
     download_blob(
         bucket_name=FILES_BUCKET,
-        source_blob_name=f"{job.user_id}/{job.transcription_file_name}",
+        source_blob_name=f"{job.user_id}/{job.transcription_file}",
         destination_file_name=transcription_file,
     )
 
     # Download audio file
-    audio_file = dir / job.audio_file_name
+    audio_file = dir / job.audio_file
     download_blob(
         bucket_name=FILES_BUCKET,
-        source_blob_name=f"{job.user_id}/{job.audio_file_name}",
+        source_blob_name=f"{job.user_id}/{job.audio_file}",
         destination_file_name=audio_file,
     )
-    return transcription_file, audio_file
-
-
-def clean_annotation(annotation: Annotation, options: DatasetOptions) -> Annotation:
-    """Cleans the text within an annotation.
-
-    Parameters:
-        annotation: The annotation to clean.
-        options: The cleaning options for the dataset.
-
-    Returns:
-        A new annotation whose transcript has been cleaned.
-    """
-    transcript = clean_text(annotation.transcript, options)
-    result = copy(annotation)
-    result.transcript = transcript
-    return result
-
-
-def generate_training_files(
-    annotation: Annotation, audio_file: Path, dir: Path = DEFAULT_DIR
-) -> Tuple[Path, Path]:
-    """Generates a transcript and audio file pairing for this annotation.
-
-    If the annotation is timed (has a start and stop time), we return a path
-    to a new audio file, which is constrained to the given times. Otherwise,
-    the annotation spans the entire audio path, and so we return this path,
-    unmodified.
-
-    Parameters:
-        annotation: The annotation for a given section of audio within the
-            supplied audio_file.
-        audio_file: The file which the annotation references.
-
-    Returns:
-        A tuple containing a transcription and audio file path for the given
-            annotation.
-    """
-    # Get a unique name prefix based on annotation start time
-    name = audio_file.stem
-    if annotation.start_ms is not None:
-        name = f"{name}_{annotation.start_ms}"
-
-    # Save transcription_file
-    transcription_file = dir / f"{name}.json"
-    with open(transcription_file, "w") as f:
-        json.dump(annotation.to_dict(), f)
-
-    # Save audio file.
-    # Type ignoring is because is_timed ensures sample_rate, start_ms and stop_ms exist
-    if annotation.is_timed():
-        cut_audio_file = dir / f"{name}.wav"
-        audio.cut(
-            audio_path=audio_file,
-            destination=cut_audio_file,
-            start_ms=annotation.start_ms,  # type: ignore
-            stop_ms=annotation.stop_ms,  # type: ignore
-        )
-        audio_file = cut_audio_file
-
     return transcription_file, audio_file
 
 
